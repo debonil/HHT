@@ -1,0 +1,184 @@
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
+
+import { ChartPsngPage } from '../chart-psng/chart-psng';
+import { ContactPage } from '../contact/contact';
+import { PopoverPage } from '../popover/popover';
+import { ActionSheetController, ModalController, PopoverController } from 'ionic-angular';
+import { SuperTabsController } from 'ionic2-super-tabs';
+import { ChartBerthPassengerDetail } from "../../model/ChartBerthPassengerDetail";
+//import { StorageProvider } from "../../providers/storage/storage";
+import { ShiftPsgnPage } from '../shift-psgn/shift-psgn';
+
+
+@IonicPage()
+@Component({
+  selector: 'page-coachwise-chart-view',
+  templateUrl: 'coachwise-chart-view.html',
+})
+export class CoachwiseChartViewPage implements OnInit {
+  // set some user information on chatParams
+  tabs;
+  listitems;
+  coachwiseChartData: Array<any>;
+  public buttonClicked: boolean = true;
+  chartComponent: any = ChartPsngPage;
+  STN_CODE: Array<any>;
+  COACHES: Array<any>;
+  PSGN_ROWS: Array<any>;
+  rows: Array<any>;
+  PSGN_DATA: Array<any>;
+  BATCH: any;
+  PIPELINE: any;
+  PAYLOAD: any;
+  myIndex: number;
+  STAGE;
+  FROM: any;
+  TO: any;
+
+  constructor(public actionSheetCtrl: ActionSheetController, public popoverCtrl: PopoverController, private superTabsCtrl: SuperTabsController,
+    public navCtrl: NavController, public navParams: NavParams,
+    // private storage: StorageProvider,
+    public modalCtrl: ModalController) {
+
+    this.PSGN_DATA = [];
+
+    this.myIndex = navParams.data.tabIndex || 0;
+    this.BATCH = {
+      SYNC: 1,
+      PSGN: { ID: 1, DOC: [] },
+      BERTH: { ID: 2, DOC: [] },
+      WAITLIST: { ID: 3, DOC: [] }
+    };
+    this.PIPELINE = 0;
+    this.PAYLOAD = {
+      PSGN: [],
+      BERTH: [],
+      WAITLIST: []
+    };
+    /* try{
+    this.storage.getStn_Code();
+  }catch(ex){
+    alert('Exception in differentialSync : ' + ex);
+  } */
+  }
+
+  ionViewDidLoad() {
+    console.log('ionViewDidLoad CoachwiseChartViewPage');
+  }
+
+  ngOnInit() {
+    this.STN_CODE = [];
+    this.coachwiseChartData = new Array();
+   /*  try{
+    this.storage.getStn_Code().then((data : any)=> {
+      this.STN_CODE = data;
+      this.FROM = this.STN_CODE[0];
+      this.TO = this.STN_CODE[data.length-1];
+    });
+
+    this.storage.loadCoachwiseChartData().then((data : any)=> {
+      this.coachwiseChartData = data;
+    });
+  }catch(ex){
+    alert('Exception in differentialSync : ' + ex);
+  } */
+  }
+
+
+  initializeItems() {
+    var tempt = Array.from(this.coachwiseChartData.keys()).map(function (coachid) {
+      var rObj = {};
+      rObj['root'] = ChartPsngPage;
+      rObj['title'] = coachid;
+      return rObj;
+    });
+    console.log('coachwise chart data : ' + JSON.stringify(this.coachwiseChartData));
+
+    for (let item of this.coachwiseChartData) {
+      console.log('key===>' + JSON.stringify(item));
+      console.log('value===>' + this.coachwiseChartData[item]);
+    }
+    this.tabs = tempt;
+  }
+
+
+  getValues_FROM(from) {
+    this.FROM = from.STN_CODE;
+    // alert('from : '+this.FROM);
+  }
+
+  getValues_TO(to) {
+    this.TO = to.STN_CODE;
+    // alert('To : '+ this.TO);
+  }
+
+
+  //To poen a side pop over
+  openPopover(myEvent) {
+    let popover = this.popoverCtrl.create(PopoverPage);
+    popover.present({
+      ev: myEvent
+    });
+  }
+
+  /* openModel_ShiftPsgn(characterNum){
+    let modal = this.modalCtrl.create(ShiftPsgnPage, characterNum);
+    modal.present();
+  } */
+
+  /*differentialSync(){
+    try{
+      WL.JSONStore.get('Passenger').getAllDirty().then((dirtyDocs)=>{
+        var len = dirtyDocs.length;
+        var arrayOfPromises = [];
+        var resource;
+        while(len--){
+          var currentDirtyDoc = dirtyDocs[len];
+          switch (currentDirtyDoc._operation) {
+            case 'add':
+            case 'store':
+              resource = new WLResourceRequest('/adapters/Passenger/addPassenger', WLResourceRequest.GET);
+              resource.setQueryParameter('params', [currentDirtyDoc]);
+              arrayOfPromises.push(resource.send());
+              if(arrayOfPromises.length==dirtyDocs.length){
+                alert(JSON.stringify(arrayOfPromises));
+                console.log('Promises: ' + JSON.stringify(arrayOfPromises));
+              }
+              break;
+            case 'replace':
+            case 'refresh':
+              resource = new WLResourceRequest('/adapters/Passenger/replacePassenger', WLResourceRequest.GET);
+              resource.setQueryParameter('params', [currentDirtyDoc]);
+              arrayOfPromises.push(resource.send());
+              if(arrayOfPromises.length==dirtyDocs.length){
+                alert(JSON.stringify(arrayOfPromises));
+                console.log('Promises: ' + JSON.stringify(arrayOfPromises));
+              }
+              break;
+          }
+        }
+        //$.when().apply(this,arrayOfPromises).then();
+      });
+    }catch(ex){
+      alert('Exception in differentialSync : ' + ex);
+    }
+  }*/
+  batchSync() {
+    try {
+      if (this.BATCH.SYNC == 1) {
+        this.BATCH.SYNC = 0;
+        //this.storage.pushPassengers();
+        //this.storage.pushVacantberth();
+        //this.storage.pushWaitlist();
+      } else {
+        this.PIPELINE = 1;
+      }
+    } catch (ex) {
+      alert('Exception in differentialSync : ' + ex);
+    }
+  }
+
+ 
+}
+

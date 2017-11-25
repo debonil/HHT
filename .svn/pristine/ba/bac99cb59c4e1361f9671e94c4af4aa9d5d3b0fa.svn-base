@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Chart Preview Psgn</ion-title>
+     <ion-buttons end>
+     <a ion-button icon-only (click)="modal_Close()">
+      <ion-icon name="close"></ion-icon>
+    </a>
+    </ion-buttons> 
+  </ion-toolbar>
+</ion-header>
+<!-- <div class="bar bar-subheader bar-positive" style="padding:0px;height: 8px;" *ngIf="completion>0">
+  <progress id="progressbar" max="100" value="{{ completion*100/psngObjArr.length }}" class="progress"> </progress>
+  {{ completion*100/psngObjArr.length }}% saving
+</div> -->
+  <ion-content>
+    <!-- <ion-list *ngIf="progressObjArr">
+      <ion-item *ngFor="let tab of progressObjArr">
+          <ion-label>{{tab.coach}}</ion-label>
+          <ion-label>{{tab.total}}</ion-label>
+          <ion-label>{{tab.progressval}}</ion-label>
+      </ion-item>
+    </ion-list> -->
+    <ion-row *ngIf="completion>0" justify-content-center>
+      <ion-col col-12>
+        <ion-card >
+          <ion-card-header color="primary" sm>
+            Saving in progress :
+          </ion-card-header>
+          <ion-card-content>
+              <progress id="progressbar" max="100" value="{{ completion*100/psngObjArr.length }}" class="progress"> </progress>
+              {{ completion*100/psngObjArr.length }}% saving
+           </ion-card-content>
+        </ion-card>
+
+      </ion-col>
+    </ion-row>
+<!-- <ion-card>
+  <div *ngIf="completion>0">
+    <progress id="progressbar" max="100" value="{{ completion*100/psngObjArr.length }}" class="progress"> </progress>
+    {{ completion*100/psngObjArr.length }}% saving
+  </div>
+</ion-card> -->
+
+    <super-tabs *ngIf="coachwiseChartData.length>0&&completion==0">
+       <super-tab *ngFor="let tab of coachwiseChartData" [root]="chartComponent" title="{{tab.key}}" [rootParams]="{psngdata:tab.value,readonly:true}" ></super-tab>  
+      <!-- <super-tab *ngFor="let tab of coachwiseChartData2" [root]="chartComponent" title="{{tab.key}}" [rootParams]="tab.value" ></super-tab> -->
+    </super-tabs>
+  </ion-content>
+  
+  
+  
+  <ion-footer>
+    <button  *ngIf="completion==0"  ion-button round color="primary" full id="chartConfirm" (click)="savePsngBerthDataLocally()">
+      Save Data in Device 
+      <ion-icon name="download"></ion-icon>
+    </button>
+</ion-footer>

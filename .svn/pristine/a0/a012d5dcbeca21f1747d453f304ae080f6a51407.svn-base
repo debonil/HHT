@@ -1,0 +1,19 @@
+export class ShiftPsgnDetails {
+    public _id              :  number;
+    public COACH_ID         :  string;
+    public SRC              :  string;
+    public DEST             :  string;
+    public BERTH_NO         :  string;
+    public CAB_CP_ID        :  string;
+    public REASON           :  string;
+    public ALLOTED          :  string;
+    public REMOTE_LOC_NO    :  number;
+    public SUB_QUOTA        :  string;
+    public PRIMARY_QUOTA    :  string;
+    public TRAIN_ID         :  number;
+    public CH_NUMBER        :  number;
+    public CAB_CP           :  string;
+    public CLASS            :  string;
+    public SYSTIME          :  string;
+    public BERTH_INDEX      :  number;
+}

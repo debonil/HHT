@@ -1,0 +1,142 @@
+
+// .show-page {
+//  background: white;
+//    font-family: 'ubuntu-regular';
+
+// }
+
+// .submit {
+//     background-color: transparent !important;
+//     color: white !important;
+//     border-color: transparent !important;
+//     font-family: 'ubuntu-regular' !important;
+//     font-size : 18px;
+//     width : 100%;
+//     opacity: 1 !important;
+//      box-shadow: none !important;
+
+// }
+
+// .reset {
+//     background-color: white;
+//     color : red;
+//     border-color: red;
+//     font-family: 'ubuntu-bold';
+//     font-size : 18px;
+// }
+
+// input
+// {
+//   -moz-border-radius: 15px;
+//  border-radius: 15px;
+//     border:solid 1px black;
+//     padding:5px;
+//     color:#333;
+// }
+
+// ion-footer{
+//     background:#3a65d2;
+//     padding: 5px 0;
+// }
+
+// #menu2 .toolbar-title.toolbar-title-md {
+//     font-size: 18px;
+//     color: #fff;
+//     font-weight: normal;
+// }
+
+// .button-md {
+//     text-transform: none !important;
+//     background-color: transparent;
+//     /* border: solid 1px white; */
+//     box-shadow: none;
+//     font-size: 18px;
+// }
+
+// ion-header .toolbar-md {
+//     min-height:10px;
+//     max-height: 50px;
+// } 
+
+// .toolbar-background-md {
+//     border-color: #3a65d2;
+//     background: #3a65d2;
+// }
+
+// .header-md{
+//     border-color: #3a65d2;
+//     background: #3a65d2; 
+// }
+
+// ion-button {
+//     background-color: transparent
+// }
+
+// @font-face {
+//   font-family: 'ubuntu-bold';
+//   src: url('../assets/fonts/ubuntu-bold-webfont.eot'); 
+//   src: url('../assets/fonts/ubuntu-bold-webfont.eot?#iefix') format('embedded-opentype'),
+//        url('../assets/fonts/ubuntu-bold-webfont.woff') format('woff'), 
+//        url('../assets/fonts/ubuntu-bold-webfont.ttf')  format('truetype'); 
+      
+// }
+
+
+// @font-face {
+//   font-family: 'ubuntu-regular';
+//   src: url('../assets/fonts/ubuntu-regular-webfont.eot'); 
+//   src: url('../assets/fonts/ubuntu-regular-webfont.eot?#iefix') format('embedded-opentype'),
+//        url('../assets/fonts/ubuntu-regular-webfont.woff') format('woff'), 
+//        url('../assets/fonts/ubuntu-regular-webfont.ttf')  format('truetype'); 
+      
+// }
+
+
+
+// @font-face {
+//   font-family: 'roboto-Medium';
+//   src: url('../assets/fonts/Roboto-Medium.eot'); 
+//   src: url('../assets/fonts/Roboto-Medium.eot?#iefix') format('embedded-opentype'),
+//        url('../assets/fonts/Roboto-Medium.woff') format('woff'), 
+//        url('../assets/fonts/Roboto-Medium.ttf')  format('truetype'); 
+      
+// }
+
+
+
+
+
+// @font-face {
+//   font-family: 'ubuntu-light';
+//   src: url('../assets/fonts/ubuntu-light-webfont.eot'); 
+//   src: url('../assets/fonts/ubuntu-light-webfont.eot?#iefix') format('embedded-opentype'),
+//        url('../assets/fonts/ubuntu-light-webfont.woff') format('woff'), 
+//        url('../assets/fonts/ubuntu-light-webfont.ttf')  format('truetype'); 
+      
+// }
+
+
+
+// App Global Sass
+// --------------------------------------------------
+// Put style rules here that you want to apply globally. These
+// styles are for the entire app and not just one component.
+// Additionally, this file can be also used as an entry point
+// to import other Sass files to be included in the output CSS.
+//
+// Shared Sass variables, which can be used to adjust Ionic's
+// default Sass variables, belong in "theme/variables.scss".
+//
+// To declare rules for a specific mode, create a child rule
+// for the .md, .ios, or .wp mode classes. The mode class is
+// automatically applied to the <body> element in the app.
+.popover-content {
+    overflow: hidden !important;
+}
+.fixed_header{
+    position:fixed;
+    z-index: 999;
+}
+// .col{
+//     padding: 0px;
+// }

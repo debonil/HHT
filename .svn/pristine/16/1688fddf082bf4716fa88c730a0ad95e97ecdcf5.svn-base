@@ -1,0 +1,38 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Shift Passenger</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding align=center>
+    <br>
+  <ion-card>
+    <ion-item>
+      <ion-label><strong>Select Coach</strong></ion-label>
+      <ion-select [(ngModel)]="coachValue" #C (ionChange)="getPassenger(C.value)">
+        <ion-option *ngFor="let option of coachId" [value]="option">{{option.COACH_ID}}</ion-option>
+      </ion-select>
+    </ion-item>
+  </ion-card>
+   <ion-card>
+    <ion-item>
+      <ion-label><strong>Select Passenger</strong></ion-label>
+      <ion-select [(ngModel)]="psgnValue" #D (ionChange)="getVacantBerth(D.value)">
+        <ion-option *ngFor="let option of psgnArray" [value]="option">{{option.PSGN_NAME}}-{{option.PSGN_CLASS}}-{{option.PNR_NO}}-{{option.REL_POS}}-{{option.BERTH_NO}}-{{option.BOARDING_PT}}-{{option.RES_UPTO}}</ion-option>
+      </ion-select>
+    </ion-item>
+  </ion-card> 
+  <ion-card>
+    <ion-item>
+      <ion-label><strong>SELECT SHIFT TYPE</strong></ion-label>
+      <ion-select [(ngModel)]="shiftVal" #E (ionChange)="getShiftType(E.value)">
+        <ion-option  >NORMAL SHIFT</ion-option>
+        <ion-option  >MUTUAL SHIFT</ion-option>
+      </ion-select>
+    </ion-item>
+  </ion-card>
+  
+</ion-content>

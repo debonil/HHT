@@ -1,0 +1,50 @@
+<!--
+  Generated template for the WaitlistModelPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>waitlist Preview</ion-title>
+  </ion-navbar>
+  <ion-buttons end>
+    <a ion-button icon-only id="waitlist" (click)="close()">
+      <ion-icon name="close"></ion-icon>
+    </a>
+  </ion-buttons>
+</ion-header>
+
+
+<ion-content padding>
+  <ion-card padding>
+    <ion-list>
+        <ion-item>
+            <ion-label> Name : </ion-label>
+            <ion-label> {{wlPsgn.json.PSGN_NAME}}</ion-label>
+        </ion-item>
+        <ion-item>
+            <ion-label> PNR : </ion-label>
+            <ion-label> {{wlPsgn.json.PNR_NO}}</ion-label>
+        </ion-item>
+        <ion-item>
+            <ion-label> From : </ion-label>
+            <ion-label> {{wlPsgn.json.JRNY_FROM}}</ion-label>
+        </ion-item>
+        <ion-item>
+            <ion-label> To : </ion-label>
+            <ion-label> {{wlPsgn.json.JRNY_TO}}</ion-label>
+        </ion-item>
+        <ion-item>
+            <ion-label> Berth : </ion-label>
+            <ion-select full interface="popover" placeholder="Select vacant berth" [(ngModel)]="bsd">
+                <ion-option *ngFor="let item of berth" [value]="item">{{item.json.COACH_ID + '-' +item.json.BERTH_INDEX + '-' + item.json.SRC + '-' + item.json.DEST}}</ion-option>
+              </ion-select>
+        </ion-item>
+        <button ion-button full (click)="onSubmit()" id="waitlistSubmit">Submit</button>
+    </ion-list>
+  </ion-card>
+
+
+</ion-content>

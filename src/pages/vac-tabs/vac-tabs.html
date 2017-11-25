@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Vacant Berths</ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content padding>
+ <!-- <div *ngIf='isAvailable'>-->
+  <super-tabs *ngIf="tabs.length > 0">
+    
+           <super-tab  *ngFor="let tab of tabs" [root]="tab1Root" title="{{tab.key}}" [rootParams]= 'tab.value' ></super-tab>
+    
+  </super-tabs>
+<!--</div>-->
+ <!-- <super-tabs id="mainTabs" (tabSelect)="onTabSelect($event)" selectedIndex=1>
+           <super-tab  *ngFor="let tab of tabs" [root]="tab1Root" title="{{tab.title}}" [rootParams]= 'tabparams' id={{tab.title}} ></super-tab>
+
+  </super-tabs>-->
+</ion-content>
+

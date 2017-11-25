@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>WaitList</ion-title>
+    <ion-buttons end>
+      <a ion-button icon-only id="waitlist">
+        <ion-icon name="logo-dropbox"></ion-icon>
+      </a>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-card>
+      <ion-list>
+        <ion-item>
+            <ion-label><strong>WL/NO<br>PNR</strong></ion-label>
+            <ion-label><strong>NAME<br>AGE/SEX</strong></ion-label>
+            <ion-label><strong>SRC<br>DEST</strong></ion-label>
+            <ion-label><strong>COACH - BERTH</strong></ion-label>
+        </ion-item>
+        <ion-item  *ngFor="let item of waitlist" padding>
+            <ion-checkbox color="secondary" (ionChange)="onDropboxClick($event, item)" [checked]="item.json.BERTH_NO>0" [disabled]="item.json.BERTH_NO>0"></ion-checkbox>
+            <ion-label>{{ item.json.PRIMARY_QUOTA!='--'?item.json.PRIMARY_QUOTA:''}} ( {{item.json.SUB_QUOTA!='--'?item.json.SUB_QUOTA:''}} ) {{item.json.WAITLIST_NO}}
+              <br>{{ item.json.PNR_NO }}</ion-label>
+            <ion-label>{{ item.json.PSGN_NAME }}<br>{{ item.json.AGE_SEX }}</ion-label>
+            <ion-label>{{ item.json.JRNY_FROM }}<br>{{item.json.JRNY_TO}}</ion-label>
+            <ion-label>{{ item.json.COACH_ID!=''?item.json.COACH_ID:'NA' }} - {{ item.json.BERTH_NO!='-1'?item.json.BERTH_NO:'NA' }}</ion-label>
+            <hr>
+        </ion-item>
+    </ion-list> 
+  </ion-card> 
+</ion-content>

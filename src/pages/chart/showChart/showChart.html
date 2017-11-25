@@ -1,0 +1,100 @@
+<!--*  Licensed Materials - Property of Paxcel Technologies-->
+
+<ion-header>
+    <ion-navbar>
+        <ion-row>
+            <ion-col> 
+                <button ion-button menuToggle>
+                    <ion-icon style ="color : white; font-size: 26px;" name="menu"></ion-icon>
+                </button>
+            </ion-col>
+            <ion-col>
+                <button ion-button full style = "background-color: transparent; padding:0; margin:0;">
+                    <ion-icon style ="color : white; font-size: 26px;" name="loop"></ion-icon>
+                </button>
+                <p class="get-data"></p>
+            </ion-col>
+                <button ion-button class = "syncbtn" [class.dirtyClass]="isSecondary" (click) = "syncData()">
+            <ion-icon name="sync"  style =" font-size: 20px;"></ion-icon>
+        </button>
+            
+        </ion-row>
+    </ion-navbar>
+</ion-header>
+
+<ion-content scrollY = "true">
+    <div margin>
+        <ion-list no-line>           
+            <form #showChartForm = "ngForm">
+                <ion-item class = "train">
+                    <ion-label inline color="light" >TRAIN NO.</ion-label>
+                    <ion-input readonly type="text" name = "trainNo" [(ngModel)] = "trainNo" placeholder ="12017">{{trainNo}}</ion-input>
+                </ion-item>
+                <br>
+                <ion-slides name = "COACH_ID" (ionSlideWillChange) = "slideChanged()">
+                    <ion-slide *ngFor="let coach of coachArr">
+                        <button class ="left-button" [disabled] = "slides.isBeginning()" ion-button style = "float : left ; color : aliceblue" (click) = "previous()">
+                            <ion-icon name="arrow-dropleft-circle"  style =" font-size: 20px;"></ion-icon>
+                        </button>
+                        <h1 class = "coach-title">{{coach.COACH_ID}}</h1>
+                        <button [disabled] = "slides.isEnd()" class ="right-button"  ion-button   (click) = "next()">
+                            <ion-icon name="arrow-dropright-circle"  style =" font-size: 20px;"></ion-icon>
+                        </button>
+                    </ion-slide>
+                </ion-slides>
+                <div style="overflow-x: auto !important;overflow-y:auto !important ;padding : 9px 8px;">   
+                    <table  class="table">
+                        <thead style = "display: table-header-group;padding : 9px 8px;">
+                            <tr>
+                                <th></th>
+                                <th>BN</th>
+                                <th>QT</th>
+                                <th>RS</th>
+                                <th>TU/NT</th>
+                                <th>PNR No</th>
+                                <th>Name</th>
+                                <th>AGE/SEX</th>
+                                <th>DEST</th>
+                                <th>TKT No</th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            <tr  *ngFor="let passenger of passengerDataArr ; let i = index; trackBy: customTrackBy"  style = "padding : 9px 8px">
+                                <td><input type="checkbox" 
+                                       (change)="onCheck($event.target.checked,$event.target.value,passenger)" 
+                                       [value] = "i"
+                                       [checked]="passenger.YNchecked" 
+                                       #showCheck ></td>
+                                <td>{{passenger.BERTH_NO}}</td>
+                                <td>{{passenger.PRIMARY_QUOTA}}</td>
+                                <td>{{passenger.SUB_QUOTA}}</td>
+                                <td><select id="attendenceSelector" 
+                                            name="status"
+                                            (change)=" updatePassengerStatus($event.target.value , i ,  passenger,showCheck)">
+                                            <option *ngFor="let status of map  ; let i = index;" 
+                                            [value]="status.status" [selected]="(passenger.ATTENDANCE_MARKER).trim() == status.status ">{{ status.status }}</option> 
+                                    </select></td>
+                                <td >{{passenger.PNR_NO}}</td>
+                                <td>{{passenger.PSGN_NAME}}</td>
+                                <td>{{passenger.AGE_SEX}}</td>
+                                <td >{{passenger.JRNY_TO}}</td>
+                                <td >{{passenger.TICKET_NO}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div *ngIf = "formErrors.coachId" class="label label-danger">
+                    <b> {{ formErrors.coachId }}</b>
+                </div>
+            </form>
+        </ion-list>
+    </div>
+</ion-content>
+
+<ion-footer>
+    <ion-row>
+        <ion-col col style="padding:0;">
+            <button ion-button full style = "background-color: transparent;color : white" (click) = "onSubmit()">Submit</button>
+        </ion-col>
+    </ion-row>
+</ion-footer>

@@ -1,0 +1,30 @@
+
+<ion-content padding>
+
+  <ion-card >
+    <ion-list>
+      <ion-item>
+        <ion-label><strong>BERTH_NO</strong></ion-label>
+        <ion-label><strong>CLASS</strong></ion-label>
+        <ion-label><strong>SRC</strong></ion-label>
+        <ion-label><strong>DEST</strong></ion-label>
+
+      </ion-item>
+    </ion-list>
+  </ion-card>
+  <ion-card>
+
+    <ion-list *ngIf=" vacBerth != null  ">
+      <ion-item *ngFor="let item of vacBerth">
+        <ion-label>{{ item.BERTH_NO }}</ion-label>
+        <ion-label>{{ item.CLASS }}</ion-label>
+        <ion-label>{{ item.SRC }}</ion-label>
+        <ion-label>{{ item.DEST }}</ion-label>
+      </ion-item>
+    </ion-list>
+    <ion-list *ngIf=" vacBerth == 0  ">
+      <h1 align=center><font color="red">No Vacant Berth Available</font></h1>
+    </ion-list>
+  </ion-card>
+
+</ion-content>

@@ -1,0 +1,174 @@
+
+<ion-menu side="left" [content]="nav" id = "menu1">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title><img src="assets/icon/usericon.png" style="vertical-align: top;"/>{{" " + username}}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list>
+      <button ion-item (click)="onLoad(chartPage)" class = "signout-menu">
+        <ion-icon     name="clipboard" item-left></ion-icon>
+        Load Chart
+      </button>
+       <button ion-item class = "signout-menu" >
+        <ion-icon     name="help" item-left></ion-icon>
+        Feedback
+      </button>
+      <button ion-item (click)="onLoad(homePage)" class = "signout-menu">
+        <ion-icon    name="log-in" item-left></ion-icon>
+        SignOut
+      </button>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+
+<ion-menu side="left" [content]="nav" id = "menu2">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title><img src="assets/icon/usericon.png" style="vertical-align: top;"/>{{" " + username}}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list>
+      <ion-row>
+       <ion-col col-2>
+     <img src="assets/icon/loadchart.png"/></ion-col>
+     <ion-col col-10>
+     <button ion-item (click)="onLoad(downloadChartPage)">
+       Home
+     </button>
+     </ion-col>
+     </ion-row>
+     <ion-row>
+      <ion-col col-2>
+    <img src="assets/icon/loadchart.png"/></ion-col>
+    <ion-col col-10>
+    <button ion-item (click)="onLoad('CoachwiseChartViewPage')">
+      Chart View
+    </button>
+    </ion-col>
+    </ion-row>
+       <ion-row>
+        <ion-col col-2>
+      <img src="assets/icon/vacant-berth.png"/></ion-col>
+      <ion-col col-10>
+      <button ion-item (click)="onLoad(vacantberth)">
+        Vacant Berth
+      </button>
+      </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-2>
+      <img src="assets/icon/Check-Status.png"/></ion-col>
+      <ion-col col-10>
+      <button ion-item (click)="onLoad(status)">
+       Check Status
+      </button>
+      </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-2>
+      <img src="assets/icon/EFT.png"/></ion-col>
+      <ion-col col-10>
+      <button ion-item (click)="onLoad(eftPage)">
+       EFT
+      </button>
+      </ion-col>
+      </ion-row>
+       <ion-row>
+        <ion-col col-2>
+      <img src="assets/icon/waitlist.png"/></ion-col>
+      <ion-col col-10>
+      <button ion-item (click)="onLoad(waitlist)">
+        Wait List
+      </button>
+      </ion-col>
+      </ion-row>
+       <ion-row>
+        <ion-col col-2>
+      <img src="assets/icon/RAC-Allocation.png"/></ion-col>
+      <ion-col col-10>
+      <button ion-item (click)="onLoad(racPage)">
+        RAC Allocation
+      </button>
+      </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col col-2>
+      <img src="assets/icon/occupacy.png"/></ion-col>
+      <ion-col col-10>
+      <button ion-item (click)="onLoad(occupancy)">
+        Occupancy
+      </button>
+      </ion-col>
+      </ion-row>
+
+       <ion-row>
+        <ion-col col-2>
+      <img src="assets/icon/shiftpassengers.png"/></ion-col>
+      <ion-col col-10>
+      <button ion-item (click)="onLoad(shiftpsgn)">
+        Shift Passengers
+      </button>
+      </ion-col>
+      </ion-row>
+
+       <ion-row>
+        <ion-col col-2>
+      <img src="assets/icon/droppedpassengers.png"/></ion-col>
+      <ion-col col-10>
+      <button ion-item (click)="onLoad(dropETkt)">
+        Dropped Passengers
+      </button>
+      </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col col-2>
+      <img src="assets/icon/after-charting-cancelled.png"/></ion-col>
+      <ion-col col-10>
+      <button ion-item (click)="onLoad(afterCharting)">
+       After-charting-cancelled
+      </button>
+      </ion-col>
+      </ion-row>
+        <ion-row>
+        <ion-col col-2>
+      <img src="assets/icon/Not-Chacked-Passengers.png"/></ion-col>
+      <ion-col col-10>
+      <button ion-item (click)="onLoad(ncpassengers)">
+        Not Checked Passengers
+      </button>
+      </ion-col>
+      </ion-row>
+    <ion-row>
+       <ion-col col-2>
+      <img src="assets/icon/nt.png"/></ion-col>
+      <ion-col col-10>
+      <button ion-item (click)="onLoad(ntpassengers)">
+        Not TurnedUp Passengers
+      </button>
+      </ion-col>
+      </ion-row>
+     <ion-row>
+         <ion-col col-2>
+      <img src="assets/icon/doctor.png"/></ion-col> 
+      <ion-col col-10>
+      <button ion-item (click)="onLoad(doctors)">
+        <ion-icon name="ion-medkit"></ion-icon> Doctors
+      </button>
+      </ion-col>
+      </ion-row>
+       <button ion-item (click)="logOutSession()" style="padding-left: 0;" class="signout-menu">
+        <ion-icon    name="log-in" item-left></ion-icon>
+        SignOut
+      </button>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+
+<ion-nav [root]="rootPage" #nav></ion-nav>

@@ -1,0 +1,8 @@
+{
+  "name": "hht-client-app",
+  "app_id": "in.gov.indianrail.hht",
+  "type": "ionic-angular",
+  "integrations": {
+    "cordova": {}
+  }
+}

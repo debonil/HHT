@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>NC Passengers</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-card>
+    <ion-list>
+        <ion-item>
+            <ion-label><strong>TU/NT</strong></ion-label>
+            <ion-label><strong>BN<br>QT/RS</strong></ion-label>
+            <ion-label col-3><strong>PNR<br>TKT NO</strong></ion-label>
+            <ion-label col-4><strong>NAME<br>S/A-MEAL</strong></ion-label>
+            <ion-label><strong>SRC<br>BRD<br>DEST</strong></ion-label>
+            <ion-label><strong>P.AMT<br>REMARKS</strong></ion-label>
+        </ion-item>
+         <ion-item  *ngFor="let item of NC_ROWS">               
+            <ion-label><select [(ngModel)]="item.json.ATTENDANCE_MARKER">
+                    <option value='P'>TU</option>
+                    <option value='A'>NT</option>
+                    <option value='--' selected> -- </option></select></ion-label>
+            <ion-label>{{ item.json.BERTH_NO }} {{ item.json.PRIMARY_QUOTA }}/{{ item.json.REL_POS }}</ion-label>
+            <ion-label col-3>{{ item.json.PNR_NO }}<br>{{ item.json.TICKET_TYPE }}</ion-label>
+            <ion-label col-4>{{ item.json.PSGN_NAME }}<br>{{ item.json.AGE_SEX }}-{{ item.json.FOOD_FLAG }}</ion-label>
+            <ion-label>{{ item.json.JRNY_FROM }}<br>{{ item.json.BOARDING_PT }}<br>{{ item.json.JRNY_TO }}</ion-label>
+            <ion-label>{{ item.json.PENDING_AMT }}<br>{{ item.json.REMARKS }}</ion-label>
+        </ion-item> 
+    </ion-list>
+  </ion-card> 
+</ion-content>
+<ion-footer>
+    <button ion-button round color="primary" full id="NC_Submit" (click)="NC_PREVIEW()">SUBMIT </button>
+</ion-footer>

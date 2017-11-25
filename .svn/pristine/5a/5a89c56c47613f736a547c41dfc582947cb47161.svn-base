@@ -1,0 +1,13 @@
+page-status {
+ 
+ion-grid {
+  height: 100%;
+  width : 100%;
+  ion-row {
+    height: 10%;
+  }
+ion-col {
+    width: 7%;
+  }
+} 
+}
