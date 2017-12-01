@@ -22,9 +22,9 @@
                 <ion-label><strong>SRC<br>BRD<br>DEST</strong></ion-label>
                 <ion-label><strong>P.AMT<br>REMARKS</strong></ion-label>
             </ion-item> -->
-            <ion-card  *ngFor="let item of rows" [hidden]="item._hidden" [color]="item.color" padding-left (press)="onItemHold(item)">
+            <ion-card  *ngFor="let item of rows" [hidden]="item._hidden" [color]="item.color" padding-left>
             <button ion-item    [disabled]="item._isLocked" solid
-             (tap)="item.toggleStatus()" 
+             (tap)="item.toggleStatus()" (press)="onItemHold(item)"
              padding >
                 <!-- <ion-label col-2 *ngIf="!readonly" ><tristate-toggle [id] = "value"></tristate-toggle></ion-label> -->
               <!-- <ion-checkbox no-padding checked="false"  color="primary"
@@ -38,12 +38,7 @@
                 <!-- <ion-label>{{ item.P_AMT }}<br>{{ item.REMARKS }}</ion-label> -->
                 <!-- <ion-label col-1 *ngIf="item._isLocked&&item.TU_NT" color="secondary">TU</ion-label>
                 <ion-label col-1 *ngIf="item._isLocked&&!item.TU_NT" color="danger">NT</ion-label> -->
-                <ion-label col-1 [color]="item.color" style="font-size:large"> 
-                        {{ item.status }}
-                </ion-label>
-                <!-- <ion-label col-1 [color]="item.color" style="font-size: x-large" float-right> 
-                        <ion-icon name="checkmark-circle"></ion-icon>
-                </ion-label> -->
+                <ion-label col-1 color="{{item.color}}">{{ item.status }}</ion-label>
             </button>
             </ion-card>
         </ion-list>

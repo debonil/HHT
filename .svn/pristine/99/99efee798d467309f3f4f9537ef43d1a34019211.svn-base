@@ -465,7 +465,7 @@ export class StorageProvider {
     return new Promise(resolve=>{
       let collectionName = 'vacantberth';
       WL.JSONStore.get(collectionName).replace(data,{markDirty : true}).then((success)=>{
-        //alert(success + 'replaced'+JSON.stringify(data));
+        alert(success + 'replaced'+JSON.stringify(data));
         resolve(true);
       },(failure)=>{
         resolve(false);
@@ -519,7 +519,9 @@ export class StorageProvider {
   replacePassenger(data){
     return new Promise(resolve=>{
       let collectionName = 'passenger';
+      let time:number=new Date().getTime(); 
       WL.JSONStore.get(collectionName).replace(data).then((success)=>{
+        alert("data saved in ==>"+(new Date().getTime()-time));
         resolve(true);
       },(failure)=>{
         resolve(false);
@@ -528,7 +530,7 @@ export class StorageProvider {
   }
 
   getDirtyRecords(collectionName) {
-    //alert('getDirtyRecords ' + collectionName);
+    alert('getDirtyRecords ' + collectionName);
     return new Promise(resolve=>{
       WL.JSONStore.get(collectionName).getAllDirty().then((docs)=>{
         this.dirtyDocs = docs;

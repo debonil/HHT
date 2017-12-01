@@ -264,7 +264,7 @@ export class EftPage {
         }
       }
       if(this.EFT.IS_CLEAN){
-       // alert('issue EFT');
+        alert('issue EFT');
         this.issueEFT(0);
       }
     });
@@ -361,7 +361,7 @@ export class EftPage {
       this.storage.appendPassengers(psgnObj).then(res=>{
         console.log(res + 'Appended PSGN : ' + JSON.stringify(psgnObj));
         if(res){
-          this.pdsp.addPsngBerth(psgnObj);
+          //this.pdsp.addPsngBerth(psgnObj);
           resolve(true);
         }else{
           //alert('PASSENGER APPEND FAILS....');

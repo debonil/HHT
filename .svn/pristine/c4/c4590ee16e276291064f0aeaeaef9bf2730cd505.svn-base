@@ -191,7 +191,7 @@ export class ChartPage {
                   this.storage.clear('passenger').then(() => {
                     this.pdsp.clearAllData();
                     this.savedChartCoachList=[];
-                    this.trainAssignment={"USER_ID":this.username};
+                    this.trainAssignment=undefined;
                     resolve(true);
                   });
                 });

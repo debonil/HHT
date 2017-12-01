@@ -48,9 +48,7 @@ export class HomePage {
 
   ionViewDidLoad(){
     //setTimeout(() => this.splash = false, 300);	
-    /* this.pdsp.findAll().subscribe(data => {
-        console.log(data.coachwiseChartData.length);
-       }); */
+    this.pdsp.findAll();
   }
 
   showPassword(input: any):any{
@@ -59,8 +57,8 @@ export class HomePage {
 
   onSubmit2(event , username , password){
       //Added by DG
-      if(username === '')username='psaini';
-      if(password === '')password='psaini';
+      if(username === '')username='ashutosh';
+      if(password === '')password='ashutosh';
 
       ///END Add
     if(username === ''){this.formErrors['username'] = this.validationMessages.username.required;}

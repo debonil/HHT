@@ -143,14 +143,7 @@ export class PsngDataServiceProvider {
     if(!psng["json"])psng["json"]=psng;
     let cvtdPsng=this.convertToViewablePsng(psng);
     this.allPassengerChartDataObj.allPassengerChartData.push(cvtdPsng);
-    var arr=this.allPassengerChartDataObj.coachwiseChartDataMap[cvtdPsng.COACH]
-    arr.some((ele,i )=> {
-      if(ele.BN>cvtdPsng.BN){
-        arr.splice(i,0,cvtdPsng);
-        return true;
-      }
-    });
-    //.push(cvtdPsng);
+    this.allPassengerChartDataObj.coachwiseChartDataMap[cvtdPsng.COACH].push(cvtdPsng);
     //this.allPassengerChartDataObj.allPassengerChartData.push(cvtdPsng);
   }
   convertToViewablePsng(element:any) :any{

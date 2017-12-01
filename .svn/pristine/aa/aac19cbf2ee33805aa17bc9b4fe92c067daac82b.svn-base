@@ -35,7 +35,6 @@ export class ChartBerthPassengerDetail {
   statusFlagArray=["-","P","A"];
   statusDetailArray=["NC","TU","NT"];
   statusColorArray=["light","primary","danger"];
-  statusIconArray=["","checkbox-outline","checkbox-outline-blank"];
 
   constructor(element) {
   // console.log(this);
@@ -82,9 +81,6 @@ export class ChartBerthPassengerDetail {
   }
   get color(){
     return  this.statusColorArray[this._status];
-  }
-  get icon(){
-    return  this.statusIconArray[this._status];
   }
   
 

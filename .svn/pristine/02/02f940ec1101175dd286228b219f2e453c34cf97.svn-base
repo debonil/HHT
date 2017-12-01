@@ -38,7 +38,7 @@
                 <!-- <ion-label>{{ item.P_AMT }}<br>{{ item.REMARKS }}</ion-label> -->
                 <!-- <ion-label col-1 *ngIf="item._isLocked&&item.TU_NT" color="secondary">TU</ion-label>
                 <ion-label col-1 *ngIf="item._isLocked&&!item.TU_NT" color="danger">NT</ion-label> -->
-                <ion-label col-1 [color]="item.color" style="font-size:large"> 
+                <ion-label col-1 [color]="item.color" style="font-size: x-large"> 
                         {{ item.status }}
                 </ion-label>
                 <!-- <ion-label col-1 [color]="item.color" style="font-size: x-large" float-right> 

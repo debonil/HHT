@@ -22,30 +22,22 @@
                 <ion-label><strong>SRC<br>BRD<br>DEST</strong></ion-label>
                 <ion-label><strong>P.AMT<br>REMARKS</strong></ion-label>
             </ion-item> -->
-            <ion-card  *ngFor="let item of rows" [hidden]="item._hidden" [color]="item.color" padding-left (press)="onItemHold(item)">
-            <button ion-item    [disabled]="item._isLocked" solid
-             (tap)="item.toggleStatus()" 
+            <ion-item   *ngFor="let item of rows" 
+             [hidden]="item._hidden" 
              padding >
                 <!-- <ion-label col-2 *ngIf="!readonly" ><tristate-toggle [id] = "value"></tristate-toggle></ion-label> -->
-              <!-- <ion-checkbox no-padding checked="false"  color="primary"
+              <ion-checkbox no-padding checked="false"  color="primary"
                  [(ngModel)]="item.IS_CHECKED" (ionChange)="item.TU_NT=item.IS_CHECKED" [disabled]="item._isLocked"></ion-checkbox>
                 <ion-toggle  no-padding color="secondary" *ngIf="!item._isLocked"
-                [(ngModel)]="item.TU_NT" [disabled]="!item.IS_CHECKED||item._isLocked"></ion-toggle> -->
+                [(ngModel)]="item.TU_NT" [disabled]="!item.IS_CHECKED||item._isLocked"></ion-toggle>
                 <ion-label  no-padding >{{ item.BN }} {{ item.QT }} </ion-label>
                 <ion-label  no-padding col-3>{{ item.PNR }}<br>{{ item.TKT }}</ion-label>
                 <ion-label  no-padding col-4>{{ item.NAME }}<br>{{ item.S_A }}-{{ item.MEAL }}</ion-label>
                 <ion-label  no-padding >{{ item.BRD }}<br>{{ item.DEST }}</ion-label>
                 <!-- <ion-label>{{ item.P_AMT }}<br>{{ item.REMARKS }}</ion-label> -->
-                <!-- <ion-label col-1 *ngIf="item._isLocked&&item.TU_NT" color="secondary">TU</ion-label>
-                <ion-label col-1 *ngIf="item._isLocked&&!item.TU_NT" color="danger">NT</ion-label> -->
-                <ion-label col-1 [color]="item.color" style="font-size:large"> 
-                        {{ item.status }}
-                </ion-label>
-                <!-- <ion-label col-1 [color]="item.color" style="font-size: x-large" float-right> 
-                        <ion-icon name="checkmark-circle"></ion-icon>
-                </ion-label> -->
-            </button>
-            </ion-card>
+                <ion-label col-1 *ngIf="item._isLocked&&item.TU_NT" color="secondary">TU</ion-label>
+                <ion-label col-1 *ngIf="item._isLocked&&!item.TU_NT" color="danger">NT</ion-label>
+            </ion-item>
         </ion-list>
         <ion-list  *ngIf="readonly">
             <!-- <ion-item>
@@ -60,10 +52,10 @@
              [hidden]="item._hidden" 
              padding >
                 <!-- <ion-label col-2 *ngIf="!readonly" ><tristate-toggle [id] = "value"></tristate-toggle></ion-label> -->
-                <!-- <ion-label col-1 *ngIf="item.IS_CHECKED&&item.TU_NT" color="secondary">TU</ion-label>
+                <ion-label col-1 *ngIf="item.IS_CHECKED&&item.TU_NT" color="secondary">TU</ion-label>
                 <ion-label col-1 *ngIf="item.IS_CHECKED&&!item.TU_NT" color="royal">NT</ion-label>
-                <ion-label col-1 *ngIf="!item.IS_CHECKED" >NC</ion-label> -->
-                <ion-label col-1 color="{{item.color}}">{{ item.status }}</ion-label>
+                <ion-label col-1 *ngIf="!item.IS_CHECKED" >NC</ion-label>
+                
                 <ion-label  no-padding >{{ item.BN }} {{ item.QT }} </ion-label>
                 <ion-label  no-padding col-3>{{ item.PNR }}<br>{{ item.TKT }}</ion-label>
                 <ion-label  no-padding col-4>{{ item.NAME }}<br>{{ item.S_A }}-{{ item.MEAL }}</ion-label>
