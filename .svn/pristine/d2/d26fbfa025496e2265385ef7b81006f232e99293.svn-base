@@ -1,0 +1,187 @@
+<!--
+  Generated template for the ChartPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar color="primary" >
+    <button ion-button icon-only menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>EHHT</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (tap)="clearChartData()">
+        <ion-icon name="trash"></ion-icon>
+      </button>
+      <button ion-button icon-only (tap)="loadChart()">
+        <ion-icon name="cloud-download"></ion-icon>
+      </button>
+      <button ion-button icon-only [class.dirtyClass]="isSecondary" (tap)="syncData_Provider()">
+        <ion-icon name="sync"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+<ion-content >
+  <ion-grid class="grid-full">
+    <ion-row *ngIf="trainAssignment" justify-content-center>
+      <ion-col col-12>
+        <ion-card >
+          <ion-card-header color="primary" sm>
+            User and Duty Details :
+          </ion-card-header>
+          <ion-card-content>
+            <ion-row>
+              <ion-col col-6>
+                <ion-label  >User :</ion-label>
+              </ion-col>
+              <ion-col col-6>
+                <ion-label   text-uppercase>{{trainAssignment.USER_ID}}</ion-label>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col col-6>
+                <ion-label  >Train No :</ion-label>
+              </ion-col>
+              <ion-col col-6>
+                <ion-label  >{{trainAssignment.TRAIN_NO}} [{{trainAssignment.TRAIN_TYPE}}]</ion-label>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col col-6>
+                <ion-label  >Duty Station :</ion-label>
+              </ion-col>
+              <ion-col col-6>
+                <ion-label  >{{trainAssignment.CH_POINT}}</ion-label>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col col-6>
+                <ion-label  >Coaches Assigned :</ion-label>
+              </ion-col>
+              <ion-col col-6>
+                <ion-label text-wrap>{{trainAssignment.ASSIGNED_COACHES}}</ion-label>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col col-6>
+                <ion-label  >Reference Date :</ion-label>
+              </ion-col>
+              <ion-col col-6>
+                <ion-label  >{{trainAssignment.LOAD_TIME}}</ion-label>
+              </ion-col>
+            </ion-row>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="progressval>0&&progressval<100" justify-content-center>
+      <ion-col col-12>
+        <ion-card >
+          <ion-card-header color="primary" sm>
+            Download progress :
+          </ion-card-header>
+          <ion-card-content>
+            <div *ngIf="progressval<100" style="overflow-y : auto">
+              <ion-label  >Downloading Chart </ion-label>
+              <progress id="progressbar" max="100" value="{{ progressval }}"> </progress>
+              <div text-center id="progressbarlabel">{{ progressval }} %</div>
+
+            </div>
+
+            <!-- <button *ngIf="progressval==100" ion-button block (tap)="goToCoachwiseChartViewPage()">
+              View Chart &nbsp; 
+              <ion-icon name="arrow-dropright"></ion-icon>
+            </button> -->
+            <!-- <ion-label  >Coaches loaded : </ion-label>
+            <kbd   *ngFor="let coach of savedChartCoachList ">{{ coach.key }} </kbd>
+            <ion-label *ngIf="progressval==100" text-left  >Download complete!!</ion-label> -->
+          </ion-card-content>
+        </ion-card>
+
+      </ion-col>
+    </ion-row>
+    <!-- Opens when passenger Table has some entries -->
+    <ion-row justify-content-center>
+      <ion-col col-12>
+        <ion-card *ngIf="trainAssignment" >
+          <ion-card-header color="primary" sm>
+            Chart status : {{progressval}}
+            <span color="danger" float-right	 *ngIf="!savedChartCoachList">Not Available </span>
+            <!-- <span color="danger" float-right	 *ngIf="savedChartCoachList&&savedChartCoachList.length<trainAssignment.ASSIGNED_COACHES.length">Incomplete {{progressval}}</span> -->
+            <span color="default" float-right	 *ngIf="savedChartCoachList&&savedChartCoachList.length<trainAssignment.ASSIGNED_COACHES.length">Downloading ({{progressval}}%)</span>
+            <span color="success" float-right	 *ngIf="savedChartCoachList&&savedChartCoachList.length==trainAssignment.ASSIGNED_COACHES.length">Download Complete!!</span>
+          </ion-card-header>
+          <ion-card-content *ngIf="savedChartCoachList">
+
+              <ion-row>
+                  <ion-col col-6>
+                    <ion-label  >No of Coaches downloaded:</ion-label>
+                  </ion-col>
+                  <ion-col col-6>
+                    <ion-label  >{{savedChartCoachList.length}} out of {{trainAssignment.ASSIGNED_COACHES.length+1}} </ion-label>
+                  </ion-col>
+                </ion-row>
+            <ion-row >
+              <ion-col col-3 *ngFor="let coach of savedChartCoachList ">
+                <ion-label text-center >{{coach.key}} ({{coach.value.length}})</ion-label>
+              </ion-col>
+              <!-- <ion-col col-6>
+                <ion-label text-center >{{coach.value.length}}</ion-label>
+              </ion-col> -->
+            </ion-row>
+          </ion-card-content>
+          <ion-card-content *ngIf="!savedChartCoachList">
+            <ion-row>
+              <ion-col col-12>
+                <ion-label  >No Chart available in this device!!</ion-label>
+                <!-- <button ion-button block (tap)="goToChart()">
+                  Download Chart &nbsp;
+                  <ion-icon name="cloud-download"></ion-icon>
+                </button> -->
+              </ion-col>
+            </ion-row>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+
+
+    <!-- Sync status -->
+
+    <ion-row justify-content-center>
+      <ion-col col-12>
+        <ion-card >
+          <ion-card-header color="primary" sm>
+            Sync progress :
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list>
+              <ion-item *ngFor="let log of syncProvider.logArray">
+                  {{log}}
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+</ion-content>
+<ion-footer>
+  <ion-row>
+    <ion-col col no-padding>
+      <button ion-button full (tap)="confirmAlert()"><ion-icon name="cloud-download"></ion-icon>&nbsp; New Chart/Duty</button>
+    </ion-col>
+    <div class="partition-line"></div>
+    <ion-col col no-padding>
+      <button ion-button full [disabled]="!savedChartCoachList" (tap)="continue()">
+        View Chart &nbsp;
+        <ion-icon name="calendar"></ion-icon>
+      </button>
+    </ion-col>
+  </ion-row>
+</ion-footer>

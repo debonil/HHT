@@ -1,8 +1,0 @@
-import { NgModule } from '@angular/core';
-import { ComponentsTristateToggleComponent } from './components-tristate-toggle/components-tristate-toggle';
-@NgModule({
-	declarations: [ComponentsTristateToggleComponent],
-	imports: [],
-	exports: [ComponentsTristateToggleComponent]
-})
-export class ComponentsModule {}

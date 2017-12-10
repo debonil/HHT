@@ -1,0 +1,81 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Chart Page</ion-title>
+    <ion-buttons end >
+      <a ion-button icon-only id="sync" (click)="refreshChart()">
+        <ion-icon name="sync"></ion-icon>
+      </a>
+    </ion-buttons>
+    <ion-buttons end>
+     <a ion-button icon-only (click)="openPopover($event)">
+      <ion-icon name="more"></ion-icon>
+    </a>
+    </ion-buttons>
+    <ion-buttons end>
+      <a ion-button icon-only id="eft" style="display:none">
+        <ion-icon name="folder-open"></ion-icon>
+      </a>
+    </ion-buttons>
+    </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-card *ngIf="trainAssignment">
+      <ion-row>
+        <ion-col col-12>
+          <ion-item >
+            <ion-label color="primary">Boarding Points</ion-label>
+            <ion-select multiple="true" [(ngModel)]="selectedBoardingPoints" (ionChange)="filterData()">
+              <ion-option *ngFor="let item of trainAssignment.ISL_ARR" >{{item}}</ion-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <ion-item>
+              <ion-label  [color]="showNotCheckedOnly?'primary':'dark'"> Show not checked only </ion-label>
+              <ion-toggle  color="primary"[(ngModel)]="showNotCheckedOnly"
+               (ionChange)="filterData()">
+              </ion-toggle>
+            </ion-item>
+        </ion-col>
+      </ion-row>
+    <!-- <ion-searchbar (ionInput)="getItems($event)" (ionCancel)="cancelPsgnSearch($event)" [showCancelButton]="shouldShowCancel"></ion-searchbar>
+    <ion-list>
+        <ion-item *ngFor="let item of listitems">
+            <ion-label>{{ item.json.PNR_NO }}- {{ item.json.PSGN_NAME }} - {{ item.json.COACH_ID }}- {{ item.json.BERTH_NO }} -{{ item.json.BOARDING_PT }} --{{ item.json.RES_UPTO }}</ion-label>
+            <ion-checkbox color="secondary"></ion-checkbox>
+        </ion-item>
+    </ion-list> -->
+  </ion-card>
+  <!-- <ion-list ng-if="coachwiseChartData!=null&&coachwiseChartData.length>0">
+    <ion-item *ngFor="let tab of coachwiseChartData">{{tab.key}}=>{{tab.value.length}}</ion-item> 
+  </ion-list> -->
+  <super-tabs *ngIf="coachwiseChartDataLoaded" [scrollTabs]="coachwiseChartData.length>10" >
+     <super-tab *ngFor="let tab of coachwiseChartData" [root]="chartComponent" title="{{tab.key}}" [rootParams]="{psngdata:tab.value,readonly:false}" ></super-tab>  
+    <!-- <super-tab *ngFor="let tab of coachwiseChartData2" [root]="chartComponent" title="{{tab.key}}" [rootParams]="tab.value" ></super-tab> -->
+  </super-tabs>
+  
+  <!-- <div *ngIf="coachwiseChartData.length==0" style="width: 100%; height: 100%;">
+    <ion-img  style="width: 100%; height: 100%;"   src="assets/images/Ball.gif"></ion-img>
+  </div> -->
+  <!-- <ion-fab bottom right >
+    <button ion-fab (tap)="previewAndSubmitChart()" large><ion-icon name="eye"></ion-icon></button>
+  </ion-fab> -->
+  <ion-fab bottom right #fab>
+    <button ion-fab large>Save</button>
+    <ion-fab-list side="top">
+      <button ion-fab (tap)="share('save', fab)" ><ion-icon name="archive"></ion-icon></button>
+      <button ion-fab (tap)="share('prev', fab)" ><ion-icon name="eye"></ion-icon></button>
+    </ion-fab-list>
+    <!-- <ion-fab-list side="left">
+      <button ion-fab>Vimeo</button>
+    </ion-fab-list> -->
+  </ion-fab>
+</ion-content>
+
+

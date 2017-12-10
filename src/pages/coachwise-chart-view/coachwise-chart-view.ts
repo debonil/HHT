@@ -2,11 +2,10 @@ import { Component, ViewChild , OnInit} from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 
  import { ChartPsngPage } from '../chart-psng/chart-psng';
-// import { ContactPage } from '../contact/contact';
 // import { PopoverPage } from '../popover/popover';
  import { ActionSheetController, ModalController, PopoverController } from 'ionic-angular';
  import { SuperTabsController } from 'ionic2-super-tabs';
-// import { ChartBerthPassengerDetail } from "../../model/ChartBerthPassengerDetail";
+ import { ChartBerthPassengerDetail } from "../../model/ChartBerthPassengerDetail";
  import { PsngDataServiceProvider } from "../../providers/psng-data-service/psng-data-service";
  import { StorageProvider } from '../../providers/storage/storage';
 // import { ShiftPsgnPage } from '../shift-psgn/shift-psgn';
@@ -33,8 +32,8 @@ export class CoachwiseChartViewPage implements OnInit {
   passengerSelectorViewObj:any={
     isActive:false,
     selectedPassengerItems:[],
-    //activate:this.passengerSelectorViewObjActivate,
-    //checkChanged:this.passengerSelectorViewObjCheckChanged,
+    activate:this.passengerSelectorViewObjActivate,
+    checkChanged:this.passengerSelectorViewObjCheckChanged,
   };
   private loading : any;
   timeTrack : number;
@@ -185,6 +184,21 @@ export class CoachwiseChartViewPage implements OnInit {
     modal.present();
   } */
 
+
+  passengerSelectorViewObjActivate(){
+    console.log("passengerSelectorViewObjActivate");
+  }
+  passengerSelectorViewObjCheckChanged(){
+    console.log("passengerSelectorViewObjCheckChanged");
+  }
+
+  releaseSelectorMode(){
+    this.passengerSelectorViewObj.isActive=false;
+    while(this.passengerSelectorViewObj.selectedPassengerItems.length>0){
+      this.passengerSelectorViewObj.selectedPassengerItems.pop().selected=false;
+    }
+  }
+  
   previewAndSubmitChart() {
     this.alertToast("Going to summery!!");
     this.navCtrl.push(this.chartPreviewPage, { coachwiseChartData: this.coachwiseChartData });
@@ -196,6 +210,16 @@ export class CoachwiseChartViewPage implements OnInit {
     });
     toast.present();
   }
+  ionViewCanLeave(): boolean{
+    // here we can either return true or false
+    // depending on if we want to leave this view
+    if(!this.passengerSelectorViewObj.isActive){
+       return true;
+     } else {
+      this.releaseSelectorMode();
+       return false;
+     }
+   }
 
 }
 
