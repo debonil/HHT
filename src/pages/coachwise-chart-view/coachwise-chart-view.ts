@@ -1,11 +1,12 @@
-import { Component, ViewChild , OnInit} from '@angular/core';
-import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
+import { Component, ViewChild} from '@angular/core';
+import { IonicPage, NavController, NavParams, LoadingController,FabContainer } from 'ionic-angular';
 
  import { ChartPsngPage } from '../chart-psng/chart-psng';
+// import { ContactPage } from '../contact/contact';
 // import { PopoverPage } from '../popover/popover';
  import { ActionSheetController, ModalController, PopoverController } from 'ionic-angular';
  import { SuperTabsController } from 'ionic2-super-tabs';
- import { ChartBerthPassengerDetail } from "../../model/ChartBerthPassengerDetail";
+// import { ChartBerthPassengerDetail } from "../../model/ChartBerthPassengerDetail";
  import { PsngDataServiceProvider } from "../../providers/psng-data-service/psng-data-service";
  import { StorageProvider } from '../../providers/storage/storage';
 // import { ShiftPsgnPage } from '../shift-psgn/shift-psgn';
@@ -18,7 +19,7 @@ import { ToastController } from 'ionic-angular/components/toast/toast-controller
   selector: 'page-coachwise-chart-view',
   templateUrl: 'coachwise-chart-view.html',
 })
-export class CoachwiseChartViewPage implements OnInit {
+export class CoachwiseChartViewPage {
   // set some user information on chatParams
  /*  tabs;
   listitems; */
@@ -32,8 +33,8 @@ export class CoachwiseChartViewPage implements OnInit {
   passengerSelectorViewObj:any={
     isActive:false,
     selectedPassengerItems:[],
-    activate:this.passengerSelectorViewObjActivate,
-    checkChanged:this.passengerSelectorViewObjCheckChanged,
+    //activate:this.passengerSelectorViewObjActivate,
+    //checkChanged:this.passengerSelectorViewObjCheckChanged,
   };
   private loading : any;
   timeTrack : number;
@@ -49,15 +50,11 @@ export class CoachwiseChartViewPage implements OnInit {
   }
   ionViewDidLoad() {
    console.log('ionViewDidLoad CoachwiseChartViewPage' + (new Date().getTime()-this.timeTrack));
-   
-  }
-  ngOnInit() {
-
-    this.loading = this.loadingCtrl.create({
+   this.loading = this.loadingCtrl.create({
       content: 'Organizing chart ......'
     });
     this.loading.present();
-}
+  }
 
   ionViewDidEnter() {
    console.log('ionViewDidEnter CoachwiseChartViewPage' + (new Date().getTime()-this.timeTrack));
@@ -73,7 +70,7 @@ export class CoachwiseChartViewPage implements OnInit {
      if (data) {
        this.coachwiseChartData = data.coachwiseChartData;
        this.trainAssignment = data.trainAssignmentObj;
-       this.selectedBoardingPoints = this.trainAssignment.ISL_ARR;
+       this.selectedBoardingPoints = this.trainAssignment.ISL_ARR.slice(0,1);
        this.coachwiseChartDataLoaded = true;
       // this.alertToast("Data loading...");
      } else {
@@ -92,6 +89,7 @@ export class CoachwiseChartViewPage implements OnInit {
        if(this.loading){
          console.log('about to dismiss loader....');
          this.loading.dismiss();
+         this.filterData();
        }
      });
     
@@ -122,12 +120,12 @@ export class CoachwiseChartViewPage implements OnInit {
         this.loading.present();
         this.coachwiseChartData = data.coachwiseChartData;
         this.coachwiseChartDataLoaded = true;
-        this.loading.dismiss();
-        this.alertToast("Data refreshed!!"); */
+        this.loading.dismiss(); */
+        this.alertToast("Data refreshed!!");
 
 
-        this.navCtrl.push(this.chartPreviewPage);
-        this.navCtrl.pop();
+        /* this.navCtrl.push(this.chartPreviewPage);
+        this.navCtrl.pop(); */
       } else {
         alert("refreshChart NO CHART DATA FOUND!!");
         this.navCtrl.setRoot(ChartPage);
@@ -184,23 +182,7 @@ export class CoachwiseChartViewPage implements OnInit {
     modal.present();
   } */
 
-
-  passengerSelectorViewObjActivate(){
-    console.log("passengerSelectorViewObjActivate");
-  }
-  passengerSelectorViewObjCheckChanged(){
-    console.log("passengerSelectorViewObjCheckChanged");
-  }
-
-  releaseSelectorMode(){
-    this.passengerSelectorViewObj.isActive=false;
-    while(this.passengerSelectorViewObj.selectedPassengerItems.length>0){
-      this.passengerSelectorViewObj.selectedPassengerItems.pop().selected=false;
-    }
-  }
-  
   previewAndSubmitChart() {
-    this.alertToast("Going to summery!!");
     this.navCtrl.push(this.chartPreviewPage, { coachwiseChartData: this.coachwiseChartData });
   }
   alertToast(msg) {
@@ -210,16 +192,82 @@ export class CoachwiseChartViewPage implements OnInit {
     });
     toast.present();
   }
-  ionViewCanLeave(): boolean{
-    // here we can either return true or false
-    // depending on if we want to leave this view
-    if(!this.passengerSelectorViewObj.isActive){
-       return true;
-     } else {
-      this.releaseSelectorMode();
-       return false;
-     }
-   }
+  share(action: string, fab: FabContainer) {
+    fab.close();
+    switch (action) {
+      case "save":
+        this.savePsngBerthDataLocally();
+        break;
+      case "prev":
+        this.previewAndSubmitChart();
+        break;
+    
+      default:
+        break;
+    }
+  }
+  showLoader(msg) {
+    if (!this.loading) {
+      this.loading  = this.loadingCtrl.create({ content: msg });
+    } else {
+      this.loading.dismiss();
+      this.loading = this.loadingCtrl.create({ content: msg });
+    }
+
+    this.loading.present();
+
+  }
+  savePsngBerthDataLocally() {
+    this.showLoader("Saving data... ");
+    let psngObjArr = [] ;
+    let vbObjArr = [] ;
+
+    this.coachwiseChartData.forEach((coachpsngbrth, ind1) => {
+      coachpsngbrth.value.forEach((psngbrth, ind2) => {
+        if (!psngbrth._isLocked && psngbrth._status > 0) {
+          psngbrth._isLocked = true;
+          psngObjArr.push(psngbrth);
+          if (psngbrth._status == 2)
+            vbObjArr.push(this.convertPsngToVBerth(psngbrth));
+        }
+      });
+    });
+    this.storage.replacePassenger(psngObjArr.map(p => p.dbObj)).then(success => {
+      this.loading.dismiss();
+      this.alertToast("Data saved successfully!!");
+      //this.modal_Close();
+      this.storage.appendVacantBerth(vbObjArr).then((success) => {
+        if (success) {
+          //this.alertToast("Generated vacant berths!!");
+        } else {
+          this.alertToast("Data Saved Failed!!" + JSON.stringify(success));
+        }
+      });
+    });
+    
+
+  }
+
+  private convertPsngToVBerth(psngbrth) {
+    return {
+      TRAIN_ID: psngbrth.TRAIN_ID,
+      COACH_ID: psngbrth.COACH,
+      BERTH_NO: psngbrth.BN,
+      CLASS: psngbrth.CLASS,
+      REMOTE_LOC_NO: psngbrth.REMOTE_LOC_NO,
+      BERTH_INDEX: psngbrth.BERTH_INDEX,
+      SRC: psngbrth.BRD,
+      DEST: psngbrth.DEST,
+      ALLOTED: "N",
+      REASON: "V",
+      CAB_CP: psngbrth.CAB_CP,
+      CAB_CP_ID: psngbrth.CAB_CP_ID,
+      CH_NUMBER: psngbrth.CH_NUMBER,
+      PRIMARY_QUOTA: psngbrth.QT,
+      SUB_QUOTA: psngbrth.SUB_QUOTA,
+      SYSTIME: psngbrth.SYSTIME,
+    };
+  }
 
 }
 

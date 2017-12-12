@@ -19,9 +19,3 @@ a[disabled], button[disabled], [ion-button][disabled] {
 	transition: transform 1s;
 	transform: rotate(1080deg);
 }
-ion-avatar .item-md ion-icon[item-left], .item-md ion-icon[item-right], .item-md ion-icon[item-start], .item-md ion-icon[item-end] {
-    margin-left: 0;
-    /* margin-top: 11px; */
-    margin-bottom: 10px;
-    position: absolute;
-}
