@@ -11,6 +11,11 @@ declare var WL;
 */
 @Injectable()
 export class PsngDataServiceProvider {
+  //Filter Data
+  selectedBoardingPoints: Array<string>;
+  showNotCheckedOnly: boolean;
+  filterStatus: string="0";
+  //
   private allPassengerChartDataObj: any ={
     trainAssignmentObj : {},
     coachwiseChartData:Array<any>() ,

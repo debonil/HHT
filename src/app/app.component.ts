@@ -36,6 +36,7 @@ import { PsngDataServiceProvider } from '../providers/psng-data-service/psng-dat
   templateUrl: 'app.html'
 })
 export class MyApp {
+  backButtonPressedOnceToExit: boolean=false;
   @ViewChild('nav') nav: NavController;
 
   rootPage: any = HomePage;
@@ -165,4 +166,71 @@ export class MyApp {
     this.nav.setRoot(page, {user : this.username});
     this.menuCtrl.close();
   }*/
+  registerBackButton(){
+    this.platform.registerBackButtonAction(() => {
+
+
+      //uncomment this and comment code below to to show toast and exit app
+      if (this.backButtonPressedOnceToExit) {
+        this.platform.exitApp();
+      } else if (this.nav.canGoBack()) {
+        this.nav.pop({});
+      } else {
+        this.showToast();
+        this.backButtonPressedOnceToExit = true;
+        setTimeout(() => {
+
+          this.backButtonPressedOnceToExit = false;
+        },2000)
+      }
+
+      /* if(this.nav.canGoBack()){
+        this.nav.pop();
+      }else{
+        if(this.alert){ 
+          this.alert.dismiss();
+          this.alert =null;     
+        }else{
+          this.showAlert();
+         }
+      } */
+    });
+  }
+
+  /* showAlert() {
+    this.alert = this.alertCtrl.create({
+      title: 'Exit?',
+      message: 'Do you want to exit the app?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            this.alert =null;
+          }
+        },
+        {
+          text: 'Exit',
+          handler: () => {
+            this.platform.exitApp();
+          }
+        }
+      ]
+    });
+    alert.present();
+  } */
+
+    showToast() {
+      let toast = this.toastCtrl.create({
+        message: 'Press Again to exit',
+        duration: 2000,
+        position: 'bottom'
+      });
+
+      toast.onDidDismiss(() => {
+        console.log('Dismissed toast');
+      });
+
+      toast.present();
+    }
 }

@@ -28,8 +28,9 @@ export class CoachwiseChartViewPage {
   chartComponent: any = ChartPsngPage;
   chartPreviewPage: any = ChartPreviewPage;
   trainAssignment: any;
-  selectedBoardingPoints: Array<string>;
+  /* selectedBoardingPoints: Array<string>;
   showNotCheckedOnly: boolean;
+  filterStatus: string="0"; */
   passengerSelectorViewObj:any={
     isActive:false,
     selectedPassengerItems:[],
@@ -70,7 +71,8 @@ export class CoachwiseChartViewPage {
      if (data) {
        this.coachwiseChartData = data.coachwiseChartData;
        this.trainAssignment = data.trainAssignmentObj;
-       this.selectedBoardingPoints = this.trainAssignment.ISL_ARR.slice(0,1);
+       if(this.pdsp.selectedBoardingPoints==undefined)
+       this.pdsp.selectedBoardingPoints = this.trainAssignment.ISL_ARR.slice(0,1);
        this.coachwiseChartDataLoaded = true;
       // this.alertToast("Data loading...");
      } else {
@@ -149,9 +151,10 @@ export class CoachwiseChartViewPage {
     return new Promise(resolve=>{
       this.coachwiseChartData.forEach((coachpsngbrth, ind1) => {
         coachpsngbrth.value.forEach((psngbrth, ind2) => {
-          psngbrth._hidden=!(this.selectedBoardingPoints.indexOf(psngbrth.BRD)>-1)
-          ||(this.showNotCheckedOnly&&psngbrth._isLocked);
-          //console.log(psngbrth);
+          psngbrth._hidden=!(this.pdsp.selectedBoardingPoints.indexOf(psngbrth.BRD)>-1)
+          //||(this.showNotCheckedOnly&&psngbrth._isLocked)
+          ||(Number(this.pdsp.filterStatus)>-1&&psngbrth._status!=this.pdsp.filterStatus);
+          //console.log(psngbrth._status);
         });
       });
       //selectedBoardingPoints
