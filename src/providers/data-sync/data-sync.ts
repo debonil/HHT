@@ -154,6 +154,7 @@ export class DataSyncProvider {
           this.storage.markClean('passenger',data).then(res=>{
                 resolve(res);
           });
+          resolve(true);
         }else{
           alert('UNHANDLED EXCEPTION ' + JSON.stringify(response));
           resolve(false);
@@ -218,6 +219,7 @@ export class DataSyncProvider {
               resolve(false);
             }
           });
+          resolve(true);
         }else if(response.CODE==500){
           this.postDirtyBerth(data);
         }else{
@@ -269,6 +271,7 @@ export class DataSyncProvider {
           this.storage.markClean('eftMaster',data).then(res=>{
             resolve(res);
           });
+          resolve(true);
         }else if(response.CODE==500){
           this.postDirtyEFT(data);
         }else{

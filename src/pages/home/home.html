@@ -8,7 +8,7 @@
 
 <div class="cris-container">
   <div margin>
-    <form #form="ngForm" (ngSubmit) = "onSubmit2($event ,username.value , password.value )">
+    <form #form="ngForm" (ngSubmit) = "false">
       <ion-scroll scrollY="true">
         <ion-navbar text-center color ="transparent">
           <ion-title text-center class ="cris-title" >
@@ -44,7 +44,7 @@
 
       </ion-scroll>
       <ion-footer>
-        <button ion-button class ="submit">Login</button>
+        <button ion-button class ="submit"  (tap)="onSubmit2(username.value , password.value)">Login</button>
       </ion-footer>
     </form>
   </div>

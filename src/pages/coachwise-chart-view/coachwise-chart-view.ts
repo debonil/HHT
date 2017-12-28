@@ -5,7 +5,7 @@ import { IonicPage, NavController, NavParams, LoadingController,FabContainer } f
 // import { ContactPage } from '../contact/contact';
 // import { PopoverPage } from '../popover/popover';
  import { ActionSheetController, ModalController, PopoverController } from 'ionic-angular';
- import { SuperTabsController } from 'ionic2-super-tabs';
+ import { SuperTabsController, SuperTabs } from 'ionic2-super-tabs';
 // import { ChartBerthPassengerDetail } from "../../model/ChartBerthPassengerDetail";
  import { PsngDataServiceProvider } from "../../providers/psng-data-service/psng-data-service";
  import { StorageProvider } from '../../providers/storage/storage';
@@ -21,8 +21,8 @@ import { ToastController } from 'ionic-angular/components/toast/toast-controller
 })
 export class CoachwiseChartViewPage {
   // set some user information on chatParams
- /*  tabs;
-  listitems; */
+  @ViewChild(SuperTabs) superTabs: SuperTabs;
+  selectedCoach: string;
   coachwiseChartData: Array<any>;
   coachwiseChartDataLoaded: boolean = false;
   chartComponent: any = ChartPsngPage;
@@ -74,6 +74,7 @@ export class CoachwiseChartViewPage {
        if(this.pdsp.selectedBoardingPoints==undefined)
        this.pdsp.selectedBoardingPoints = this.trainAssignment.ISL_ARR.slice(0,1);
        this.coachwiseChartDataLoaded = true;
+       this.selectedCoach = data.coachwiseChartData[0].key;
       // this.alertToast("Data loading...");
      } else {
        alert("NO CHART DATA FOUND!!");
@@ -251,6 +252,10 @@ export class CoachwiseChartViewPage {
 
   }
 
+  onTabSelect(event){
+    console.log(event);
+    this.selectedCoach=event.id;
+  }
   private convertPsngToVBerth(psngbrth) {
     return {
       TRAIN_ID: psngbrth.TRAIN_ID,

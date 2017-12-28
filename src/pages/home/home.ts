@@ -20,6 +20,7 @@ export class HomePage {
   optionPage : ChartPage;
   isInvalid : boolean = false;
   username : string; 
+  password : string; 
   formErrors = {
       'username': '',
       'password': ''
@@ -44,6 +45,7 @@ export class HomePage {
       this.menu.get('menu1').enable(false);
       this.menu.get('menu2').enable(false);
       app._setDisableScroll(true);
+      console.log(this);
   }
 
   ionViewDidLoad(){
@@ -57,7 +59,13 @@ export class HomePage {
     input.type = input.type === 'password' ? 'text' : 'password';
   }
 
-  onSubmit2(event , username , password){
+ /*  login(){
+    alert("Login");
+    alert("Login"+ this.username +" ::"+ this.password);
+      this.onSubmit2( this.username , this.password);
+  } */
+
+  onSubmit2( username , password){
       //Added by DG
       if(username === '')username='psaini';
       if(password === '')password='psaini';
