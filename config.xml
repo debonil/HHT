@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="in.gov.indianrail.hhtapp" version="2.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:mfp="http://www.ibm.com/mobilefirst/cordova-plugin-mfp">
+<widget id="in.gov.indianrail.hhtapp" version="2.0.3" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:mfp="http://www.ibm.com/mobilefirst/cordova-plugin-mfp">
     <name>HHT APP</name>
     <description>HHT Client app... to enable TTEs with technology...</description>
     <author email="debonil.ghosh@gmail.com" href="http://www.cris.org.in/">Debonil Ghosh</author>
