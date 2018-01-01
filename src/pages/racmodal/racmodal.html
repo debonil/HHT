@@ -18,21 +18,21 @@
     
          <ion-item>
                 <ion-label><strong>COACH<br>BN</strong></ion-label>
-                <ion-label col-3><strong>PNR<br>RES_UPTO</strong></ion-label>
-                <ion-label col-4><strong>NAME<br>S/A</strong></ion-label>
+                <ion-label><strong>PNR<br>RES_UPTO</strong></ion-label>
+                <ion-label><strong>NAME<br>S/A</strong></ion-label>
                 <ion-label><strong>SRC<br>BRD<br>DEST</strong></ion-label>
                <!-- <ion-label><strong>FREE_BSD<br>REL_POS</strong></ion-label>-->
-                <ion-label><strong>REL_POS</strong></ion-label>
+                <!-- <ion-label><strong>REL_POS</strong></ion-label> -->
                <ion-label><strong>REMARKS</strong></ion-label>
 
-            </ion-item>
+            </ion-item> </ion-card>  <ion-card>
             <ion-item  *ngFor="let item of psgnData">
                 <ion-label>{{ item.COACH_ID }}<br>{{ item.BERTH_NO }}</ion-label>
-                <ion-label col-3>{{ item.PNR_NO }}<br>{{ item.RES_UPTO }}</ion-label>
-                <ion-label col-4>{{ item.PSGN_NAME }}<br>{{ item.AGE_SEX }}</ion-label>
+                <ion-label>{{ item.PNR_NO }}<br>{{ item.RES_UPTO }}</ion-label>
+                <ion-label>{{ item.PSGN_NAME }}<br>{{ item.AGE_SEX }}</ion-label>
                 <ion-label>{{ item.BOARDING_PT }}<br>{{ item.JRNY_FROM }}<br>{{ item.JRNY_TO }}</ion-label>
               <!--  <ion-label>{{ item.FREE_BSD }}<br>{{ item.REL_POS }}</ion-label>-->
-                <ion-label>{{ item.REL_POS }}</ion-label>
+                <!-- <ion-label>{{ item.REL_POS }}</ion-label> -->
                  <ion-label>{{item.REMARKS}}</ion-label>
 
             </ion-item>

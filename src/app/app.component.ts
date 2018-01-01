@@ -31,6 +31,8 @@ import { WaitListTabsPage } from '../pages/wait-list-tabs/wait-list-tabs';
 import { SuperTabsModule } from 'ionic2-super-tabs';
 import { DroppedETktPassengerPage } from '../pages/dropped-e-tkt-passenger/dropped-e-tkt-passenger';
 import { PsngDataServiceProvider } from '../providers/psng-data-service/psng-data-service';
+import { RacTabPage } from '../pages/rac-tab/rac-tab';
+
 
 @Component({
   templateUrl: 'app.html'
@@ -47,7 +49,9 @@ export class MyApp {
   eftPage = EftPage
   dropETkt = DroppedETktPassengerPage;
   occupancy = OccupancyPage;
-  racPage = RacPage;
+  //racPage = RacPage;
+    racPage = RacTabPage;
+
   afterCharting = AfterChartingCancelledPage;
   status = StatusPage;
   vacantberth = VacTabsPage;
@@ -223,7 +227,7 @@ export class MyApp {
 
     showToast() {
       let toast = this.toastCtrl.create({
-        message: 'Press Again to exit',
+        message: 'Press back again to exit',
         duration: 2000,
         position: 'bottom'
       });

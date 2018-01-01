@@ -43,6 +43,8 @@ import { DataSyncProvider } from '../providers/data-sync/data-sync';
 import { DataLoadProvider } from '../providers/data-load/data-load';
 import { NormalShiftPageModule } from '../pages/normal-shift/normal-shift.module';
 import { MutualShiftPageModule } from '../pages/mutual-shift/mutual-shift.module';
+import { RacTabPageModule } from '../pages/rac-tab/rac-tab.module';
+
 import { NtPassengersPageModule } from '../pages/nt-passengers/nt-passengers.module';
 import { DoctorsPageModule } from '../pages/doctors/doctors.module';
 import { DirectivesModule } from '../directives/directives.module';
@@ -90,6 +92,7 @@ import { DataSyncStatusPageModule } from '../pages/data-sync-status/data-sync-st
     NtPassengersPageModule,
     DoctorsPageModule,
     DataSyncStatusPageModule,
+	RacTabPageModule,
   ],
   bootstrap: [IonicApp],
   entryComponents: [

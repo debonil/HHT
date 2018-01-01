@@ -535,6 +535,18 @@ export class StorageProvider {
     });
   }
 
+   findPassenger(data){
+    return new Promise(resolve=>{
+      let collectionName = 'passenger';
+      let options={exact:true};
+      WL.JSONStore.get(collectionName).find(data,options).then((success)=>{
+        resolve(success);
+      },(failure)=>{
+        resolve(failure);
+      });
+    });
+  }
+
   getDirtyRecords(collectionName) {
     //alert('getDirtyRecords ' + collectionName);
     return new Promise(resolve=>{

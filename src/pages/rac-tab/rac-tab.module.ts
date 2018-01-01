@@ -1,14 +1,15 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { RacPage } from './rac';
+import { RacTabPage } from './rac-tab';
 import { SuperTabsModule } from 'ionic2-super-tabs';
 
 @NgModule({
   declarations: [
-    RacPage,
+    RacTabPage,
   ],
   imports: [
-    IonicPageModule.forChild(RacPage),
+    IonicPageModule.forChild(RacTabPage),
+    SuperTabsModule
   ],
 })
-export class RacPageModule {}
+export class RacTabPageModule {}
