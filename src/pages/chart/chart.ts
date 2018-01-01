@@ -514,6 +514,7 @@ export class ChartPage {
           this.savedChartCoachList = data.coachwiseChartData;
           this.trainAssignment = data.trainAssignmentObj;
           this.trainAssignment.LOAD_TIME = this.syncProvider.serverTimeAtProcessStart;
+          this.trainAssignment.LAST_SYNCED = this.syncProvider.serverTimeAtProcessStart;
          });
       }else{
         this.alertToast("Some Problem in data Sync, completed in "+this.syncProvider.getTimeInMili()/1000+" sec");

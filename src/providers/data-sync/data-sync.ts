@@ -295,7 +295,9 @@ export class DataSyncProvider {
       if(this.isDataSyncComplete){
         this.logLocal("All complete at : "+this.getTimeInMili()/1000+" sec");
         this.trainAssignment.LOAD_TIME = this.serverTimeAtProcessStart;
+        this.trainAssignment.LAST_SYNCED = this.serverTimeAtProcessStart;
         this.storage.replaceTrainAssignment(this.trainAssignment).then(res=>{
+          console.log(this.trainAssignment);
           resolve(res);
         });
       }else{
