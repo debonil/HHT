@@ -154,7 +154,9 @@ export class CoachwiseChartViewPage {
         coachpsngbrth.value.forEach((psngbrth, ind2) => {
           psngbrth._hidden=!(this.pdsp.selectedBoardingPoints.indexOf(psngbrth.BRD)>-1)
           //||(this.showNotCheckedOnly&&psngbrth._isLocked)
-          ||(Number(this.pdsp.filterStatus)>-1&&psngbrth._status!=this.pdsp.filterStatus);
+          ||((Number(this.pdsp.filterStatus)>-1&&(Number(this.pdsp.filterStatus)<3))&&psngbrth._status!=this.pdsp.filterStatus)
+          
+          ||(Number(this.pdsp.filterStatus)>2&&psngbrth.dbObj.json.PSGN_NO!=-1);
           //console.log(psngbrth._status);
         });
       });

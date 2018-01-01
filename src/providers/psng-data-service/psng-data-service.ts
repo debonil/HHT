@@ -14,7 +14,7 @@ export class PsngDataServiceProvider {
   //Filter Data
   selectedBoardingPoints: Array<string>;
   showNotCheckedOnly: boolean;
-  filterStatus: string="0";
+  filterStatus: string="-1";
   //
   private allPassengerChartDataObj: any ={
     trainAssignmentObj : {},

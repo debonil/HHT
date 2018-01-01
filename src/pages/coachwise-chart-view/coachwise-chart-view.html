@@ -47,17 +47,20 @@
       <ion-row>
           <ion-toolbar>
               <ion-segment [(ngModel)]="pdsp.filterStatus" color="primary" (ionChange)="filterData()">
+                <ion-segment-button value="-1">
+                  ALL
+                </ion-segment-button>
                 <ion-segment-button value="0">
                   NC
-                </ion-segment-button>
-                <ion-segment-button value="2">
-                  NT
                 </ion-segment-button>
                 <ion-segment-button value="1">
                   TU
                 </ion-segment-button>
-                <ion-segment-button value="-1">
-                    ALL
+                <ion-segment-button value="2">
+                  NT
+                </ion-segment-button>
+                <ion-segment-button value="3">
+                  CUR
                 </ion-segment-button>
               </ion-segment>
             </ion-toolbar>
