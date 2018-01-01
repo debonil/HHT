@@ -520,6 +520,7 @@ export class ChartPage {
       }
     }).catch((e) => {
       console.error(e);
+      alert(e);
   });
   }
 }

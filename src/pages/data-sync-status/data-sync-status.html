@@ -1,0 +1,114 @@
+<!--
+  Generated template for the DataSyncStatusPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar color="primary" >
+    <button ion-button icon-only menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Data Sync Status</ion-title>
+    <ion-buttons end>
+      <!-- <button ion-button icon-only (tap)="clearChartData()">
+        <ion-icon name="trash"></ion-icon>
+      </button>
+      <button ion-button icon-only (tap)="loadChart()">
+        <ion-icon name="cloud-download"></ion-icon>
+      </button> -->
+      <!-- <button ion-button icon-only (tap)="syncProvider.syncPassenger()">
+        <ion-icon name="cloud-upload"></ion-icon>
+      </button> -->
+      <button ion-button icon-only (tap)="syncProvider.syncData()">
+        <ion-icon name="git-compare"></ion-icon>
+      </button>
+      <!-- <button ion-button icon-only (tap)="backend.postPassengerData2()">
+        <ion-icon name="bug"></ion-icon>
+      </button> -->
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+  <ion-grid>
+      <!-- Sync status -->
+
+      <ion-row justify-content-center>
+        <ion-col col-12>
+          <ion-card >
+            <ion-card-header color="primary" sm>
+              Sync Status:
+              <span float-right>{{syncProvider.statusLog}}</span>
+            </ion-card-header>
+            <ion-card-content >
+                <ion-list >
+                    <ion-item text-wrap>
+                        <ion-label>dataSyncProcessRunning : {{syncProvider.dataSyncProcessRunning}}</ion-label>
+                    </ion-item>
+                    <ion-item text-wrap>
+                        <ion-label>isPsngDataSyncIncomplete : {{syncProvider.isPsngDataSyncIncomplete}}</ion-label>
+                    </ion-item>
+                    <ion-item text-wrap>
+                        <ion-label>isVacantBerthDataSyncIncomplete : {{syncProvider.isVacantBerthDataSyncIncomplete}}</ion-label>
+                    </ion-item>
+                    <ion-item text-wrap>
+                        <ion-label>isEFTMasterDataSyncIncomplete : {{syncProvider.isEFTMasterDataSyncIncomplete}}</ion-label>
+                    </ion-item>
+                </ion-list>
+            </ion-card-content>
+          </ion-card>
+  
+        </ion-col>
+      </ion-row>
+      <!-- Sync status -->
+
+      <ion-row justify-content-center>
+        <ion-col col-12>
+          <ion-card >
+            <ion-card-header color="primary" sm>
+              Sync progress stats
+            </ion-card-header>
+            <ion-card-content >
+              <ion-list >
+                  <ion-item text-wrap>
+                      <ion-label>Dirty Psng found : {{syncProvider.dirtyPsngCount}}</ion-label>
+                  </ion-item>
+                  <ion-item text-wrap>
+                      <ion-label>Dirty Psng SyncSuccessCount : {{syncProvider.dirtyPsngSyncSuccessCount}}</ion-label>
+                  </ion-item>
+                  <ion-item text-wrap>
+                      <ion-label>Dirty Psng SyncFailureCount : {{syncProvider.dirtyPsngSyncFailureCount}}</ion-label>
+                  </ion-item>
+                  <ion-item text-wrap>
+                      <ion-label>Differential Psng Downloaded Count : {{syncProvider.differentialPsngDownloadedCount}}</ion-label>
+                  </ion-item>
+              </ion-list>
+            </ion-card-content>
+          </ion-card>
+  
+        </ion-col>
+      </ion-row>
+      <!-- Sync status -->
+
+      <ion-row justify-content-center>
+        <ion-col col-12>
+          <ion-card >
+            <ion-card-header color="primary" sm>
+              Sync progress log:
+              <span float-right>{{syncProvider.statusLog}}</span>
+            </ion-card-header>
+            <ion-card-content >
+              <ion-list >
+                <ion-item *ngFor="let log of syncProvider.logArray" text-wrap>
+                    {{log}}
+                </ion-item>
+              </ion-list>
+            </ion-card-content>
+          </ion-card>
+  
+        </ion-col>
+      </ion-row>
+  </ion-grid>
+</ion-content>

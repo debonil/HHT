@@ -60,45 +60,51 @@ export class DataSyncProvider {
             ///Syncing Passenger
             this.syncPassenger().then(res=>{
               this.logLocal("completed syncPassenger at :"+this.getTimeInMili()/1000+" sec");
+              this.updateLoadTime().then(res=>{
+                if(res)resolve(true);
+              });
               if(res){
                 //this.isPsngDataSyncIncomplete = false;
-                this.updateLoadTime().then(res=>{
+                /* this.updateLoadTime().then(res=>{
                   if(res)resolve(true);
-                });
+                }); */
               }else{
                 alert("Passenger data Sync failed!!");
               }
             }).catch((e)=>{
+              this.isPsngDataSyncIncomplete = false;
+                this.updateLoadTime().then(res=>{
+                  if(res)resolve(true);
+                });
               alert("Passenger data Sync failed!! \n ERROR : "+JSON.stringify(e));
             });
     
             //Syncing Vacant Berth
             this.syncVacantberth().then(res=>{
               this.logLocal("completed syncVacantberth at :"+this.getTimeInMili()/1000+" sec");
-              if(res){
+              //if(res){
                 this.isVacantBerthDataSyncIncomplete = false;
                 this.updateLoadTime().then(res=>{
                   if(res)resolve(true);
                 });
-              }
+              //}
             });
     
             //Syncing EFT 
             this.syncEFTMaster().then(res=>{
               this.logLocal("completed EFTMaster at :"+this.getTimeInMili()/1000+" sec");
               
-              if(res){
+              //if(res){
                 this.isEFTMasterDataSyncIncomplete = false;
                 this.updateLoadTime().then(res=>{
                   if(res)resolve(true);
                 });
-              }
+              //}
             });
     
-          }else if(res.CODE==500){
-            alert('UNHANDLED EXCEPTION ' + JSON.stringify(res));
           }else{
             alert('UNHANDLED EXCEPTION ' + JSON.stringify(res));
+            this.dataSyncProcessRunning = false;
           }
         });
       });
@@ -172,6 +178,9 @@ export class DataSyncProvider {
           //let data = this.util.convertIntoJson(response.TEXT);
           console.log("getDifferentialPassenger");
           console.log(response);
+          this.logLocal("got ["+response.data.resultSet.length+"]"+
+           " DifferentialPassenger in fetchAndSaveNewDifferentialPsng at :"+this.getTimeInMili()/1000+" sec");
+          this.differentialPsngDownloadedCount=response.data.resultSet.length;
           //debugger;
           this.storage.addPassengers(response.data.resultSet).then(res=>{
             console.log(res);
@@ -209,19 +218,22 @@ export class DataSyncProvider {
     //alert('post dirty berth ' + JSON.stringify(data));
     return new Promise(resolve=>{
       this.backend.postVacantberthData(data).then((response:any)=>{
+        this.logLocal("response vacantberth =>"+response.TEXT+" at :"+this.getTimeInMili()/1000+" sec");
         if(response.CODE==200){
-          this.storage.markClean('vacantberth',data).then(res=>{
-            if(res){
-              this.getDifferentialBerth().then(res=>{
-                resolve(res);
-              });
-            }else{
-              resolve(false);
-            }
-          });
+          try {
+            this.storage.markClean('vacantberth',data).then(res=>{
+              if(res){
+                this.getDifferentialBerth().then(res=>{
+                  resolve(res);
+                });
+              }else{
+                resolve(false);
+              }
+            });
+          } catch (error) {
+            alert('UNHANDLED EXCEPTION ' + JSON.stringify(error));
+          }
           resolve(true);
-        }else if(response.CODE==500){
-          this.postDirtyBerth(data);
         }else{
           alert('UNHANDLED EXCEPTION ' + JSON.stringify(response));
           resolve(false);
@@ -239,8 +251,6 @@ export class DataSyncProvider {
           this.storage.addVacantBerth(response.data.resultSet).then(res=>{
             resolve(res);
           });
-        }else if(response.CODE==500){
-          this.getDifferentialBerth();
         }else{
           alert('UNHANDLED EXCEPTION ' + JSON.stringify(response));
           resolve(false);
@@ -272,8 +282,6 @@ export class DataSyncProvider {
             resolve(res);
           });
           resolve(true);
-        }else if(response.CODE==500){
-          this.postDirtyEFT(data);
         }else{
           alert('UNHANDLED EXCEPTION ' + JSON.stringify(response));
           resolve(false);
@@ -302,7 +310,8 @@ getTimeInMili(){
   
 logLocal(msg:string){
   this.statusLog=msg;
-  this.logArray.push(msg);
+  let currentDate = '[' + new Date().toLocaleString("en-US",{hour12:false}) + '] ';
+  this.logArray.push(currentDate+msg);
   console.log(msg);
 }
   //// getter & setters

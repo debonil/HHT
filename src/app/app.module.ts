@@ -48,6 +48,7 @@ import { DoctorsPageModule } from '../pages/doctors/doctors.module';
 import { DirectivesModule } from '../directives/directives.module';
 import { ComponentsModule } from '../components/components.module';
 import { WaitListPsngComponent } from '../components/wait-list-psng/wait-list-psng';
+import { DataSyncStatusPageModule } from '../pages/data-sync-status/data-sync-status.module';
 @NgModule({
   declarations: [
      MyApp,
@@ -87,7 +88,8 @@ import { WaitListPsngComponent } from '../components/wait-list-psng/wait-list-ps
     MutualShiftPageModule,
     NormalShiftPageModule,
     NtPassengersPageModule,
-    DoctorsPageModule
+    DoctorsPageModule,
+    DataSyncStatusPageModule,
   ],
   bootstrap: [IonicApp],
   entryComponents: [
