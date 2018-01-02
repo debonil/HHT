@@ -24,15 +24,41 @@ export class WaitlistModelPage {
   berthSrc : any;
   berthDest : any;
   bsd : any;
+  isl : any = [];
+  srcArr : any = [];
+  destArr : any = [];
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl : ViewController,
   private storage : StorageProvider,private pdsp: PsngDataServiceProvider) {
+
+    this.storage.getISL().then(res=>{
+      this.isl = res;
+      this.srcArr = this.isl.splice(0,this.isl.indexOf(navParams.data.json.JRNY_FROM)+1);
+      this.destArr = this.isl.splice(this.isl.indexOf(navParams.data.json.JRNY_TO));
+      
+      this.storage.getAdvancedVacantBerth(this.srcArr,this.destArr).then(res=>{
+        this.berth = res;
+      });
+    });
+    
+
     this.wlPsgn = {
       _id : navParams.data._id,
       json : navParams.data.json
     };
+    this.storage.getStationSerialNumber(navParams.data.json.JRNY_FROM, navParams.data.json.JRNY_TO).then((res:any)=>{
+      this.wlSrc = {
+        STN_CODE : navParams.data.json.JRNY_FROM,
+        STN_SRL_NO : res.SRC_SRL_NO
+      };
+      this.wlDest = {
+        STN_CODE : navParams.data.json.JRNY_TO,
+        STN_SRL_NO : res.DEST_SRL_NO
+      };
+    });
+
     console.log('this.wlPsgn : '+JSON.stringify(this.wlPsgn));
-    this.storage.getVacantBerth({ALLOTED : 'N', CLASS : this.wlPsgn.json.CLASS},{exact : true}).then(res=>{
+    /* this.storage.getVacantBerth({ALLOTED : 'N', CLASS : this.wlPsgn.json.CLASS},{exact : true}).then(res=>{
       this.berth = res;
       this.storage.getStationSerialNumber(navParams.data.json.JRNY_FROM, navParams.data.json.JRNY_TO).then((res:any)=>{
         this.wlSrc = {
@@ -44,12 +70,10 @@ export class WaitlistModelPage {
           STN_SRL_NO : res.DEST_SRL_NO
         };
       });
-    });
+    }); */
   }
 
   onSubmit(){
-    alert('add waitlist '+(this.bsd));
-    //alert('add waitlist '+(this.bsd.json.SUB_QUOTA));
     if(this.bsd!=undefined){
       this.storage.getStationSerialNumber(this.bsd.json.SRC, this.bsd.json.DEST).then((res:any)=>{
         this.berthSrc = {

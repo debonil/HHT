@@ -6,7 +6,7 @@ import { StorageProvider } from '../../providers/storage/storage';
 import { LoggerProvider } from '../../providers/logger/logger';
 import {Logs} from '../../entities/messages';
 import { PsngDataServiceProvider } from '../../providers/psng-data-service/psng-data-service';
-//import { ChartPsngPage } from '../chart-psng/chart-psng';
+import { EftFormPage } from '../eft-form/eft-form';
 
 //declare var WL;
 /**
@@ -24,9 +24,12 @@ import { PsngDataServiceProvider } from '../../providers/psng-data-service/psng-
 export class EftPage {
   //rootPage : ChartPsngPage;
   EFT = {
+    USER_ID : '',
     TRAIN_ID : '',
     PNR_NO : '',
     COACH_ID : '',
+    CLASS : '',
+    REMOTE_LOC_NO : 1,
     FARE : '',
     EXCESS_FARE : '',
     TOTAL : '',
@@ -89,7 +92,7 @@ export class EftPage {
   };
 
 
-
+  eftList: any[] = [];
   coachArr : CoachDetails[] = [];
   islArr : IsldtlTable[] = [];
   berthArr : VacantBerth[] = [];
@@ -124,20 +127,23 @@ export class EftPage {
     public params : NavParams , private loadCtrl : LoadingController  , 
     private storage : StorageProvider , private menu : MenuController,
     private alert : AlertController , private logger : LoggerProvider,private pdsp: PsngDataServiceProvider) {
+      
     //this.menu.get('menu1').enable(false);
     //this.menu.get('menu2').enable(true);
+   
   }
 
   ngOnInit(){
     this.storage.getTrainAssignment().then((result:any)=>{
+      this.EFT.USER_ID = result.USER_ID,
       this.EFT.TRAIN_ID = result.TRAIN_ID,
       this.EFT.CH_NUMBER = result.CH_NUMBER;
       this.coachArr = result.ASSIGNED_COACH;
       this.islArr = result.ISL;
       this.username = result.USER_ID;
-      console.log('EFT USER : ' + JSON.stringify(this.username));
+      /* console.log('EFT USER : ' + JSON.stringify(this.username));
       console.log('EFT ISL : ' + JSON.stringify(this.islArr));
-      console.log('EFT ASSIGNED COACH : ' + JSON.stringify(this.coachArr));
+      console.log('EFT ASSIGNED COACH : ' + JSON.stringify(this.coachArr)); */
 
       for(let i=0;i<6;i++){
         this.EFT.PSGNLIST.push({
@@ -148,15 +154,40 @@ export class EftPage {
         });
       }
     });
+
+    /* this.storage.getEftMaster().then((res:any)=>{
+      alert(JSON.stringify(res));
+      if(res!="failure"){
+        this.eftList = res;
+      }
+    }); */
+  }
+
+  ionViewDidEnter(){
+    //console.log('eft page called...........');
+    this.storage.getEftMaster().then((res:any)=>{
+      //alert(JSON.stringify(res));
+      if(res!="failure"){
+        this.eftList = res;
+      }
+    });
+  }
+
+  tapEvent(event){
+    //alert('check tap');
+    console.log(event);
+    this.navCtrl.push(EftFormPage);
   }
 
   updateCoach() {
+    alert(JSON.stringify(this.coachArr));
     //this.coachId = coach.trim();
     //this.storage.getVacantBerth({COACH_ID : this.coachId.trim()},{exact : true}).then((berth)=>{
     this.storage.getVacantBerth({
       COACH_ID : this.EFT.COACH_ID.trim(),
       ALLOTED : 'N'},{exact : true}).then((berth)=>{
       this.berthArr = berth;
+      this.EFT.CLASS = berth[0].json.CLASS;
     });
   }
 
@@ -179,12 +210,15 @@ export class EftPage {
   }
 
   getTotal(fare, excessfare){
-    this.total = fare + excessfare;
+    //this.total = fare + excessfare;
+    return Number.parseInt(fare) + Number.parseInt(excessfare);
   }
 
   ionViewWillEnter() {
       this.viewCtrl.showBackButton(false);
   }
+
+  ionvie
 
   resetEFTErrors(){
     return new Promise(resolve=>{
@@ -272,9 +306,8 @@ export class EftPage {
   }
 
   issueEFT(index){
-    //alert('********' + index);
+    //alert(JSON.stringify(this.EFT));
     if(index<this.EFT.PSGNLIST.length){
-      //if(element.NAME!='' && element.BSD!=''){
       if(this.EFT.PSGNLIST[index].NAME!='' && this.EFT.PSGNLIST[index].BSD!=''){
         this.addEFTPassenger(this.EFT.PSGNLIST[index],index).then(res=>{
           if(res){
@@ -292,7 +325,7 @@ export class EftPage {
                 }
               });
             }else{
-              this.issueEFT(index+1);//-------------------
+              this.issueEFT(index+1);
             }
           }
         });

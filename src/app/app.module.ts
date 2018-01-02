@@ -51,12 +51,16 @@ import { DirectivesModule } from '../directives/directives.module';
 import { ComponentsModule } from '../components/components.module';
 import { WaitListPsngComponent } from '../components/wait-list-psng/wait-list-psng';
 import { DataSyncStatusPageModule } from '../pages/data-sync-status/data-sync-status.module';
+import { EftServiceProvider } from '../providers/eft-service/eft-service';
+import { EftFormPage } from '../pages/eft-form/eft-form';
+
 @NgModule({
   declarations: [
      MyApp,
      HomePage,
      ChartPage,
      ChartPsngPage,
+     EftFormPage
      //ComponentsModule,
   ],
   imports: [
@@ -100,7 +104,8 @@ import { DataSyncStatusPageModule } from '../pages/data-sync-status/data-sync-st
     HomePage,
     ChartPage,
     ChartPsngPage,
-    WaitListPsngComponent
+    WaitListPsngComponent,
+    EftFormPage
   ],
   providers: [
     StatusBar,
@@ -115,7 +120,8 @@ import { DataSyncStatusPageModule } from '../pages/data-sync-status/data-sync-st
     DataSyncProvider,
     // SQLite,
     Vibration,
-    DataLoadProvider
+    DataLoadProvider,
+    EftServiceProvider
   ]
 })
 export class AppModule {}

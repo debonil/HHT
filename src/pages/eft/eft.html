@@ -13,7 +13,28 @@
 </ion-header>
 
 <ion-content padding>
-  <ion-card>
+  <ion-card (tap)="tapEvent($event)">
+    <ion-fab bottom right>
+        <button ion-fab mini><ion-icon name="add"></ion-icon></button>
+    </ion-fab>
+  </ion-card>
+  
+  <ion-item color="mediumgraycustom">
+      <ion-label><strong>EFT NO<br>NO OF PSGN</strong></ion-label>
+      <ion-label><strong>SRC<br>DEST</strong></ion-label>
+      <ion-label><strong>FARE<br>EXCESS FARE</strong></ion-label>
+      <ion-label><strong>TOTAL FARE<BR>EFT DATE</strong></ion-label>
+  </ion-item>
+  <ion-card *ngFor="let item of eftList" padding-left color="primary">
+      <button ion-item padding>
+          <ion-label text-wrap>{{item.json.EFT_NO}}<br>{{item.json.NUM_OF_PSGN}}</ion-label>
+          <ion-label text-wrap>{{item.json.SRC}}<br>{{item.json.DEST}}</ion-label>
+          <ion-label text-wrap>{{item.json.FARE}}<br>{{item.json.FINE}}</ion-label>
+          <ion-label text-wrap>{{getTotal(item.json.FARE,item.json.FINE)}}<br>{{item.json.EFT_DATE}}</ion-label>
+      </button>
+  </ion-card>
+
+  <!-- <ion-card>
     <ion-list>
       <ion-item>  
           <ion-label color=primary>EFT</ion-label>
@@ -109,5 +130,5 @@
 
   <ion-card>
     <button  ion-button full (click)="scanEFT();">Submit</button>
-  </ion-card> 
+  </ion-card> --> 
 </ion-content>

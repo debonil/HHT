@@ -19,7 +19,7 @@
   </ion-item> -->
 </ion-card>
 
-<ion-card *ngFor="let item of non_confirmed_waitlist" padding-left color="bright">
+<ion-card *ngFor="let item of non_confirmed_waitlist" padding-left color="primary">
   <button ion-item padding (tap)="onWaitlistClick($event, item)" [disabled]="item.json.BERTH_NO>0">
     <ion-label text-wrap>{{ item.json.PRIMARY_QUOTA!='--'?item.json.PRIMARY_QUOTA:''}} ( {{item.json.SUB_QUOTA!='--'?item.json.SUB_QUOTA:''}} ) {{item.json.WAITLIST_NO}}
       <br>{{ item.json.PNR_NO }}</ion-label>
@@ -30,7 +30,7 @@
 </ion-card>
 <ion-card *ngFor="let item of confirmed_waitlist" padding-left color="mediumgraycustom">
   <button ion-item padding>
-    <ion-label text-wrap>{{ item.json.PRIMARY_QUOTA!='--'?item.json.PRIMARY_QUOTA:''}} ( {{item.json.SUB_QUOTA!='--'?item.json.SUB_QUOTA:''}} ) {{item.json.WAITLIST_NO}}
+    <ion-label text-wrap>{{ item.json.PRIMARY_QUOTA!='--'?item.json.PRIMARY_QUOTA:''}}  {{item.json.SUB_QUOTA!='--'?'('+item.json.SUB_QUOTA+')':''}}  {{item.json.WAITLIST_NO}}
       <br>{{ item.json.PNR_NO }}</ion-label>
     <ion-label text-wrap>{{ item.json.PSGN_NAME }}<br>{{ item.json.AGE_SEX }}</ion-label>
     <ion-label text-wrap>{{ item.json.JRNY_FROM }}<br>{{item.json.JRNY_TO}}</ion-label>

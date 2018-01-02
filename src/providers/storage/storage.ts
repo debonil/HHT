@@ -92,7 +92,7 @@ export class StorageProvider {
     if(dd.length<2){
       dd = '0' + dd;
     }
-    var mm = '' + (new Date()).getMonth()+1;
+    var mm = '' + ((new Date()).getMonth()+1);
     if(mm.length<2){
       mm = '0' + mm;
     }
@@ -416,6 +416,30 @@ export class StorageProvider {
     });
   }
 
+  getEftMaster(){
+    return new Promise(resolve=>{
+      let collectionName = 'eftMaster';
+      WL.JSONStore.get(collectionName).findAll().then((res)=>{
+        resolve(res);
+      },(failure)=>{
+        resolve("failure");
+      });
+    });
+  }
+
+  findEftMaster(eftno){
+    return new Promise(resolve=>{
+      let collectionName = 'eftMaster';
+      let query = {EFT_NO : eftno};
+      let option = {exact : true};
+      WL.JSONStore.get(collectionName).find(query,option).then((res)=>{
+        resolve(res);
+      },(failure)=>{
+        resolve("failure");
+      });
+    });
+  }
+
   getVacantBerthCount(query:any, option:any){
     return new Promise(resolve=>{
       let collectionName = 'vacantberth';
@@ -581,7 +605,7 @@ export class StorageProvider {
 
   getConfirmedWaitlistPassenger(classType){
     return new Promise(resolve=>{
-      var queryPart = WL.JSONStore.QueryPart().equal('CLASS', classType).greaterThan('BERTH_INDEX', 0);//WAITLIST_NO 
+      var queryPart = WL.JSONStore.QueryPart().equal('CLASS', classType).greaterThan('BERTH_INDEX', 0).greaterThan("WAITLIST_NO",0);//WL_NO 
       var option = {
         exact : true
       };
@@ -773,6 +797,42 @@ updateAttendanceMarker(id:number,tu_nt:boolean,is_checked:boolean){
       });
     });  
   }
+
+  getISL(){
+    return new Promise(resolve=>{
+      let isl = [];
+      WL.JSONStore.get('trainAssignment').findAll().then(res=>{
+        resolve(res[0].json.ISL_ARR);
+      });
+    });
+  }
+
+  getAdvancedVacantBerth(src, dest){
+    return new Promise(resolve=>{
+      var queryPart = WL.JSONStore.QueryPart().inside('SRC',src ).inside('DEST',dest ).equal('ALLOTED','N');
+      WL.JSONStore.get('vacantberth').advancedFind([queryPart]).then(res=>{
+        resolve(res);
+      });
+    });
+  }
+
+  getAdvancedVacantBerthInCoach(src, dest, coach){
+    return new Promise(resolve=>{
+      var queryPart = WL.JSONStore.QueryPart().inside('SRC',src ).inside('DEST',dest ).equal('ALLOTED','N').equal('COACH_ID',coach.trim());
+      WL.JSONStore.get('vacantberth').advancedFind([queryPart]).then(res=>{
+        resolve(res);
+      });
+    });
+  }
+
+  getAssignedCoaches(){
+    return new Promise(resolve=>{
+      WL.JSONStore.get('trainAssignment').findAll().then(res=>{
+        resolve(res[0].json.ASSIGNED_COACHES);
+      });
+    });
+  }
+
  /* 
   get_COACHES(){
    try{
