@@ -1,0 +1,97 @@
+<!--
+  Generated template for the EftFormPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>eftForm</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <ion-grid>
+    <ion-card>
+        <ion-row>
+          <ion-col>
+            <ion-input type="text" placeholder ="EFT NO" [(ngModel)]="EFT.EFT_NO" required maxlength = "10"></ion-input>
+          </ion-col>
+          <ion-col>
+            <ion-input type="text" placeholder ="REASON" [(ngModel)] = "EFT.REASON"></ion-input>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>
+            <ion-select [(ngModel)]= "EFT.FROM" interface="popover" placeholder="SRC" (ionChange)="updateBerth()">
+              <ion-option *ngFor="let isl of islArr  ; let i = index;" [value]="isl">{{ isl }}</ion-option>
+            </ion-select>
+          </ion-col>
+          <ion-col>
+            <ion-select [(ngModel)]= "EFT.TO" interface="popover" placeholder="DEST" (ionChange)="updateBerth()">
+              <ion-option *ngFor="let isl of islArr  ; let i = index;" [value]="isl">{{ isl }}</ion-option>
+            </ion-select>
+          </ion-col>
+          <ion-col>
+              <ion-select [(ngModel)]="EFT.COACH_ID" interface="popover" placeholder="COACH" (ionChange)="updateBerth()">
+                <ion-option *ngFor="let coach of coachArr  ; let i = index;" [value]="coach.COACH_ID">{{ coach }}</ion-option>
+              </ion-select>
+            </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>
+            <ion-input placeholder = FARE type="number" [(ngModel)]="EFT.FARE" (ionChange)="updateTotal()"></ion-input>
+          </ion-col>
+          <ion-col>
+            <ion-input placeholder = EXCESS FARE type="number" [(ngModel)]="EFT.EXCESS_FARE" (ionChange)="updateTotal()"></ion-input>
+          </ion-col>
+          <ion-col>
+            <ion-input placeholder ="Total" type="number" [(ngModel)] = "EFT.TOTAL"></ion-input>
+          </ion-col>
+        </ion-row>
+    </ion-card>
+  </ion-grid>
+
+  <ion-card>
+    <ion-item color="mediumgraycustom">
+      <ion-label><strong>Name</strong></ion-label>
+      <ion-label><strong>Age</strong></ion-label>
+      <ion-label><strong>Sex</strong></ion-label>
+      <ion-label><strong>Berth</strong></ion-label>
+    </ion-item>
+  </ion-card>
+
+  <ion-card>
+      <ion-row *ngFor="let item of EFT.PSGNLIST; let i=index">
+        <ion-col>
+          <ion-input placeholder="Name" [(ngModel)]="EFT.PSGNLIST[i].NAME" maxlength="10"></ion-input>
+        </ion-col>
+        <ion-col>
+          <ion-input type="number" placeholder="Age" [(ngModel)]="EFT.PSGNLIST[i].AGE" min =5 max=150></ion-input>
+        </ion-col>
+        <ion-col>
+          <ion-select style="max-width:100%" interface="popover" placeholder="Sex" [(ngModel)]="EFT.PSGNLIST[i].SEX">
+            <ion-option [value]="M">M</ion-option>
+            <ion-option [value]="F">F</ion-option>
+            <ion-option [value]="O">O</ion-option>
+          </ion-select>
+        </ion-col>
+        <ion-col col-5>
+          <ion-select  style="max-width:100%" interface="popover" placeholder="BSD" [(ngModel)]="EFT.PSGNLIST[i].BSD">
+            <ion-option value="S">Standing</ion-option>
+            <ion-option no-padding *ngFor="let item of berthArr" [value]="item">{{item.json.COACH_ID + '-' +item.json.BERTH_INDEX + '-' + item.json.SRC + '-' + item.json.DEST}}</ion-option>
+          </ion-select>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col><button color="mediumgraycustom" ion-button full (click)="addRow()">Add Row</button></ion-col>
+        <ion-col><button color="mediumgraycustom" ion-button full (click)="deleteRow()">delete Row</button></ion-col>
+      </ion-row>
+      <button ion-button full (click)="makeEFT()">Make EFT</button>
+  </ion-card>
+</ion-content>
