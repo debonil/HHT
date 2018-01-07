@@ -263,7 +263,8 @@ export class DataSyncProvider {
     return new Promise(resolve=>{
       this.isEFTMasterDataSyncIncomplete = true;
       this.storage.getDirtyRecords('eftMaster').then((dirtyEft:any)=>{
-        if(dirtyEft>0){
+        this.logLocal("got ["+dirtyEft.length+"] dirtyEFT in syncEFTMaster at :"+this.getTimeInMili()/1000+" sec");
+        if(dirtyEft.length>0){
           this.postDirtyEFT(dirtyEft).then(res=>{
             resolve(res);
           });
@@ -277,6 +278,7 @@ export class DataSyncProvider {
   postDirtyEFT(data){
     return new Promise(resolve=>{
       this.backend.postEftmasterdata(data).then((response:any)=>{
+        this.logLocal("response eft =>"+response.TEXT+" at :"+this.getTimeInMili()/1000+" sec");
         if(response.CODE==200){
           this.storage.markClean('eftMaster',data).then(res=>{
             resolve(res);
