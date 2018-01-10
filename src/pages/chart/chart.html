@@ -55,7 +55,9 @@
                   <ion-label  >User :</ion-label>
                 </ion-col>
                 <ion-col col-6>
-                  <ion-label   text-uppercase>{{trainAssignment.USER_ID}}</ion-label>
+                  <ion-label   text-uppercase>{{trainAssignment.USER_ID}}
+                    <span *ngIf="trainAssignment.TS_FLAG">[TS]</span>
+                  </ion-label>
                 </ion-col>
               </ion-row>
               <ion-row>
@@ -103,7 +105,10 @@
                   <ion-label  >Network :</ion-label>
                 </ion-col>
                 <ion-col col-6>
-                  <ion-label  >{{network.type}}, {{network.downlinkMax}}</ion-label>
+                  <ion-label >
+                      <span *ngIf="isNetworkAvailable" color="secondary" >Connected via {{network.type}} {{network.downlinkMax}}</span>
+                      <span *ngIf="!isNetworkAvailable" >Disconnected</span>
+                  </ion-label>
                 </ion-col>
               </ion-row>
             </ion-card-content>
@@ -142,7 +147,7 @@
       <ion-col col-12>
         <ion-card *ngIf="trainAssignment" >
           <ion-card-header color="primary" sm>
-            Chart status : {{progressval| number : '1.0-0'}}%
+            Chart status : <!-- {{progressval| number : '1.0-0'}}% -->
             <span color="danger" float-right	 *ngIf="!savedChartCoachList">Not Available </span>
             <!-- <span color="danger" float-right	 *ngIf="savedChartCoachList&&savedChartCoachList.length<trainAssignment.ASSIGNED_COACHES.length">Incomplete {{progressval}}</span> -->
             <span color="default" float-right	 *ngIf="savedChartCoachList&&savedChartCoachList.length<trainAssignment.ASSIGNED_COACHES.length">Downloading ({{progressval| number : '1.0-0'}}%)</span>

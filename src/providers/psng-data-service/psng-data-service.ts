@@ -126,7 +126,13 @@ export class PsngDataServiceProvider {
              this.allPassengerChartDataObj.coachwiseChartData= new Array();
              for (let rowskey in this.allPassengerChartDataObj.coachwiseChartDataMap) {
                let rowsvalue = this.allPassengerChartDataObj.coachwiseChartDataMap[rowskey];
-               this.allPassengerChartDataObj.coachwiseChartData.push({ key: rowskey, value: rowsvalue });
+               this.allPassengerChartDataObj.coachwiseChartData.push(
+                  { 
+                    key: rowskey, 
+                    value: rowsvalue ,
+                    readOnly : this.allPassengerChartDataObj.trainAssignmentObj.ASSIGNED_COACHES.indexOf(rowskey) == -1,
+                  }
+                );
                //this.observer.next(this.coachwiseChartData);
              }
              this.observer.next(this.allPassengerChartDataObj);

@@ -77,7 +77,7 @@
     <ion-item *ngFor="let tab of coachwiseChartData">{{tab.key}}=>{{tab.value.length}}</ion-item> 
   </ion-list> -->
   <super-tabs *ngIf="coachwiseChartDataLoaded" [scrollTabs]="coachwiseChartData.length>10" (tabSelect)="onTabSelect($event)">
-     <super-tab *ngFor="let tab of coachwiseChartData" [root]="chartComponent" title="{{tab.key}}" id="{{tab.key}}" [rootParams]="{psngdata:tab.value,readonly:false}" ></super-tab>  
+     <super-tab *ngFor="let tab of coachwiseChartData" [root]="chartComponent" title="{{tab.key}}" id="{{tab.key}}" [rootParams]="{psngdata:tab.value,readonly:tab.readOnly}" ></super-tab>  
     <!-- <super-tab *ngFor="let tab of coachwiseChartData2" [root]="chartComponent" title="{{tab.key}}" [rootParams]="tab.value" ></super-tab> -->
   </super-tabs>
   

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, ModalController } from 'ionic-angular';
-import { Vibration } from '@ionic-native/vibration';
+//import { Vibration } from '@ionic-native/vibration';
 import { ShiftPsgnPage } from '../shift-psgn/shift-psgn';
 @Component({
   selector: 'page-chart',
@@ -14,8 +14,12 @@ export class  ChartPsngPage {
   myIcon : string;
   someArray=new Array();
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,public modalCtrl: ModalController,
-    private vibration: Vibration) {
+  constructor(
+    //public navCtrl: NavController, 
+    public navParams: NavParams,
+    //public modalCtrl: ModalController,
+    //private vibration: Vibration
+  ) {
     this.rows = this.navParams.data.psngdata;
     this.readonly = this.navParams.data.readonly; 
     console.log(this.navParams.data);
@@ -26,13 +30,13 @@ console.log(val);
 
   }
 
-  onItemHold(item){
+  /* onItemHold(item){
     console.log(item);
     this.vibration.vibrate(50);
     //alert(item.BN);
-  }
+  } */
 
-  chartItemClicked(val) {
+ /*  chartItemClicked(val) {
     console.log(val);
     //alert(val);
   }
@@ -40,6 +44,6 @@ console.log(val);
   openModel_ShiftPsgn(selectedPsgnData){
     let modal = this.modalCtrl.create(ShiftPsgnPage, selectedPsgnData);
     modal.present();
-  }
+  } */
 
 }

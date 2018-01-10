@@ -52,6 +52,10 @@ export class DataSyncProvider {
       let syncDataPromise= new Promise(resolve=>{
         this.dataSyncProcessRunning =true;
         this.trainAssignment = trainAssignmentObj;
+        this.dirtyPsngCount =0;
+        this.dirtyPsngSyncSuccessCount=0;
+        this.dirtyPsngSyncFailureCount =0;
+        this.differentialPsngDownloadedCount =0;
         this.logArray=new Array<string>();
         this.logLocal("SYNC started!!");
     
@@ -256,8 +260,8 @@ export class DataSyncProvider {
       this.serverTimeAtProcessStart).then((response:any)=>{
         if(response.CODE==200){
           //let data = this.util.convertIntoJson(response.TEXT);
-          this.storage.add(this.storage.collectionName.VACANT_BERTH_TABLE,
-            response.data.resultSet,true).then(res=>{
+          this.storage.addOrReplace(this.storage.collectionName.VACANT_BERTH_TABLE,
+            response.data.resultSet,["PNR_NO","REL_POS"],true).then(res=>{
             resolve(res);
           });
         }else{

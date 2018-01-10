@@ -22,26 +22,10 @@ import { Network } from '@ionic-native/network';
   templateUrl: 'chart.html',
 })
 export class ChartPage {
-  collectionName: string = 'trainCoachData';
   trainAssignment: any;
   loader : any;
-  trainN: string = '12014';
-  trainId: number = -1;
-  coachArr: CoachDetails[] = [];
-  coachTimeArr: CoachTime[] = [];
-  dropEticketPassengerArr: DropEticketPassenger[] = [];
-  dynamicFareArr: DynamicFare[] = [];
-  eftMasterArr: EftMaster[] = [];
-  isldtlArr: IsldtlTable[] = [];
-  vacantBerthData: VacantBerth[] = [];
-  passengerData: Passenger[] = [];
-  //copyPassenger = [];
-  //loadedChart = ShowChartPage;
-  isSecondary: boolean;
-  syncPassengerData: Passenger[] = [];
-  totalPassengerData: number;
   dataleft: boolean;
-  noNetwork: boolean;
+  isNetworkAvailable: boolean;
   noChart: boolean = false;
   noCoach: boolean;
   username: string;
@@ -363,7 +347,8 @@ export class ChartPage {
     var downloadStartTime=new Date();
     //let index = 0;
     this.savedChartCoachList = new Array<any>();
-    let coachArry=this.trainAssignment.ASSIGNED_COACHES.slice();
+    let coachArry=this.trainAssignment.TS_FLAG?this.trainAssignment.TOTAL_COACH.map(coach=>coach.COACH_ID):
+    this.trainAssignment.ASSIGNED_COACHES.slice();
     coachArry.push("W/L");
     console.log(coachArry);
     
@@ -436,12 +421,14 @@ export class ChartPage {
   ionViewWillEnter() {
     // watch network for a disconnect
     let disconnectSubscription = this.network.onDisconnect().subscribe(() => {
-      console.log('network was disconnected :-(');
+      this.isNetworkAvailable=false;
+      alert('Network was disconnected :-(');
     });
 
     // watch network for a connection
     let connectSubscription = this.network.onConnect().subscribe(() => {
-      console.log('network connected!');
+      this.isNetworkAvailable=true;
+      alert('Network connected!');
       // We just got a connection but we need to wait briefly
       // before we determine the connection type. Might need to wait.
       // prior to doing any api requests as well.
