@@ -34,7 +34,7 @@ export class OccupancyPage {
   islArr: any[] = [];
   islReduced:any=[];
   psgnArr: any = [];
-
+  loading:any;
   getCoaches() {
     this.presentLoadingDefault();
     try {
@@ -52,15 +52,15 @@ export class OccupancyPage {
   }
 
   presentLoadingDefault() {
-    let loading = this.loadingCtrl.create({
-      content: 'Please wait...'
+     this.loading = this.loadingCtrl.create({
+      content: 'Loading Occupancy...'
     });
 
-    loading.present();
+    this.loading.present();
 
-    setTimeout(() => {
+   /*  setTimeout(() => {
       loading.dismiss();
-    }, 5000);
+    }, 5000); */
   }
 
   getPassengers() {
@@ -106,6 +106,7 @@ export class OccupancyPage {
       this.finalArr.sort((a,b)=>{
         return a.id-b.id;
       });
+      this.loading.dismiss();
       }, (fail) => {
         console.log("failed to load passengers" + JSON.stringify(fail));
       });

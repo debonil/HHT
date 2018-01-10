@@ -14,43 +14,53 @@
 
 
 <ion-content padding>
-<ion-card>
-    
+     <ion-list *ngFor="let item of psgnData" radio-group [(ngModel)]="data">
+ 
+  <!-- 
          <ion-item>
                 <ion-label><strong>COACH<br>BN</strong></ion-label>
                 <ion-label><strong>PNR<br>RES_UPTO</strong></ion-label>
                 <ion-label><strong>NAME<br>S/A</strong></ion-label>
                 <ion-label><strong>SRC<br>BRD<br>DEST</strong></ion-label>
-               <!-- <ion-label><strong>FREE_BSD<br>REL_POS</strong></ion-label>-->
-                <!-- <ion-label><strong>REL_POS</strong></ion-label> -->
+                <ion-label><strong>FREE_BSD<br>REL_POS</strong></ion-label>
+                 <ion-label><strong>REL_POS</strong></ion-label> 
                <ion-label><strong>REMARKS</strong></ion-label>
 
-            </ion-item> </ion-card>  <ion-card>
-            <ion-item  *ngFor="let item of psgnData">
-                <ion-label>{{ item.COACH_ID }}<br>{{ item.BERTH_NO }}</ion-label>
-                <ion-label>{{ item.PNR_NO }}<br>{{ item.RES_UPTO }}</ion-label>
-                <ion-label>{{ item.PSGN_NAME }}<br>{{ item.AGE_SEX }}</ion-label>
-                <ion-label>{{ item.BOARDING_PT }}<br>{{ item.JRNY_FROM }}<br>{{ item.JRNY_TO }}</ion-label>
-              <!--  <ion-label>{{ item.FREE_BSD }}<br>{{ item.REL_POS }}</ion-label>-->
-                <!-- <ion-label>{{ item.REL_POS }}</ion-label> -->
-                 <ion-label>{{item.REMARKS}}</ion-label>
+            </ion-item> -->
+  <ion-card>
+    <ion-item >
+      <ion-radio value="item.value[0]" (ionSelect)="submit()"></ion-radio>
+      <ion-label>{{ item.value[0].PSGN_NAME }}</ion-label>
+      <ion-label>{{ item.value[0].AGE_SEX }}</ion-label>
+      <ion-label>{{ item.value[0].BOARDING_PT }}</ion-label>
+      <ion-label>{{ item.value[0].RES_UPTO }}</ion-label>
+    </ion-item>
+  </ion-card>
+  <ion-card>
+    <ion-item >
+      <ion-radio value="item.value[1]"(ionSelect)="submit()"></ion-radio>
+      <ion-label>{{ item.value[1].PSGN_NAME }}</ion-label>
+      <ion-label>{{ item.value[1].AGE_SEX }}</ion-label>
+      <ion-label>{{ item.value[1].BOARDING_PT }}</ion-label>
+      <ion-label>{{ item.value[1].RES_UPTO }}</ion-label>
 
-            </ion-item>
-    </ion-card> 
+    </ion-item>
+  </ion-card>
+    </ion-list>
+ 
+  <ion-card *ngIf="vacArr.length>0">
 
-     <ion-card>
+    <ion-item>
+      <ion-label><strong> PLEASE SELECT VACANT BERTH :</strong></ion-label>
+      <ion-select interface="popover" placeholder="SELECT BERTH" [(ngModel)]="vacBerth">
+        <ion-option *ngFor="let item of vacArr" [value]="item">{{item.json.COACH_ID}} {{item.json.BERTH_NO}} {{item.json.CLASS}} {{item.json.SRC}} {{item.json.DEST}} {{item.json.ALLOTED}}</ion-option>
+      </ion-select>
+    </ion-item>
+  </ion-card>
 
-        <ion-item  >
-          <ion-label><strong>VACANT BERTH :</strong></ion-label>
-          <ion-select interface="popover" placeholder="SELECT BERTH" [(ngModel)]="vacBerth" >
-              <ion-option *ngFor="let item of vacArr" [value]="item">{{item.json.COACH_ID}} {{item.json.BERTH_NO}} {{item.json.CLASS}} {{item.json.SRC}} {{item.json.DEST}} {{item.json.ALLOTED}}</ion-option>
-          </ion-select>
-        </ion-item>
-       </ion-card> 
-
-     <ion-card>  
-        <button ion-button block (click)="submit()">SUBMIT</button>
-    <!--<button ion-button block (click)="closeModal()">Close Modal</button>-->
-    
+   <ion-card>
+    <button ion-button block (click)="submit1()">SUBMIT</button>
+<!--     <button ion-button block (click)="closeModal()">Close Modal</button>
+ -->
   </ion-card> 
 </ion-content>

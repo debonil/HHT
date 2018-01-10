@@ -3,7 +3,8 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { App, ViewController } from 'ionic-angular';
 import { RacTabPage } from "../rac-tab/rac-tab";
 import { RacPage } from "../rac/rac";
-import { StorageProvider } from '../../providers/storage/storage';
+//import { StorageProvider } from '../../providers/storage/storage';
+import { StorageServiceProvider } from "../../providers/storage-service/storage-service";
 
 declare var WL;
 /**
@@ -19,7 +20,7 @@ declare var WL;
 })
 export class RacmodalPage {
   @ViewChild('nav') nav: NavController;
-
+dataArr:any[]=[];
   vacArr: any = [];
   islArray: any = [];
   psgnArr;
@@ -27,24 +28,27 @@ export class RacmodalPage {
   psgnVal: any[] = [];
   psgnData: any[] = [];
   vacBerth;
+  data;
   resArr;
   stn1: any = [];
   stn2: any = [];
   racArr: any[] = [];
   PSGN_UPDT = new Array();
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
-    public appCtrl: App, private storage: StorageProvider) {
+    public appCtrl: App, private storage: StorageServiceProvider) {
     this.psgnArr = this.navParams.data;
     this.psgnData.push(this.psgnArr);
-    this.populateVacantBerth();
+
     this.populateISL();
   }
 
   populateISL() {
     try {
-      this.storage.getTrainAssignmentDocument().then((res: any) => {
-        this.resArr = res.json.ISL;
-        alert("loading stations: " + JSON.stringify(this.resArr));
+       this.storage.getDocuments(this.storage.collectionName.TRAIN_ASSNGMNT_TABLE).then((res:any)=>{
+       console.log(JSON.stringify(res));
+     // this.storage.getTrainAssignmentDocument().then((res: any) => {
+        this.resArr = res[0].json.ISL;
+       // alert("loading stations: " + JSON.stringify(this.resArr));
         for (let i = 0; i < this.resArr.length; i++) {
           this.islArray.push({
             STN_CODE: this.resArr[i].STN_CODE
@@ -61,7 +65,9 @@ export class RacmodalPage {
     try {
       var query = { ALLOTED: 'N' };
       var options = { exact: true };
-      this.storage.getVacantBerth(query, options).then((res: any) => {
+    this.storage.getDocuments(this.storage.collectionName.VACANT_BERTH_TABLE,query,options).then((res:any[])=>{
+
+    //  this.storage.getVacantBerth(query, options).then((res: any) => {
         for (let i = 0; i < res.length; i++) {
           this.vacArr = res;
         }
@@ -70,21 +76,41 @@ export class RacmodalPage {
       alert(ex);
     }
   }
-
-
   submit() {
+    //console.log(JSON.stringify(this.data));
+    this.populateVacantBerth();
+  }
+
+  submit1() {
     try {
-      this.stn1.push({
-        STN_CODE: this.psgnData[0].RES_UPTO
-      });
       this.stn2.push({
         STN_CODE: this.vacBerth.json.DEST
       });
-      alert("index of vacant berth : " + JSON.stringify(this.islArray).indexOf(this.vacBerth.json.DEST))
-      alert("index of passenger: " + JSON.stringify(this.islArray).indexOf(this.psgnData[0].RES_UPTO));
-      if ((JSON.stringify(this.islArray).indexOf(this.vacBerth.json.DEST)) >= (JSON.stringify(this.islArray).indexOf(this.psgnData[0].RES_UPTO))) {
-        console.log("greater ");
-        if ((JSON.stringify(this.islArray).indexOf(this.vacBerth.json.DEST)) > (JSON.stringify(this.islArray).indexOf(this.psgnData[0].RES_UPTO))) {
+      if (this.data == 'item.value[0]') {
+        this.stn1.push({
+          STN_CODE: this.psgnData[0].value[0].RES_UPTO
+        });
+        this.updateVacantBerth(this.psgnData[0].value[0],this.psgnData[0].value[1]);
+      } else if (this.data == 'item.value[1]') {
+        this.stn1.push({
+          STN_CODE: this.psgnData[0].value[1].RES_UPTO
+        });
+         this.updateVacantBerth(this.psgnData[0].value[1],this.psgnData[0].value[0]);
+
+      }
+      
+    }
+    catch (ex) {
+
+    }
+  }
+  updateVacantBerth(psg,psg1) {
+    try {
+     // alert("index of vacant berth : " + JSON.stringify(this.islArray).indexOf(this.vacBerth.json.DEST))
+     // alert("index of passenger: " + JSON.stringify(this.islArray).indexOf(psg.RES_UPTO));
+      if ((JSON.stringify(this.islArray).indexOf(this.vacBerth.json.DEST)) >= (JSON.stringify(this.islArray).indexOf(psg.RES_UPTO))) {
+      //  console.log("greater ");
+        if ((JSON.stringify(this.islArray).indexOf(this.vacBerth.json.DEST)) > (JSON.stringify(this.islArray).indexOf(psg.RES_UPTO))) {
 
           this.newVacBerth.push({
             CLASS: this.vacBerth.json.CLASS,
@@ -97,7 +123,7 @@ export class RacmodalPage {
             SYSTIME: this.vacBerth.json.SYSTIME,
             SUB_QUOTA: this.vacBerth.json.SUB_QUOTA,
             BERTH_INDEX: this.vacBerth.json.BERTH_INDEX,
-            SRC: this.psgnData[0].RES_UPTO,
+            SRC: psg.RES_UPTO,
             TRAIN_ID: this.vacBerth.json.TRAIN_ID,
             PRIMARY_QUOTA: this.vacBerth.json.PRIMARY_QUOTA,
             CH_NUMBER: this.vacBerth.json.CH_NUMBER,
@@ -107,29 +133,32 @@ export class RacmodalPage {
         }
         else {
           this.vacBerth.json.ALLOTED = 'Y';
-          this.storage.replaceVacantBerth(this.vacBerth).then(() => {
-            //     WL.JSONStore.get('vacantberth').replace(this.vacBerth).then(() => {
-            this.addFirstPassenger();
+           this.storage.replace(this.storage.collectionName.VACANT_BERTH_TABLE,this.vacBerth).then((success) => {
+
+        //  this.storage.replaceVacantBerth(this.vacBerth).then(() => {
+            this.addFirstPassenger(psg,psg1);
           }, (f) => {
             alert("fail to replace vacant berth " + f);
           });
         }
       } else {
         alert("passenger Destination Cannot be after vacant berth destination");
-        alert(this.newVacBerth.length);
-        this.closeModal();
+      //  alert(this.newVacBerth.length);
+        this.closeModal(psg,psg1);
       }
       if (this.newVacBerth.length > 0) {
-        //  var options = { exact: false };
-        this.storage.appendVacantBerth(this.newVacBerth[0]).then((res) => {
-          // WL.JSONStore.get('vacantberth').add(this.newVacBerth[0], options).then((res) => {
+        this.storage.add(this.storage.collectionName.VACANT_BERTH_TABLE,this.newVacBerth[0]).then((res) => {
+
+      //  this.storage.appendVacantBerth(this.newVacBerth[0]).then((res) => {
           this.vacBerth.json.ALLOTED = 'Y';
-         this.storage.replaceVacantBerth(this.vacBerth).then(() => {
-            this.addFirstPassenger();
-          },(f) => {
+         this.storage.replace(this.storage.collectionName.VACANT_BERTH_TABLE,this.vacBerth).then((success) => {
+
+        //  this.storage.replaceVacantBerth(this.vacBerth).then(() => {
+            this.addFirstPassenger(psg,psg1);
+          }, (f) => {
             alert("fail to replace vacant berth " + f);
           });
-        },(f) => {
+        }, (f) => {
           alert("failed to add new vacant berth");
         });
       }
@@ -140,23 +169,26 @@ export class RacmodalPage {
 
   }
 
-  addFirstPassenger() {
+  addFirstPassenger(psg,psg1) {
     try {
-      var query = { REL_POS: this.psgnData[0].REL_POS, PNR_NO: this.psgnData[0].PNR_NO };
-     // var options = { exact: true };
-      this.storage.findPassenger(query).then((res)=>{
-   //   WL.JSONStore.get('passenger').find(query, options).then((res) => {
+      var query = { REL_POS: psg.REL_POS, PNR_NO: psg.PNR_NO };
+      var option ={exact:true};
+   this.storage.getDocuments(this.storage.collectionName.PASSENGER_TABLE,query,option).then((res:any)=>{
+
+     // this.storage.findPassenger(query).then((res) => {
         res[0].json.NEW_COACH_ID = res[0].json.COACH_ID
         res[0].json.NEW_BERTH_NO = res[0].json.BERTH_NO
         res[0].json.COACH_ID = this.vacBerth.json.COACH_ID;
         res[0].json.BERTH_NO = this.vacBerth.json.BERTH_NO;
         res[0].json.BERTH_INDEX = this.vacBerth.json.BERTH_INDEX;
         res[0].json.CLASS = this.vacBerth.json.CLASS;
-        res[0].json.REMARKS = 'RAC_CNF';
-        this.storage.replacePassenger(res).then((success)=> {
-      //  WL.JSONStore.get('passenger').replace(res).then((success) => {
+        res[0].json.REMARKS = 'CNF';
+        res[0].json.NEW_PRIMARY_QUOTA='CNF';
+       this.storage.replace(this.storage.collectionName.PASSENGER_TABLE,res).then((success) => {
+
+       // this.storage.replacePassenger(res).then((success) => {
           console.log("first passenger updated successfully" + JSON.stringify(success));
-          this.updateSecondPsgn();
+          this.updateSecondPsgn(res,psg1);
         }, (fail) => {
           console.log("failed to update first passenger " + JSON.stringify(fail));
 
@@ -171,19 +203,20 @@ export class RacmodalPage {
 
   }
 
-  updateSecondPsgn() {
+  updateSecondPsgn(res,psg1) {
     try {
-      var query = { COACH_ID: this.psgnData[0].COACH_ID, BERTH_NO: this.psgnData[0].BERTH_NO, REMARKS: this.psgnData[0].REMARKS };
+      var query = { COACH_ID: psg1.COACH_ID, BERTH_NO: psg1.BERTH_NO, REMARKS: psg1.REMARKS };
       var options = { exact: true };
-      console.log(JSON.stringify(query));
-            this.storage.findPassenger(query).then((res)=>{
+         this.storage.getDocuments(this.storage.collectionName.PASSENGER_TABLE,query,options).then((opt:any)=>{
 
-     // WL.JSONStore.get('passenger').find(query, options).then((res) => {
-        res[0].json.REMARKS = 'RAC_CNF';
-        this.storage.replacePassenger(res).then((success)=> {
-     //   WL.JSONStore.get('passenger').replace(res).then((success) => {
+     // this.storage.findPassenger(query).then((opt) => {
+        opt[0].json.REMARKS = 'CNF';
+        opt[0].json.NEW_PRIMARY_QUOTA='CNF';
+               this.storage.replace(this.storage.collectionName.PASSENGER_TABLE,opt).then((success) => {
+
+     //   this.storage.replacePassenger(opt).then((success) => {
           console.log("second passenger updated successfully " + JSON.stringify(success));
-          this.closeModal();
+          this.closeModal(res,opt);
         }, (fail) => {
           console.log("failed to update second passenger" + JSON.stringify(fail));
         })
@@ -197,11 +230,14 @@ export class RacmodalPage {
   }
 
 
-  closeModal() {
+  closeModal(psg,psg1) {
     //this.navCtrl.setRoot(RacTabPage);
-    this.viewCtrl.dismiss();
-   console.log(this.appCtrl.getRootNav()); 
-   // this.nav.push(RacTabPage, {});
+    this.dataArr.push(psg);
+        this.dataArr.push(psg1);
+
+    this.viewCtrl.dismiss(this.dataArr);
+    //console.log(this.appCtrl.getRootNav());
+    // this.nav.push(RacTabPage, {});
   }
 
 

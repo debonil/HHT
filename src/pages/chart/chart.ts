@@ -5,7 +5,7 @@ import {
   CoachDetails, CoachTime, DropEticketPassenger, DynamicFare, EftMaster, IsldtlTable,
   VacantBerth, Passenger, NewCoaches
 } from '../../entities/map';
-import { StorageProvider } from '../../providers/storage/storage';
+//import { StorageProvider } from '../../providers/storage/storage';
 import { LoggerProvider } from '../../providers/logger/logger';
 import { BackendProvider } from '../../providers/backend/backend';
 import { UtilProvider } from '../../providers/util/util';
@@ -14,6 +14,8 @@ import { CoachwiseChartViewPage } from '../coachwise-chart-view/coachwise-chart-
 
 import { PsngDataServiceProvider } from "../../providers/psng-data-service/psng-data-service";
 import { DataSyncProvider } from "../../providers/data-sync/data-sync";
+import { StorageServiceProvider } from '../../providers/storage-service/storage-service';
+import { Network } from '@ionic-native/network';
 ///@IonicPage()
 @Component({
   selector: 'page-chart',
@@ -49,12 +51,20 @@ export class ChartPage {
   progressval: number = 0;
   savedChartCoachList: Array<any>;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,
-    private viewCtrl: ViewController, private menuCtrl: MenuController,
-    private storage: StorageProvider, private loading: LoadingController,
-    private alert: AlertController, private logger: LoggerProvider,
-    private backend: BackendProvider, private util: UtilProvider,
-    private pdsp: PsngDataServiceProvider, public toastCtrl: ToastController,
+  constructor(public navCtrl: NavController, 
+    public navParams: NavParams,
+    private viewCtrl: ViewController, 
+    private menuCtrl: MenuController,
+    private network: Network,
+    //private storage: StorageProvider, 
+    public storage:StorageServiceProvider,
+    private loading: LoadingController,
+    private alert: AlertController, 
+    private logger: LoggerProvider,
+    private backend: BackendProvider, 
+    private util: UtilProvider,
+    private pdsp: PsngDataServiceProvider, 
+    public toastCtrl: ToastController,
     public syncProvider: DataSyncProvider) {
 
     this.menuCtrl.get('menu1').enable(false);
@@ -64,8 +74,10 @@ export class ChartPage {
     // console.log("no chart" + this.noChart); */
   }
   ionViewDidLoad() {
-    this.storage.getTrainAssignment().then(result => {
-      this.trainAssignment = result;
+    this.storage.getDocuments(
+      this.storage.collectionName.TRAIN_ASSNGMNT_TABLE
+    ).then(result => {
+      this.trainAssignment = result[0].json;
       this.username = this.trainAssignment.USER_ID;
     });
     this.pdsp.findAll().subscribe(data => {
@@ -181,23 +193,11 @@ export class ChartPage {
   clearChart() {
     //alert('clear chart');
     return new Promise(resolve => {
-      this.storage.clear('trainAssignment').then(() => {
-        this.storage.clear('coachTime').then(() => {
-          this.storage.clear('droptEticketPassenger').then(() => {
-            this.storage.clear('dynamicFare').then(() => {
-              this.storage.clear('eftMaster').then(() => {
-                this.storage.clear('vacantberth').then(() => {
-                  this.storage.clear('passenger').then(() => {
-                    this.pdsp.clearAllData();
-                    this.savedChartCoachList=[];
-                    this.trainAssignment={"USER_ID":this.username};
-                    resolve(true);
-                  });
-                });
-              });
-            });
-          });
-        });
+      this.storage.clearAll().then(() => {
+        this.pdsp.clearAllData();
+        this.savedChartCoachList=[];
+        this.trainAssignment={"USER_ID":this.username};
+        resolve(true);
       });
     });
   }
@@ -207,7 +207,8 @@ export class ChartPage {
       this.backend.getTrainAssignment(this.username).then((response: any) => {
         if (response.CODE == 200) {
           this.trainAssignment = response.TEXT;
-          this.storage.addTrainAssignment(this.trainAssignment).then(success => {
+          this.storage.add(this.storage.collectionName.TRAIN_ASSNGMNT_TABLE,
+            this.trainAssignment,true).then(success => {
             resolve(success);
           });
         } else if (response.CODE == 500) {
@@ -222,42 +223,10 @@ export class ChartPage {
     });
   }
 
-  addTrainAssignment(loader) {
-    return new Promise(resolve => {
-      this.storage.getTrainAssignment().then(response => {
-        if (response == '') {
-          this.backend.getTrainAssignment(this.username).then((response: any) => {
-            if (response.CODE == 200) {
-              // let data = this.util.convertIntoJson(response.TEXT);
-              this.trainAssignment = response.TEXT;
-              this.storage.addTrainAssignment(this.trainAssignment).then(success => {
-
-              });
-              resolve(true);
-            } else if (response.CODE == 500) {
-              this.addTrainAssignment(loader);
-            } else {
-             this.loader.dismiss();
-              alert('UNHANDLED ERROR ' + response.CODE);
-            }
-          }, failure => {
-            alert('FAILS TO GET TRAIN ASSIGNMENT' + JSON.stringify(failure));
-          });
-        } else {
-          this.trainAssignment = response;
-          /* this.navCtrl.setRoot(ShowChartPage , {
-            username : this.trainAssignment.USER_ID , 
-            TRAIN_NO : this.trainAssignment.TRAIN_ID , 
-            chartLoadDate : this.trainAssignment.SRC_DATE, 
-            coachArr : this.trainAssignment.ASSIGNED_COACHES}); */
-          resolve(true);
-        }
-      });
-    });
-  }
   addVacantBerth(trainId, coach, index, loader, loadTime) {
     return new Promise(resolve => {
-      this.storage.getVacantBerthCount({ COACH_ID: coach }, { exact: true }).then(count => {
+      this.storage.getDocumentCount(this.storage.collectionName.VACANT_BERTH_TABLE,
+        { COACH_ID: coach }, { exact: true }).then(count => {
         if (count > 0) {
           if (index < this.trainAssignment.ASSIGNED_COACHES.length - 1) {
             index++;
@@ -268,7 +237,8 @@ export class ChartPage {
           this.backend.getVacantBerth(trainId, coach, loadTime).then((response: any) => {
             if (response.CODE == 200) {
               let data = this.util.convertIntoJson(response.TEXT);
-              this.storage.addVacantBerth(data.resultSet).then(success => {
+              this.storage.add(this.storage.collectionName.VACANT_BERTH_TABLE,
+                data.resultSet,true).then(success => {
                 //alert(coach + ' : ' + data.resultSet.length);
                 if (index < (this.trainAssignment.ASSIGNED_COACHES.length - 1)) {
                   index++;
@@ -292,49 +262,17 @@ export class ChartPage {
     });
   }
 
-  loadWaitlist() {
-    let trainId = this.trainAssignment.TRAIN_ID;
-    let loadTime = this.trainAssignment.LOAD_TIME;
-    return new Promise(resolve => {
-      this.storage.getWaitlistCount({ BERTH_NO: '-1' }, { exact: true }).then(cnt => {
-        if (cnt == 0) {
-          this.backend.getWaitlist(trainId, loadTime).then((response: any) => {
-            if (response.CODE == 200) {
-             // console.log(response);
-
-              this.storage.putWaitListPassenger(response.TEXT.resultSet).then((success) => {
-                this.savedChartCoachList.push({ key: "W/L", value: response.TEXT.resultSet });
-                //alert('WL : ' + data.resultSet.length);
-              }, (failure) => {
-                alert("FAILS TO ADD WAITLIST " + JSON.stringify(failure));
-              });
-              resolve(true);
-            } else if (response.CODE == 500) {
-              this.loadWaitlist();
-            } else {
-              this.loader.dismiss();
-              alert('UNHANDLED ERROR ' + response.CODE);
-            }
-          }, (failure) => {
-            alert("FAILS TO GET WAITLIST FROM BACKEND " + JSON.stringify(failure));
-          });
-        } else {
-          resolve(true);
-        }
-      });
-    });
-  }
-
   loadDropEticketPassenger(loader) {
     let trainId = this.trainAssignment.TRAIN_ID;
     return new Promise(resolve => {
-      this.storage.getDroppedEticketPassengerCount().then(cnt => {
+      this.storage.getDocumentCount(this.storage.collectionName.DROP_ETCKT_PSNG_TABLE).then(cnt => {
         if (cnt == 0) {
           this.backend.loaddroppedETickets(trainId).then((response: any) => {
             if (response.CODE == 200) {
               let data = this.util.convertIntoJson(response.TEXT);
               if (data.resultSet.length > 0) {
-                this.storage.addDroppedEticketPassenger(data.resultSet).then((success) => {
+                this.storage.add(this.storage.collectionName.DROP_ETCKT_PSNG_TABLE,
+                  data.resultSet,true).then((success) => {
 
                 }, (failure) => {
                   alert("failed to add dropped e ticket passenger " + JSON.stringify(failure));
@@ -360,13 +298,13 @@ export class ChartPage {
   loadDynamicFare(loader) {
     let trainId = this.trainAssignment.TRAIN_ID;
     return new Promise(resolve => {
-      this.storage.getDynamicFareCount().then(cnt => {
+      this.storage.getDocumentCount(this.storage.collectionName.DYNAMIC_FARE_TABLE).then(cnt => {
         if (cnt == 0) {
           this.backend.getDynamicFare(trainId).then((response: any) => {
             if (response.CODE == 200) {
               let data = this.util.convertIntoJson(response.TEXT);
               if (data.resultSet.length > 0) {
-                this.storage.addDynamicFare(data.resultSet).then((success) => {
+                this.storage.add(this.storage.collectionName.DYNAMIC_FARE_TABLE,data.resultSet,true).then((success) => {
 
                 }, (failure) => {
                   alert("failed to add dynamic fare " + JSON.stringify(failure));
@@ -392,13 +330,13 @@ export class ChartPage {
   loadEFTMaster(loader) {
     let trainId = this.trainAssignment.TRAIN_ID;
     return new Promise(resolve => {
-      this.storage.getEftMasterCount().then(cnt => {
+      this.storage.getDocumentCount(this.storage.collectionName.EFT_MASTER_TABLE).then(cnt => {
         if (cnt == 0) {
           this.backend.getEFTDetails(trainId).then((response: any) => {
             if (response.CODE == 200) {
               let data = this.util.convertIntoJson(response.TEXT);
               if (data.resultSet.length > 0) {
-                this.storage.addEftMaster(data.resultSet).then((success) => {
+                this.storage.add(this.storage.collectionName.EFT_MASTER_TABLE,data.resultSet,true).then((success) => {
 
                 }, (failure) => {
                   alert("FAILS TO ADD EFT MASTER " + JSON.stringify(failure));
@@ -434,7 +372,7 @@ export class ChartPage {
     
     coachArry.forEach((coachId, index) => {
       this.loader.present();
-      this.storage.getPassengerCount({ COACH_ID: coachId }, { exact: true }).then(count => {
+      this.storage.getDocumentCount(this.storage.collectionName.PASSENGER_TABLE,{ COACH_ID: coachId }, { exact: true }).then(count => {
         if (count == 0) {
           let loadTime = this.trainAssignment.LOAD_TIME;
           let trainId = this.trainAssignment.TRAIN_ID;
@@ -463,7 +401,7 @@ export class ChartPage {
                // console.log(this.savedChartCoachList);
                // console.log(rdcdArr);
 
-                this.storage.addPassengers(rdcdArr).then((success) => {
+                this.storage.add(this.storage.collectionName.PASSENGER_TABLE,rdcdArr,true).then((success) => {
                   if (success) {
                    // console.log("Downloaded "+coachId+" ==>"+response.TEXT.resultSet.length);
                    // console.log((new Date().getTime()-downloadStartTime.getTime())/ 1000);
@@ -496,9 +434,23 @@ export class ChartPage {
 
 
   ionViewWillEnter() {
-    //this.changeSyncFlag();
-    //this.checkPartialDownloading();
+    // watch network for a disconnect
+    let disconnectSubscription = this.network.onDisconnect().subscribe(() => {
+      console.log('network was disconnected :-(');
+    });
 
+    // watch network for a connection
+    let connectSubscription = this.network.onConnect().subscribe(() => {
+      console.log('network connected!');
+      // We just got a connection but we need to wait briefly
+      // before we determine the connection type. Might need to wait.
+      // prior to doing any api requests as well.
+      setTimeout(() => {
+        if (this.network.type === 'wifi') {
+          alert('we got a wifi connection, woohoo!');
+        }
+      }, 3000);
+    });
   }
 
   syncData() {

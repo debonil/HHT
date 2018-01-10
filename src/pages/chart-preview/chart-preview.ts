@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController, LoadingController, AlertController, ToastController } from 'ionic-angular';
 import { ChartPsngPage } from '../chart-psng/chart-psng';
-import { StorageProvider } from '../../providers/storage/storage';
+//import { StorageProvider } from '../../providers/storage/storage';
 import { LoggerProvider } from '../../providers/logger/logger';
 import { BackendProvider } from '../../providers/backend/backend';
+import { StorageServiceProvider } from '../../providers/storage-service/storage-service';
 
 @IonicPage()
 @Component({
@@ -22,7 +23,7 @@ export class ChartPreviewPage {
 
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
-    public viewCtrl: ViewController, private storage: StorageProvider, private loading: LoadingController,
+    public viewCtrl: ViewController, private loading: LoadingController,
     private alert: AlertController, private logger: LoggerProvider,
     private backend: BackendProvider, public toastCtrl: ToastController) {
 
@@ -61,7 +62,7 @@ export class ChartPreviewPage {
         }
       });
     });
-    this.storage.replacePassenger(this.psngObjArr.map(p => p.dbObj)).then(success => {
+    /* this.storage.replacePassenger(this.psngObjArr.map(p => p.dbObj)).then(success => {
       this.loader.dismiss();
       this.alertToast("Data saved successfully!!");
       this.modal_Close();
@@ -72,7 +73,7 @@ export class ChartPreviewPage {
           this.alertToast("Data Saved Failed!!" + JSON.stringify(success));
         }
       });
-    });
+    }); */
     
 
   }

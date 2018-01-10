@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { StorageProvider } from '../../providers/storage/storage';
 import { LoggerProvider } from '../../providers/logger/logger';
 import { BackendProvider } from '../../providers/backend/backend';
+import { StorageServiceProvider } from "../../providers/storage-service/storage-service";
 /**
  * Generated class for the DroppedETktPassengerPage page.
  *
@@ -17,7 +18,7 @@ import { BackendProvider } from '../../providers/backend/backend';
 })
 export class DroppedETktPassengerPage {
   droppedPsgnArr: any = [];
-  constructor(public navCtrl: NavController, public navParams: NavParams, private storage: StorageProvider) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private storage: StorageServiceProvider) {
     this.getDroppedETicketPassenger();
   }
 
@@ -27,7 +28,9 @@ export class DroppedETktPassengerPage {
 
   getDroppedETicketPassenger() {
     try {
-      this.storage.getDropEticketPassenger('droptEticketPassenger').then((res) => {
+      this.storage.getDocuments(this.storage.collectionName.DROP_ETCKT_PSNG_TABLE).then((res) => {
+    //  this.storage.getDropEticketPassenger('droptEticketPassenger').then((res) => {
+      console.log(JSON.stringify(res));
         this.droppedPsgnArr = res;
       });
     } catch (ex) {

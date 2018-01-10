@@ -1,47 +1,58 @@
-<ion-content  no-padding overflow-scroll=true>
-<!--   <ion-card padding>
- -->    <ion-list *ngFor="let item of racBerth"  >
+<ion-content no-padding overflow-scroll=true>
+  <ion-list>
+    <ion-card >
+       <ion-row *ngIf="racBerth.length == 0">
+        <ion-col align=center><font color="red">NO<br> RAC PASSENGER <br>IN <br>THIS COACH</font></ion-col>
+      </ion-row>
+    </ion-card>
+    <ion-card text-wrap *ngFor="let item of racBerth">
      
-      <ion-card text-wrap >
-        <ion-item *ngIf="item.ATTENDANCE_MARKER==='A'&&item.REMARKS==='-'" color=danger padding >
-          <ion-label col-1 no-padding align=center>{{ item.BERTH_NO }}</ion-label>
-          <ion-label col-3 no-padding align=center>{{ item.PNR_NO }}<br>{{item.PRIMARY_QUOTA}}</ion-label>
-          <ion-label col-3 no-padding align=center>{{ item.PSGN_NAME }}<br>{{ item.AGE_SEX }}</ion-label>
-          <ion-label col-1 no-padding align=center>{{ item.BOARDING_PT }}<br>{{ item.RES_UPTO }}</ion-label>
-          <ion-label no-padding align=center>{{ item.ATTENDANCE_MARKER }}<br></ion-label>
-          <ion-label no-padding align=center>{{item.REMARKS}}</ion-label>
-        </ion-item>
-      </ion-card>
-      <ion-card  text-wrap>
-        <ion-item *ngIf="item.ATTENDANCE_MARKER==='P'&&item.REMARKS==='-'" color=primary (Press)="showAlertPopup(item)"[(ngModel)]="item.BERTH_NO" padding>
-          <ion-label col-1 no-padding align=center>{{ item.BERTH_NO }}</ion-label>
-          <ion-label col-3 no-padding align=center>{{ item.PNR_NO }}<br>{{item.PRIMARY_QUOTA}}</ion-label>
-          <ion-label col-3 no-padding align=center>{{ item.PSGN_NAME }}<br>{{ item.AGE_SEX }}</ion-label>
-          <ion-label col-1 no-padding align=center>{{ item.BOARDING_PT }}<br>{{ item.RES_UPTO }}</ion-label>
-          <ion-label no-padding align=center>{{ item.ATTENDANCE_MARKER }}<br></ion-label>
-          <ion-label no-padding align=center>{{item.REMARKS}}</ion-label>
-        </ion-item>
-      </ion-card>
-     <ion-card text-wrap >
-        <ion-item *ngIf="item.ATTENDANCE_MARKER==='-'&&item.REMARKS==='-'" color=light padding>
-          <ion-label col-1 no-padding align=center>{{ item.BERTH_NO }}</ion-label>
-          <ion-label col-3 no-padding align=center>{{ item.PNR_NO }}<br>{{item.PRIMARY_QUOTA}}</ion-label>
-          <ion-label col-3 no-padding align=center>{{ item.PSGN_NAME }}<br>{{ item.AGE_SEX }}</ion-label>
-          <ion-label col-1 no-padding align=center>{{ item.BOARDING_PT }}<br>{{ item.RES_UPTO }}</ion-label>
-          <ion-label no-padding align=center>{{ item.ATTENDANCE_MARKER }}<br></ion-label>
-          <ion-label no-padding align=center>{{item.REMARKS}}</ion-label>
-        </ion-item>
-      </ion-card>
-       <ion-card  text-wrap>
-        <ion-item *ngIf="item.ATTENDANCE_MARKER==='P'&&item.REMARKS==='RAC_CNF'" color=secondary padding>
-          <ion-label col-1 no-padding align=center>{{ item.BERTH_NO }}</ion-label>
-          <ion-label col-3 no-padding align=center>{{ item.PNR_NO }}<br>{{item.PRIMARY_QUOTA}}</ion-label>
-          <ion-label col-3 no-padding align=center>{{ item.PSGN_NAME }}<br>{{ item.AGE_SEX }}</ion-label>
-          <ion-label col-1 no-padding align=center>{{ item.BOARDING_PT }}<br>{{ item.RES_UPTO }}</ion-label>
-          <ion-label no-padding align=center>{{ item.ATTENDANCE_MARKER }}<br></ion-label>
-          <ion-label no-padding align=center>{{item.REMARKS}}</ion-label>
-        </ion-item>
-      </ion-card> 
-    </ion-list>
-<!--   </ion-card>
- --></ion-content>
+
+      <ion-row *ngIf="item.value[0].ATTENDANCE_MARKER==='-'&&item.value[1].ATTENDANCE_MARKER==='-'" color=light padding align-items-center>
+        <ion-col col-1 no-padding align=center>
+          <ion-avatar item-start>{{ item.berthNo }}</ion-avatar>
+        </ion-col>
+        <ion-col col-11 no-padding align=center>
+          <ion-row *ngFor="let psng of item.value">
+            <ion-col>{{ psng.PSGN_NAME }}<br>{{psng.AGE_SEX }}</ion-col>
+            <ion-col>{{ psng.PNR_NO }}<br>{{psng.PRIMARY_QUOTA}} {{psng.NEW_PRIMARY_QUOTA}}</ion-col>
+            <ion-col>{{ psng.BOARDING_PT }}<br>{{ psng.RES_UPTO }}</ion-col>
+            <ion-col>{{ psng.ATTENDANCE_MARKER }}<br>{{psng.REMARKS}}</ion-col>
+            <hr>
+          </ion-row>
+        </ion-col>
+      </ion-row>
+
+      <ion-row *ngIf="item.value[0].ATTENDANCE_MARKER==='A'&&item.value[1].ATTENDANCE_MARKER==='A'" color=light padding align-items-center
+      (Press)="showAlertPopup(item)">
+        <ion-col col-1 no-padding align=center>
+          <ion-avatar item-start>{{ item.berthNo }}</ion-avatar>
+        </ion-col>
+        <ion-col col-11 no-padding align=center>
+          <ion-row *ngFor="let psng of item.value">
+            <ion-col>{{ psng.PSGN_NAME }}<br>{{psng.AGE_SEX }}</ion-col>
+            <ion-col>{{ psng.PNR_NO }}<br>{{psng.PRIMARY_QUOTA}} {{psng.NEW_PRIMARY_QUOTA}}</ion-col>
+            <ion-col>{{ psng.BOARDING_PT }}<br>{{ psng.RES_UPTO }}</ion-col>
+            <ion-col>{{ psng.ATTENDANCE_MARKER }}<br>{{psng.REMARKS}}</ion-col>
+            <hr>
+          </ion-row>
+        </ion-col>
+      </ion-row>
+
+      <ion-row *ngIf="item.value[0].ATTENDANCE_MARKER==='P'||item.value[1].ATTENDANCE_MARKER==='P'" color=secondary padding align-items-center
+        (Press)="showAlertPopup(item)">
+        <ion-col col-1 no-padding align=center>{{ item.berthNo }}</ion-col>
+        <ion-col col-11 no-padding align=center>
+          <ion-row *ngFor="let psng of item.value">
+            <ion-col>{{ psng.PSGN_NAME }}<br>{{ psng.AGE_SEX }}</ion-col>
+            <ion-col>{{ psng.PNR_NO }}<br>{{psng.PRIMARY_QUOTA}} {{psng.NEW_PRIMARY_QUOTA}}</ion-col>
+            <ion-col>{{ psng.BOARDING_PT }}<br>{{ psng.RES_UPTO }}</ion-col>
+            <ion-col>{{ psng.ATTENDANCE_MARKER }}<br>{{psng.REMARKS}}</ion-col>
+            <hr>
+          </ion-row>
+        </ion-col>
+      </ion-row>
+
+    </ion-card>
+  </ion-list>
+</ion-content>

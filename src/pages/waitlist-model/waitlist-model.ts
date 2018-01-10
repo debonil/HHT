@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
-import { StorageProvider } from '../../providers/storage/storage';
+//import { StorageProvider } from '../../providers/storage/storage';
+import {StorageServiceProvider} from '../../providers/storage-service/storage-service';
 import { WaitlistPage } from '../waitlist/waitlist';
 import { PsngDataServiceProvider } from '../../providers/psng-data-service/psng-data-service';
 
@@ -28,71 +29,57 @@ export class WaitlistModelPage {
   srcArr : any = [];
   destArr : any = [];
 
+  trainAssignmentObject : any;
+
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl : ViewController,
-  private storage : StorageProvider,private pdsp: PsngDataServiceProvider) {
-
-    this.storage.getISL().then(res=>{
-      this.isl = res;
-      this.srcArr = this.isl.splice(0,this.isl.indexOf(navParams.data.json.JRNY_FROM)+1);
-      this.destArr = this.isl.splice(this.isl.indexOf(navParams.data.json.JRNY_TO));
-      
-      this.storage.getAdvancedVacantBerth(this.srcArr,this.destArr).then(res=>{
-        this.berth = res;
-      });
-    });
+  private storageService : StorageServiceProvider,private pdsp: PsngDataServiceProvider) {
+    console.log(navParams.data);
+    this.trainAssignmentObject = this.pdsp.trainAssignmentObject;
+    this.isl = this.trainAssignmentObject.ISL_ARR;
     
+    this.wlPsgn = {_id : navParams.data._id,json : navParams.data.json};
+    this.srcArr = this.isl.slice(0,this.isl.indexOf(navParams.data.json.JRNY_FROM)+1);
+    this.destArr = this.isl.slice(this.isl.indexOf(navParams.data.json.JRNY_TO));
 
-    this.wlPsgn = {
-      _id : navParams.data._id,
-      json : navParams.data.json
+    var query = {
+      $inside : [{'SRC':this.srcArr},{'DEST':this.destArr}],
+      $equal : [{'ALLOTED':'N'}]
     };
-    this.storage.getStationSerialNumber(navParams.data.json.JRNY_FROM, navParams.data.json.JRNY_TO).then((res:any)=>{
-      this.wlSrc = {
-        STN_CODE : navParams.data.json.JRNY_FROM,
-        STN_SRL_NO : res.SRC_SRL_NO
-      };
-      this.wlDest = {
-        STN_CODE : navParams.data.json.JRNY_TO,
-        STN_SRL_NO : res.DEST_SRL_NO
-      };
+    var option = {exact : true};
+    this.storageService.getDocumentsAdvanced(this.storageService.collectionName.VACANT_BERTH_TABLE, query, option).then(res=>{
+      this.berth = res;
     });
 
-    console.log('this.wlPsgn : '+JSON.stringify(this.wlPsgn));
-    /* this.storage.getVacantBerth({ALLOTED : 'N', CLASS : this.wlPsgn.json.CLASS},{exact : true}).then(res=>{
-      this.berth = res;
-      this.storage.getStationSerialNumber(navParams.data.json.JRNY_FROM, navParams.data.json.JRNY_TO).then((res:any)=>{
-        this.wlSrc = {
-          STN_CODE : navParams.data.json.JRNY_FROM,
-          STN_SRL_NO : res.SRC_SRL_NO
-        };
-        this.wlDest = {
-          STN_CODE : navParams.data.json.JRNY_TO,
-          STN_SRL_NO : res.DEST_SRL_NO
-        };
-      });
-    }); */
+    this.wlSrc = {
+      STN_CODE : navParams.data.json.JRNY_FROM,
+      STN_SRL_NO : this.isl.indexOf(navParams.data.json.JRNY_FROM)+1
+    };
+    this.wlDest = {
+      STN_CODE : navParams.data.json.JRNY_TO,
+      STN_SRL_NO : this.isl.indexOf(navParams.data.json.JRNY_TO)+1
+    };
   }
 
   onSubmit(){
     if(this.bsd!=undefined){
-      this.storage.getStationSerialNumber(this.bsd.json.SRC, this.bsd.json.DEST).then((res:any)=>{
-        this.berthSrc = {
-          STN_CODE : this.bsd.json.SRC,
-          STN_SRL_NO : res.SRC_SRL_NO
-        };
-        this.berthDest = {
-          STN_CODE : this.bsd.json.DEST,
-          STN_SRL_NO : res.DEST_SRL_NO
-        };
+      this.berthSrc = {
+        STN_CODE : this.bsd.json.SRC,
+        STN_SRL_NO : this.isl.indexOf(this.bsd.json.SRC)+1
+      };
+
+      this.berthDest = {
+        STN_CODE : this.bsd.json.DEST,
+        STN_SRL_NO : this.isl.indexOf(this.bsd.json.DEST)+1
+      };
+      
+      if(this.berthDest.STN_SRL_NO<this.wlDest.STN_SRL_NO || this.berthSrc.STN_SRL_NO>=this.wlDest.STN_SRL_NO){
+        alert(JSON.stringify(this.berthDest) + ':' + JSON.stringify(this.wlDest) + '**' + JSON.stringify(this.berthSrc) +' : '+ JSON.stringify(this.wlDest) + 'such an allotment is not aollwed'+ this.berthDest.STN_SRL_NO + ':' + this.wlDest.STN_SRL_NO + '**' + this.berthSrc.STN_SRL_NO +' : '+ this.wlDest.STN_SRL_NO);
         
-        if(this.berthDest.STN_SRL_NO<this.wlDest.STN_SRL_NO || this.berthSrc.STN_SRL_NO>=this.wlDest.STN_SRL_NO){
-          alert('such an allotment is not aollwed');
-        }else{
-          this.assignWaitlist();
-        }
-      });
+      }else{
+        this.assignWaitlist();
+      }
     }else{
-      alert('such an allotment is not allowed');
+      alert('such an allotment is not allowed null');
     }
   }
 
@@ -155,11 +142,11 @@ export class WaitlistModelPage {
     this.bsd.json.ALLOTED = 'Y';
     this.bsd.json.REASON = 'W';
 
-    this.storage.appendVacantBerth(berthAdd).then(berthAdded=>{
+    this.storageService.add(this.storageService.collectionName.VACANT_BERTH_TABLE, berthAdd).then(berthAdded=>{
       if(berthAdded){
-        this.storage.replaceVacantBerth(this.bsd).then(berthReplaced=>{
+        this.storageService.replace(this.storageService.collectionName.VACANT_BERTH_TABLE, this.bsd).then(berthReplaced=>{
           if(berthReplaced){
-            this.storage.replacePassenger(this.wlPsgn).then(psgnUpdate=>{
+            this.storageService.replace(this.storageService.collectionName.PASSENGER_TABLE,[this.wlPsgn]).then(psgnUpdate=>{
               if(psgnUpdate){
                 this.pdsp.addPsngBerth(this.wlPsgn);
                 this.navCtrl.pop();

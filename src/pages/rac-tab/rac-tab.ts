@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { RacPage } from '../rac/rac';
 import { StorageProvider } from '../../providers/storage/storage';
+//import { RacServiceProvider } from '../../providers/rac-service/rac-service';
+import { StorageServiceProvider } from "../../providers/storage-service/storage-service";
 
 declare var WL;
 /**
@@ -18,7 +20,8 @@ declare var WL;
 })
 export class RacTabPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private storage: StorageProvider) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,
+     private storage: StorageServiceProvider) {
     this.getCoaches();
   }
   tabparams = { title: null };
@@ -29,13 +32,14 @@ export class RacTabPage {
 
   getCoaches() {
     try {
-      this.storage.getTrainAssignmentDocument().then((res: any) => {
+      this.storage.getDocuments(this.storage.collectionName.TRAIN_ASSNGMNT_TABLE).then((res:any)=>{
+        console.log(JSON.stringify(res));
+      //this.storage.getTrainAssignmentDocument().then((res: any) => {
         // WL.JSONStore.get('trainAssignment').findAll().then((res) => {
-        this.coach = res.json.ASSIGNED_COACHES;
-        console.log(JSON.stringify(this.coach));
+        this.coach = res[0].json.ASSIGNED_COACHES;
         for (let i = 0; i < this.coach.length; i++) {
-          this.racBerth[this.coach[i]] = [];
-          console.log(this.racBerth);
+          this.racBerth[this.coach[i]] ={};
+        
         }
         this.getValue();
       });
@@ -49,60 +53,47 @@ export class RacTabPage {
     try {
       var option = { exact: true };
       var query = { PRIMARY_QUOTA: 'RC' }
-      this.storage.findPassenger(query).then((res: any) => {
+      this.storage.getDocuments(this.storage.collectionName.PASSENGER_TABLE,query,option).then((res:any[])=>{
+      //  console.log(JSON.stringify(res));
+
+    //  this.storage.findPassenger(query).then((res: any) => {
 
         //    WL.JSONStore.get('passenger').find(query).then((res)=>{
         for (let i = 0; i < res.length; i++) {
-          this.racBerth[res[i].json.COACH_ID].push({
-            COACH_ID: res[i].json.COACH_ID,
-            FOOD_FLAG: res[i].json.FOOD_FLAG,
-            CLASS: res[i].json.CLASS,
-            REMARKS: res[i].json.REMARKS,
-            CANCEL_PASS_FLAG: res[i].json.CANCEL_PASS_FLAG,
-            VIP_MARKER: res[i].json.VIP_MARKER,
-            ATTENDANCE_MARKER: res[i].json.ATTENDANCE_MARKER,
-            REMOTE_LOC_NO: res[i].json.REMOTE_LOC_NO,
-            SUB_QUOTA: res[i].json.SUB_QUOTA,
-            PNR_NO: res[i].json.PNR_NO,
-            PSGN_NAME: res[i].json.PSGN_NAME,
-            OLD_CLASS: res[i].json.OLD_CLASS,
-            BERTH_SRC: res[i].json.BERTH_SRC,
-            TICKET_NO: res[i].json.TICKET_NO,
-            PENDING_AMT: res[i].json.PENDING_AMT,
-            AGE_SEX: res[i].json.AGE_SEX,
-            PRIMARY_QUOTA: res[i].json.PRIMARY_QUOTA,
-            BERTH_DEST: res[i].json.BERTH_DEST,
-            BERTH_NO: res[i].json.BERTH_NO,
-            RES_UPTO: res[i].json.RES_UPTO,
-            CAB_CP_ID: res[i].json.CAB_CP_ID,
-            PASS_LOC_FLAG: res[i].json.PASS_LOC_FLAG,
-            MSG_STN: res[i].json.MSG_STN,
-            SYNC_FLAG: res[i].json.SYNC_FLAG,
-            SYSTIME: res[i].json.SYSTIME,
-            DUP_TKT_MARKER: res[i].json.DUP_TKT_MARKER,
-            BERTH_INDEX: res[i].json.BERTH_INDEX,
-            BOARDING_PT: res[i].json.BOARDING_PT,
-            TRAIN_ID: res[i].json.TRAIN_ID,
-            REL_POS: res[i].json.REL_POS,
-            PSGN_NO: res[i].json.PSGN_NO,
-            JRNY_TO: res[i].json.JRNY_TO,
-            CH_NUMBER: res[i].json.CH_NUMBER,
-            CAB_CP: res[i].json.CAB_CP,
-            TICKET_TYPE: res[i].json.TICKET_TYPE,
-            JRNY_FROM: res[i].json.JRNY_FROM
-          });
-          console.log(this.racBerth);
+         // this.racBerth[res[i].json.COACH_ID].push(this.convertToRACBerth(res[i]));
+          let key=res[i].json.BERTH_NO+"";
+          let racmap=this.racBerth[res[i].json.COACH_ID];
+           if (racmap[key] == null) {
+            racmap[key] = Array<any>();
+          } 
+
+            racmap[key].push(this.convertToRACBerth(res[i]));
+
+          
+       //  console.log(racmap);
         }
+
+                  //console.log(racmap);
+
         for (let rowkey in this.racBerth) {
           var rowval = this.racBerth[rowkey];
+          var berthArr=[];
+          for(let berthNo in rowval){
+            berthArr.push({
+              berthNo: berthNo,
+              value: rowval[berthNo]
+            });
+          }
+
+
           this.tabs.push({
             key: rowkey,
-            value: rowval,
-            badge: rowval.length
+            value: berthArr,
+            badge: berthArr.length
           });
-          console.log(this.tabs);
 
         }
+       // console.log(JSON.stringify(this.tabs));
       });
     } catch (EX) {
       console.log(EX);;
@@ -111,6 +102,48 @@ export class RacTabPage {
 
   ionViewDidEnter() {
     console.log('ionViewDidEnter RacTabPage');
+  }
+
+  convertToRACBerth(psngObj){
+    return {
+            COACH_ID: psngObj.json.COACH_ID,
+            FOOD_FLAG: psngObj.json.FOOD_FLAG,
+            CLASS: psngObj.json.CLASS,
+            REMARKS: psngObj.json.REMARKS,
+            CANCEL_PASS_FLAG: psngObj.json.CANCEL_PASS_FLAG,
+            VIP_MARKER: psngObj.json.VIP_MARKER,
+            ATTENDANCE_MARKER: psngObj.json.ATTENDANCE_MARKER,
+            REMOTE_LOC_NO: psngObj.json.REMOTE_LOC_NO,
+            SUB_QUOTA: psngObj.json.SUB_QUOTA,
+            PNR_NO: psngObj.json.PNR_NO,
+            PSGN_NAME: psngObj.json.PSGN_NAME,
+            OLD_CLASS: psngObj.json.OLD_CLASS,
+            BERTH_SRC: psngObj.json.BERTH_SRC,
+            TICKET_NO: psngObj.json.TICKET_NO,
+            PENDING_AMT: psngObj.json.PENDING_AMT,
+            AGE_SEX: psngObj.json.AGE_SEX,
+            PRIMARY_QUOTA: psngObj.json.PRIMARY_QUOTA,
+            BERTH_DEST: psngObj.json.BERTH_DEST,
+            BERTH_NO: psngObj.json.BERTH_NO,
+            RES_UPTO: psngObj.json.RES_UPTO,
+            CAB_CP_ID: psngObj.json.CAB_CP_ID,
+            PASS_LOC_FLAG: psngObj.json.PASS_LOC_FLAG,
+            MSG_STN: psngObj.json.MSG_STN,
+            SYNC_FLAG: psngObj.json.SYNC_FLAG,
+            SYSTIME: psngObj.json.SYSTIME,
+            DUP_TKT_MARKER: psngObj.json.DUP_TKT_MARKER,
+            BERTH_INDEX: psngObj.json.BERTH_INDEX,
+            BOARDING_PT: psngObj.json.BOARDING_PT,
+            TRAIN_ID: psngObj.json.TRAIN_ID,
+            REL_POS: psngObj.json.REL_POS,
+            PSGN_NO: psngObj.json.PSGN_NO,
+            JRNY_TO: psngObj.json.JRNY_TO,
+            CH_NUMBER: psngObj.json.CH_NUMBER,
+            CAB_CP: psngObj.json.CAB_CP,
+            TICKET_TYPE: psngObj.json.TICKET_TYPE,
+            JRNY_FROM: psngObj.json.JRNY_FROM,
+            NEW_PRIMARY_QUOTA:psngObj.json.NEW_PRIMARY_QUOTA
+          };
   }
 
 }

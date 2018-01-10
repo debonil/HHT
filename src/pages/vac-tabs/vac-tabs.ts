@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { VacantberthPage } from '../../pages/vacantberth/vacantberth';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { StorageProvider } from '../../providers/storage/storage';
+//import { StorageProvider } from '../../providers/storage/storage';
+import { StorageServiceProvider } from "../../providers/storage-service/storage-service";
 
 declare var WL;
 /**
@@ -15,8 +16,9 @@ declare var WL;
   templateUrl: 'vac-tabs.html'
 })
 export class VacTabsPage {
+  [x: string]: any;
   isAvailable: boolean = false;
-  constructor(public navCtrl: NavController, public navParams: NavParams, private storage: StorageProvider) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private storage: StorageServiceProvider) {
     this.getCoaches();
   }
   temp:any[]=[];
@@ -45,8 +47,11 @@ export class VacTabsPage {
  */
   getCoaches() {
     try {
-        this.storage.getTrainAssignment().then((res:any)=>{      
-         this.coach=res.ASSIGNED_COACHES;
+       // var Collection='trainAssignment';
+        this.storage.getDocuments(this.storage.collectionName.TRAIN_ASSNGMNT_TABLE).then((res:any)=>{
+     //   this.storage.getTrainAssignment().then((res:any)=>{  
+       console.log(JSON.stringify(res));    
+         this.coach=res[0].json.ASSIGNED_COACHES;
         for (let i = 0; i < this.coach.length; i++) {
           this.vacBerth[this.coach[i]] = [];
         }
@@ -63,7 +68,10 @@ export class VacTabsPage {
     try {
       var query = { ALLOTED: "N" };
       var option = { exact: true };
-      this.storage.getVacantBerth(query,option).then((res:any) => {
+     // var Collection='vacantberth';
+      this.storage.getDocuments(this.storage.collectionName.VACANT_BERTH_TABLE,query,option).then((res:any) => {
+        console.log(JSON.stringify(res));
+    //  this.storage.getVacantBerth(query,option).then((res:any) => {
         for (let i = 0; i < res.length; i++) {
           this.vacBerth[res[i].json.COACH_ID].push({
             COACH_ID: res[i].json.COACH_ID,

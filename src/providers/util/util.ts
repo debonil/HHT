@@ -70,4 +70,30 @@ js_yyyy_mm_dd_hh_mm_ss (date) {
   return year + "-" + month + "-" + day + "-" + hour + "." + minute + "." + second;
 }
 
+getCurrentDateString(){
+  var date = new Date();
+  var dd = '' + date.getDate();
+    if(dd.length<2){
+      dd = '0' + dd;
+    }
+    var mm = '' + (date.getMonth()+1);
+    if(mm.length<2){
+      mm = '0' + mm;
+    }
+    var yyyy = date.getFullYear();
+    var hh = '' + date.getHours();
+    if(hh.length<2){
+      hh = '0' + hh;
+    }
+    var mi = '' + date.getMinutes();
+    if(mi.length<2){
+      mi = '0' + mi;
+    }
+    var ss = '' + date.getSeconds();
+    if(ss.length<2){
+      ss = '0' + ss;
+    }
+    return yyyy + '-' + mm + '-' + dd +' ' + hh + ':' + mi + ':' + ss + '.' + (new Date()).getMilliseconds();
+}
+
 }

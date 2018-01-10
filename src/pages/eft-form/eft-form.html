@@ -28,17 +28,20 @@
         <ion-row>
           <ion-col>
             <ion-select [(ngModel)]= "EFT.FROM" interface="popover" placeholder="SRC" (ionChange)="updateBerth()">
-              <ion-option *ngFor="let isl of islArr  ; let i = index;" [value]="isl">{{ isl }}</ion-option>
+              <!-- <ion-option *ngFor="let isl of islArr  ; let i = index;" [value]="isl">{{ isl }}</ion-option> -->
+              <ion-option *ngFor="let isl of this.trainAssignmentObject.ISL_ARR  ; let i = index;" [value]="isl">{{ isl }}</ion-option>
             </ion-select>
           </ion-col>
           <ion-col>
             <ion-select [(ngModel)]= "EFT.TO" interface="popover" placeholder="DEST" (ionChange)="updateBerth()">
-              <ion-option *ngFor="let isl of islArr  ; let i = index;" [value]="isl">{{ isl }}</ion-option>
+              <!-- <ion-option *ngFor="let isl of islArr  ; let i = index;" [value]="isl">{{ isl }}</ion-option> -->
+              <ion-option *ngFor="let isl of this.trainAssignmentObject.ISL_ARR  ; let i = index;" [value]="isl">{{ isl }}</ion-option>
             </ion-select>
           </ion-col>
           <ion-col>
               <ion-select [(ngModel)]="EFT.COACH_ID" interface="popover" placeholder="COACH" (ionChange)="updateBerth()">
-                <ion-option *ngFor="let coach of coachArr  ; let i = index;" [value]="coach.COACH_ID">{{ coach }}</ion-option>
+                <!-- <ion-option *ngFor="let coach of coachArr  ; let i = index;" [value]="coach.COACH_ID">{{ coach }}</ion-option> -->
+                <ion-option *ngFor="let coach of trainAssignmentObject.ASSIGNED_COACHES  ; let i = index;" [value]="coach.COACH_ID">{{ coach }}</ion-option>
               </ion-select>
             </ion-col>
         </ion-row>
@@ -92,6 +95,7 @@
         <ion-col><button color="mediumgraycustom" ion-button full (click)="addRow()">Add Row</button></ion-col>
         <ion-col><button color="mediumgraycustom" ion-button full (click)="deleteRow()">delete Row</button></ion-col>
       </ion-row>
-      <button ion-button full (click)="makeEFT()">Make EFT</button>
+      <!-- <button ion-button full (click)="makeEFT()">Make EFT</button> -->
+      <button ion-button full (click)="issueEFT()">Make EFT</button>
   </ion-card>
 </ion-content>

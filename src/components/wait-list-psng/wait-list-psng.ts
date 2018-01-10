@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { StorageProvider } from '../../providers/storage/storage';
+//import { StorageProvider } from '../../providers/storage/storage';
+import {StorageServiceProvider} from '../../providers/storage-service/storage-service';
 import { ModalController, NavController, NavParams } from 'ionic-angular';
 import { WaitlistModelPage } from '../../pages/waitlist-model/waitlist-model';
-
+import { PsngDataServiceProvider } from '../../providers/psng-data-service/psng-data-service';
 /**
  * Generated class for the WaitListPsngComponent component.
  *
@@ -18,26 +19,29 @@ export class WaitListPsngComponent {
   confirmed_waitlist: any =[];
   non_confirmed_waitlist: any =[];
 
-  constructor(private storage : StorageProvider, private modalCtrl : ModalController,
-    private navCtrl: NavController, public navParams: NavParams) {
-    //alert('Hello WaitListPsngComponent Component' + navParams.data);
-    console.log('-----------------------------');
-    console.log(navParams.data);
-
-    this.storage.getConfirmedWaitlistPassenger(navParams.data.class).then(res=>{
+  trainAssignmentObject : any;
+  
+  constructor(private storageService : StorageServiceProvider, private modalCtrl : ModalController,
+    private navCtrl: NavController, public navParams: NavParams,private pdsp: PsngDataServiceProvider) {
+    this.trainAssignmentObject = this.pdsp.trainAssignmentObject;
+      
+    var query = {
+      $equal : [{'CLASS' : navParams.data.class}],
+      $greaterThan : [{'BERTH_INDEX':0},{'WAITLIST_NO':0}]
+    };  
+    var option = {
+      exact : true
+    };
+    this.storageService.getDocumentsAdvanced(this.storageService.collectionName.PASSENGER_TABLE, query, option).then(res=>{
       this.confirmed_waitlist = res;
-      console.log('cnf');
-      console.log(this.confirmed_waitlist);
-    },failure=>{
-      alert("failed to load confirmed waitlist "+JSON.stringify(failure));
     });
 
-    this.storage.getNonConfirmedWaitlistPassenger(navParams.data.class).then(res=>{
+    var query2 = {
+      $equal : [{'CLASS' : navParams.data.class},{'BERTH_INDEX':-1}]
+    };
+
+    this.storageService.getDocumentsAdvanced(this.storageService.collectionName.PASSENGER_TABLE, query2, option).then(res=>{
       this.non_confirmed_waitlist = res;
-      console.log('non cnf');
-      console.log(this.non_confirmed_waitlist);
-    },failure=>{
-      alert("failed to load non-confirmed waitlist "+JSON.stringify(failure));
     });
   }
 

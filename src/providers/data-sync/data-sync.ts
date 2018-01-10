@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
-import { StorageProvider } from '../../providers/storage/storage';
+//import { StorageProvider } from '../../providers/storage/storage';
 import { LoggerProvider } from '../../providers/logger/logger';
 import { BackendProvider } from '../../providers/backend/backend';
 import { UtilProvider } from '../../providers/util/util';
+import { StorageServiceProvider } from '../storage-service/storage-service';
 /*
   Generated class for the DataSyncProvider provider.
 
@@ -33,7 +34,11 @@ export class DataSyncProvider {
   differentialPsngDownloadedCount : number;
   
 
-  constructor(public storage: StorageProvider, public backend : BackendProvider,public util : UtilProvider) {
+  constructor(
+   // public storage: StorageProvider,
+    public storage:StorageServiceProvider,
+     public backend : BackendProvider,
+     public util : UtilProvider) {
     //this.logLocal('Hello DataSyncProvider Provider');
     /* this.storage.getTrainAssignment().then(data=>{
       this.trainAssignment = data;
@@ -119,10 +124,11 @@ export class DataSyncProvider {
     //alert('syncPassenger');
     return new Promise(resolve=>{
       this.isPsngDataSyncIncomplete = true;
-      this.storage.getDirtyRecords('passenger').then((dirtyPsgn:any)=>{
+      this.storage.getAllDirtyDocuments(this.storage.collectionName.PASSENGER_TABLE).then((dirtyPsgn:any)=>{
         this.logLocal("got ["+dirtyPsgn.length+"] dirty psng in getDirtyRecords at :"+this.getTimeInMili()/1000+" sec");
         this.dirtyPsngCount = dirtyPsgn.length;
-
+        
+        //alert("getAllDirtyDocuments=>"+JSON.stringify(dirtyPsgn));
 
         let isDirtyPsngDataSyncComplete = false;
         let isFetchAndSaveNewDifferentialPsngComplete = false;
@@ -157,6 +163,7 @@ export class DataSyncProvider {
         if(response.CODE==200){
           this.dirtyPsngSyncFailureCount=response.data.failedToSavedIds.length;
           this.dirtyPsngSyncSuccessCount=response.data.successfullSavedIds.length;
+          //alert("before markClean=>"+JSON.stringify(data));
           this.storage.markClean('passenger',data).then(res=>{
                 resolve(res);
           });
@@ -182,7 +189,8 @@ export class DataSyncProvider {
            " DifferentialPassenger in fetchAndSaveNewDifferentialPsng at :"+this.getTimeInMili()/1000+" sec");
           this.differentialPsngDownloadedCount=response.data.resultSet.length;
           //debugger;
-          this.storage.addPassengers(response.data.resultSet).then(res=>{
+          this.storage.add(this.storage.collectionName.PASSENGER_TABLE,
+            response.data.resultSet,true).then(res=>{
             console.log(res);
             resolve(res);
           });
@@ -197,7 +205,7 @@ export class DataSyncProvider {
   syncVacantberth(){
     return new Promise(resolve=>{
       this.isVacantBerthDataSyncIncomplete = true;
-      this.storage.getDirtyRecords('vacantberth').then((dirtyBerth:any)=>{
+      this.storage.getAllDirtyDocuments(this.storage.collectionName.VACANT_BERTH_TABLE).then((dirtyBerth:any)=>{
         console.log(dirtyBerth);
         
         this.logLocal("got ["+dirtyBerth.length+"] dirtyBerth in getDirtyRecords at :"+this.getTimeInMili()/1000+" sec");
@@ -248,7 +256,8 @@ export class DataSyncProvider {
       this.serverTimeAtProcessStart).then((response:any)=>{
         if(response.CODE==200){
           //let data = this.util.convertIntoJson(response.TEXT);
-          this.storage.addVacantBerth(response.data.resultSet).then(res=>{
+          this.storage.add(this.storage.collectionName.VACANT_BERTH_TABLE,
+            response.data.resultSet,true).then(res=>{
             resolve(res);
           });
         }else{
@@ -262,7 +271,8 @@ export class DataSyncProvider {
   syncEFTMaster(){
     return new Promise(resolve=>{
       this.isEFTMasterDataSyncIncomplete = true;
-      this.storage.getDirtyRecords('eftMaster').then((dirtyEft:any)=>{
+      this.storage.getAllDirtyDocuments(this.storage.collectionName.EFT_MASTER_TABLE
+      ).then((dirtyEft:any)=>{
         this.logLocal("got ["+dirtyEft.length+"] dirtyEFT in syncEFTMaster at :"+this.getTimeInMili()/1000+" sec");
         if(dirtyEft.length>0){
           this.postDirtyEFT(dirtyEft).then(res=>{
@@ -298,9 +308,15 @@ export class DataSyncProvider {
         this.logLocal("All complete at : "+this.getTimeInMili()/1000+" sec");
         this.trainAssignment.LOAD_TIME = this.serverTimeAtProcessStart;
         this.trainAssignment.LAST_SYNCED = this.serverTimeAtProcessStart;
-        this.storage.replaceTrainAssignment(this.trainAssignment).then(res=>{
+        let dbObj=[];
+        dbObj["json"]=this.trainAssignment;
+        dbObj["_id"]=1;
+        this.storage.replace(this.storage.collectionName.TRAIN_ASSNGMNT_TABLE,
+          dbObj,true).then(res=>{
           console.log(this.trainAssignment);
-          resolve(res);
+          //resolve(res);
+          if(!res)alert('Failed to update trainAssignment.LOAD_TIME');
+          resolve(true);
         });
       }else{
         resolve(false);

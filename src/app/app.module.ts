@@ -4,6 +4,7 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { Vibration } from '@ionic-native/vibration';
+import { Network } from '@ionic-native/network';
 // import { IonicStorageModule } from '@ionic/storage';
 //import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { MyApp } from './app.component';
@@ -11,7 +12,7 @@ import { HomePage } from '../pages/home/home';
 import { ChartPage } from '../pages/chart/chart';
 import { EftPageModule } from '../pages/eft/eft.module';
 
-import { StorageProvider } from '../providers/storage/storage';
+//import { StorageProvider } from '../providers/storage/storage';
 import { LoggerProvider } from '../providers/logger/logger';
 import { BackendProvider } from '../providers/backend/backend';
 import { UtilProvider } from '../providers/util/util';
@@ -53,6 +54,7 @@ import { WaitListPsngComponent } from '../components/wait-list-psng/wait-list-ps
 import { DataSyncStatusPageModule } from '../pages/data-sync-status/data-sync-status.module';
 import { EftServiceProvider } from '../providers/eft-service/eft-service';
 import { EftFormPage } from '../pages/eft-form/eft-form';
+import { StorageServiceProvider } from '../providers/storage-service/storage-service';
 
 @NgModule({
   declarations: [
@@ -111,13 +113,15 @@ import { EftFormPage } from '../pages/eft-form/eft-form';
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    StorageProvider,
+    Network,
+    //StorageProvider,
     LoggerProvider,
     BackendProvider,
     UtilProvider,
     PsngDataServiceProvider,
     DatabaseProvider,
     DataSyncProvider,
+    StorageServiceProvider,
     // SQLite,
     Vibration,
     DataLoadProvider,

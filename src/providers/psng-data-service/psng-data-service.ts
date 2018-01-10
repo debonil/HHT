@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 import { ChartBerthPassengerDetail } from "../../model/ChartBerthPassengerDetail";
-declare var WL;
+//import { StorageProvider } from '../storage/storage';
+import { StorageServiceProvider } from '../storage-service/storage-service';
+//declare var WL;
 /*
   Generated class for the PsngDataServiceProvider provider.
 
@@ -28,7 +30,7 @@ export class PsngDataServiceProvider {
   private coachwiseChartDataObservable:  Observable<any> ;
   private observer: any;
   private startTime: number;
-  constructor() {
+  constructor(private storage: StorageServiceProvider,) {
     console.log('Hello PsngDataServiceProvider Provider');
     this.coachwiseChartDataObservable= Observable.create(observer => {
       this.observer=observer;
@@ -72,7 +74,9 @@ export class PsngDataServiceProvider {
       console.log("loadCoachwiseChartData data  hard loading!!");
       this.loadingCoachwiseChartData=true;
     try{
-      WL.JSONStore.get('trainAssignment').findAll().then(success=>{
+      this.storage.getDocuments(
+        this.storage.collectionName.TRAIN_ASSNGMNT_TABLE
+       ).then(success=>{
         if(success.length !== 0){
           this.allPassengerChartDataObj.trainAssignmentObj=success[0].json;
         }else{
@@ -80,7 +84,9 @@ export class PsngDataServiceProvider {
         }
       });
        // WL.JSONStore.get('Passenger').findAll().then( (res)=> {
-         WL.JSONStore.get('passenger').findAll().then( (res)=> {
+         this.storage.getDocuments(
+          this.storage.collectionName.PASSENGER_TABLE
+         ).then( (res)=> {
            //console.log(res.length);
           // console.log(rows);
            if(res.length>0){
@@ -133,7 +139,7 @@ export class PsngDataServiceProvider {
            this.loadingCoachwiseChartData=false;
 
           this.allPassengerChartDataObj.empty=false;
-         }).fail(function(error){
+         }).catch(function(error){
          console.log('Fail to get passengers details : ' +error);
        });
        
@@ -163,4 +169,69 @@ export class PsngDataServiceProvider {
 
   }
 
+
+  savePsngBerthDataLocally() {
+    return new Promise(resolve=>{
+    //this.showLoader("Saving data... ");
+    let psngObjArr = [] ;
+    let vbObjArr = [] ;
+    let response = {success:false,msg:""} ;
+    this.allPassengerChartDataObj.coachwiseChartData.forEach((coachpsngbrth, ind1) => {
+      coachpsngbrth.value.forEach((psngbrth, ind2) => {
+        if (!psngbrth._isLocked && psngbrth._status > 0) {
+          psngbrth._isLocked = true;
+          psngObjArr.push(psngbrth);
+          if (psngbrth._status == 2&&psngbrth.QT!='RC')
+            vbObjArr.push(this.convertPsngToVBerth(psngbrth));
+        }
+      });
+    });
+    this.storage.replace(this.storage.collectionName.PASSENGER_TABLE,psngObjArr.map(p => p.dbObj)).then(success => {
+      /* this.loading.dismiss();
+      this.alertToast("Data saved successfully!!"); */
+      //this.modal_Close();
+      this.storage.add(this.storage.collectionName.VACANT_BERTH_TABLE,vbObjArr).then((success) => {
+        if (success) {
+          //this.alertToast("Generated vacant berths!!");
+          response.success=true;
+          resolve(response);
+        } else {
+          response.success=false;
+          response.msg=JSON.stringify(success);
+          resolve(response);
+          //this.alertToast("Data Saved Failed!!" + JSON.stringify(success));
+        }
+      });
+    });
+    
+  });
+  }
+
+
+  private convertPsngToVBerth(psngbrth) {
+    return {
+      TRAIN_ID: psngbrth.TRAIN_ID,
+      COACH_ID: psngbrth.COACH,
+      BERTH_NO: psngbrth.BN,
+      CLASS: psngbrth.CLASS,
+      REMOTE_LOC_NO: psngbrth.REMOTE_LOC_NO,
+      BERTH_INDEX: psngbrth.BERTH_INDEX,
+      SRC: psngbrth.BRD,
+      DEST: psngbrth.DEST,
+      ALLOTED: "N",
+      REASON: "V",
+      CAB_CP: psngbrth.CAB_CP,
+      CAB_CP_ID: psngbrth.CAB_CP_ID,
+      CH_NUMBER: psngbrth.CH_NUMBER,
+      PRIMARY_QUOTA: psngbrth.QT,
+      SUB_QUOTA: psngbrth.SUB_QUOTA,
+      SYSTIME: psngbrth.SYSTIME,
+    };
+  }
+  get trainAssignmentObject(){
+    return this.allPassengerChartDataObj.trainAssignmentObj
+  }
+  set trainAssignmentObject(trainAssignmentObj:any){
+    this.allPassengerChartDataObj.trainAssignmentObj=trainAssignmentObj;
+  }
 }

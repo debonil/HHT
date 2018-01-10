@@ -3,7 +3,7 @@ import { Platform , MenuController , NavController, Events ,ToastController} fro
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { HomePage } from '../pages/home/home';
-import { StorageProvider } from '../providers/storage/storage';
+//import { StorageProvider } from '../providers/storage/storage';
 import { ChartPage } from '../pages/chart/chart';
 
 import { EftPage } from '../pages/eft/eft';
@@ -32,6 +32,7 @@ import { SuperTabsModule } from 'ionic2-super-tabs';
 import { DroppedETktPassengerPage } from '../pages/dropped-e-tkt-passenger/dropped-e-tkt-passenger';
 import { PsngDataServiceProvider } from '../providers/psng-data-service/psng-data-service';
 import { RacTabPage } from '../pages/rac-tab/rac-tab';
+import { StorageServiceProvider } from '../providers/storage-service/storage-service';
 
 
 @Component({
@@ -62,9 +63,16 @@ export class MyApp {
   doctors=DoctorsPage;
   //pages: Array<{title: string, component: any}>;
 
-  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen ,
-    public renderer : Renderer, public storageProvider: StorageProvider, public event : Events,
-    public menuCtrl : MenuController,private pdsp: PsngDataServiceProvider,
+  constructor(
+    public platform: Platform, 
+    public statusBar: StatusBar, 
+    public splashScreen: SplashScreen ,
+    public renderer : Renderer, 
+    //public storageProvider: StorageProvider,
+    public event : Events, 
+    public storageServiceProvider:StorageServiceProvider,
+    public menuCtrl : MenuController,
+    private pdsp: PsngDataServiceProvider,
     public toastCtrl: ToastController) {
 
     this.initializeApp();
@@ -72,10 +80,12 @@ export class MyApp {
     this.renderer.listenGlobal('document','mfpjsonjsloaded',()=>{
       //alert('MFP LOADED');
       console.log('--> mfpjsonjsloaded rendered');
-      this.storageProvider.init().then(s=>{
-        this.storageProvider.getTrainAssignment().then(result=>{
+      this.storageServiceProvider.init().then(s=>{
+        this.storageServiceProvider.getDocuments(
+          this.storageServiceProvider.collectionName.TRAIN_ASSNGMNT_TABLE
+        ).then(result=>{
               //console.log(result);
-               if(result&&result["USER_ID"]){
+               if(result[0]&&result[0]["json"]&&result[0]["json"]["USER_ID"]){
                 this.username=result["USER_ID"];
                 this.pdsp.findAll().subscribe(data => {
                   //console.log(data.coachwiseChartData.length);
@@ -148,13 +158,23 @@ export class MyApp {
   clearChart() {
     //alert('clear chart');
     return new Promise(resolve => {
-      this.storageProvider.clear('trainAssignment').then(() => {
-        this.storageProvider.clear('coachTime').then(() => {
-          this.storageProvider.clear('droptEticketPassenger').then(() => {
-            this.storageProvider.clear('dynamicFare').then(() => {
-              this.storageProvider.clear('eftMaster').then(() => {
-                this.storageProvider.clear('vacantberth').then(() => {
-                  this.storageProvider.clear('passenger').then(() => {
+      this.storageServiceProvider.clearAll().then(() => {
+        this.pdsp.clearAllData();
+        resolve(true);
+      });
+    });
+  }
+/* 
+  clearChart() {
+    //alert('clear chart');
+    return new Promise(resolve => {
+      this.storageServiceProvider.clear('trainAssignment').then(() => {
+        this.storageServiceProvider.clear('coachTime').then(() => {
+          this.storageServiceProvider.clear('droptEticketPassenger').then(() => {
+            this.storageServiceProvider.clear('dynamicFare').then(() => {
+              this.storageServiceProvider.clear('eftMaster').then(() => {
+                this.storageServiceProvider.clear('vacantberth').then(() => {
+                  this.storageServiceProvider.clear('passenger').then(() => {
                     this.pdsp.clearAllData();
                     resolve(true);
                   });
@@ -165,7 +185,7 @@ export class MyApp {
         });
       });
     });
-  }
+  } */
  /* dropEtkt(page:any){
    // alert('Page load ' + page.html());
     this.nav.setRoot(page, {user : this.username});

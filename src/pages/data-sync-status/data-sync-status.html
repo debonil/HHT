@@ -44,18 +44,23 @@
             </ion-card-header>
             <ion-card-content >
                 <ion-list >
-                    <ion-item text-wrap>
-                        <ion-label>dataSyncProcessRunning : {{syncProvider.dataSyncProcessRunning}}</ion-label>
-                    </ion-item>
-                    <ion-item text-wrap>
-                        <ion-label>isPsngDataSyncIncomplete : {{syncProvider.isPsngDataSyncIncomplete}}</ion-label>
-                    </ion-item>
-                    <ion-item text-wrap>
-                        <ion-label>isVacantBerthDataSyncIncomplete : {{syncProvider.isVacantBerthDataSyncIncomplete}}</ion-label>
-                    </ion-item>
-                    <ion-item text-wrap>
-                        <ion-label>isEFTMasterDataSyncIncomplete : {{syncProvider.isEFTMasterDataSyncIncomplete}}</ion-label>
-                    </ion-item>
+                  <ion-item text-wrap *ngIf="syncProvider.dataSyncProcessRunning">
+                      <span><ion-spinner name="bubbles"></ion-spinner> 
+                         Data sync is running..</span>
+                         <ul>
+                          <li *ngIf="syncProvider.isPsngDataSyncIncomplete"><ion-spinner name="bubbles"></ion-spinner> 
+                            Passenger Data is syncing</li>
+                          <li *ngIf="syncProvider.isVacantBerthDataSyncIncomplete"><ion-spinner name="bubbles"></ion-spinner> 
+                            Passenger Data is syncing</li>
+                          <li *ngIf="syncProvider.isEFTMasterDataSyncIncomplete"><ion-spinner name="bubbles"></ion-spinner> 
+                            Passenger Data is syncing</li>
+                        </ul>
+                        
+                  </ion-item>
+                  <ion-item text-wrap *ngIf="!syncProvider.dataSyncProcessRunning">
+                      <ion-label><ion-icon name="done-all"></ion-icon> Data sync complete!!</ion-label>
+  
+                  </ion-item>
                 </ion-list>
             </ion-card-content>
           </ion-card>
@@ -73,16 +78,16 @@
             <ion-card-content >
               <ion-list >
                   <ion-item text-wrap>
-                      <ion-label>Dirty Psng found : {{syncProvider.dirtyPsngCount}}</ion-label>
+                      <ion-label>No of Dirty Psng found : {{syncProvider.dirtyPsngCount}}</ion-label>
                   </ion-item>
                   <ion-item text-wrap>
-                      <ion-label>Dirty Psng SyncSuccessCount : {{syncProvider.dirtyPsngSyncSuccessCount}}</ion-label>
+                      <ion-label>No of Dirty Psng SyncSuccessCount : {{syncProvider.dirtyPsngSyncSuccessCount}}</ion-label>
                   </ion-item>
                   <ion-item text-wrap>
-                      <ion-label>Dirty Psng SyncFailureCount : {{syncProvider.dirtyPsngSyncFailureCount}}</ion-label>
+                      <ion-label>No of Dirty Psng SyncFailureCount : {{syncProvider.dirtyPsngSyncFailureCount}}</ion-label>
                   </ion-item>
                   <ion-item text-wrap>
-                      <ion-label>Differential Psng Downloaded Count : {{syncProvider.differentialPsngDownloadedCount}}</ion-label>
+                      <ion-label>No of Differential Psng Downloaded Count : {{syncProvider.differentialPsngDownloadedCount}}</ion-label>
                   </ion-item>
               </ion-list>
             </ion-card-content>

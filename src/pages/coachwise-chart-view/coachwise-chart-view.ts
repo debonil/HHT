@@ -8,7 +8,7 @@ import { IonicPage, NavController, NavParams, LoadingController,FabContainer } f
  import { SuperTabsController, SuperTabs } from 'ionic2-super-tabs';
 // import { ChartBerthPassengerDetail } from "../../model/ChartBerthPassengerDetail";
  import { PsngDataServiceProvider } from "../../providers/psng-data-service/psng-data-service";
- import { StorageProvider } from '../../providers/storage/storage';
+ //import { StorageProvider } from '../../providers/storage/storage';
 // import { ShiftPsgnPage } from '../shift-psgn/shift-psgn';
  import { ChartPreviewPage } from '../chart-preview/chart-preview';
  import { ChartPage } from '../chart/chart';
@@ -40,10 +40,18 @@ export class CoachwiseChartViewPage {
   private loading : any;
   timeTrack : number;
 
-  constructor(public actionSheetCtrl: ActionSheetController, public popoverCtrl: PopoverController, private superTabsCtrl: SuperTabsController,
-    public navCtrl: NavController, public navParams: NavParams, private pdsp: PsngDataServiceProvider,
-    public modalCtrl: ModalController, private loadingCtrl: LoadingController, private storage: StorageProvider,
-    private toastCtrl:ToastController) {
+  constructor(
+    public actionSheetCtrl: ActionSheetController,
+    public popoverCtrl: PopoverController, 
+    private superTabsCtrl: SuperTabsController,
+    public navCtrl: NavController, 
+    public navParams: NavParams, 
+    private pdsp: PsngDataServiceProvider,
+    public modalCtrl: ModalController, 
+    private loadingCtrl: LoadingController, 
+    //private storage: StorageProvider,
+    private toastCtrl:ToastController
+  ) {
    console.log('constructor CoachwiseChartViewPage' + new Date());
     this.timeTrack = new Date().getTime();
 
@@ -225,58 +233,23 @@ export class CoachwiseChartViewPage {
   }
   savePsngBerthDataLocally() {
     this.showLoader("Saving data... ");
-    let psngObjArr = [] ;
-    let vbObjArr = [] ;
-
-    this.coachwiseChartData.forEach((coachpsngbrth, ind1) => {
-      coachpsngbrth.value.forEach((psngbrth, ind2) => {
-        if (!psngbrth._isLocked && psngbrth._status > 0) {
-          psngbrth._isLocked = true;
-          psngObjArr.push(psngbrth);
-          if (psngbrth._status == 2)
-            vbObjArr.push(this.convertPsngToVBerth(psngbrth));
-        }
-      });
-    });
-    this.storage.replacePassenger(psngObjArr.map(p => p.dbObj)).then(success => {
+    this.pdsp.savePsngBerthDataLocally()
+    .then((resp)=>{
       this.loading.dismiss();
-      this.alertToast("Data saved successfully!!");
-      //this.modal_Close();
-      this.storage.appendVacantBerth(vbObjArr).then((success) => {
-        if (success) {
-          //this.alertToast("Generated vacant berths!!");
-        } else {
-          this.alertToast("Data Saved Failed!!" + JSON.stringify(success));
-        }
-      });
+      if(resp["success"]){
+        this.alertToast("Data saved successfully!!");
+      }else{
+        alert("Data could not be saved!! \n ERROR : "+ JSON.stringify(resp));
+      }
+    })
+    .catch((error)=>{
+      this.loading.dismiss();
+      alert("Data could not be saved!! \n ERROR : "+ JSON.stringify(error));
     });
-    
-
   }
-
   onTabSelect(event){
     console.log(event);
     this.selectedCoach=event.id;
-  }
-  private convertPsngToVBerth(psngbrth) {
-    return {
-      TRAIN_ID: psngbrth.TRAIN_ID,
-      COACH_ID: psngbrth.COACH,
-      BERTH_NO: psngbrth.BN,
-      CLASS: psngbrth.CLASS,
-      REMOTE_LOC_NO: psngbrth.REMOTE_LOC_NO,
-      BERTH_INDEX: psngbrth.BERTH_INDEX,
-      SRC: psngbrth.BRD,
-      DEST: psngbrth.DEST,
-      ALLOTED: "N",
-      REASON: "V",
-      CAB_CP: psngbrth.CAB_CP,
-      CAB_CP_ID: psngbrth.CAB_CP_ID,
-      CH_NUMBER: psngbrth.CH_NUMBER,
-      PRIMARY_QUOTA: psngbrth.QT,
-      SUB_QUOTA: psngbrth.SUB_QUOTA,
-      SYSTIME: psngbrth.SYSTIME,
-    };
   }
 
 }
