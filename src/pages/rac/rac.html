@@ -2,7 +2,11 @@
   <ion-list>
     <ion-card >
        <ion-row *ngIf="racBerth.length == 0">
-        <ion-col align=center><font color="red">NO<br> RAC PASSENGER <br>IN <br>THIS COACH</font></ion-col>
+        <ion-col align=center>
+          <h1 align=center>
+          <font color="red">NO<br> RAC PASSENGER <br>IN <br>THIS COACH</font>
+          </h1>
+        </ion-col>
       </ion-row>
     </ion-card>
     <ion-card text-wrap *ngFor="let item of racBerth">
@@ -29,7 +33,7 @@
           <ion-avatar item-start>{{ item.berthNo }}</ion-avatar>
         </ion-col>
         <ion-col col-11 no-padding align=center>
-          <ion-row *ngFor="let psng of item.value">
+          <ion-row *ngFor="let psng of item.value" color='danger'>
             <ion-col>{{ psng.PSGN_NAME }}<br>{{psng.AGE_SEX }}</ion-col>
             <ion-col>{{ psng.PNR_NO }}<br>{{psng.PRIMARY_QUOTA}} {{psng.NEW_PRIMARY_QUOTA}}</ion-col>
             <ion-col>{{ psng.BOARDING_PT }}<br>{{ psng.RES_UPTO }}</ion-col>

@@ -71,9 +71,10 @@ export class HomePage {
 
   onSubmit2( username , password){
       //Added by DG
-      if(username === '')username='psaini';
-      if(password === '')password='psaini';
-
+      if(username === '')username='sunily';
+      if(password === '')password='sunily';
+      username=username.trim().toLowerCase();
+      password=password.trim().toLowerCase();
       ///END Add
     if(username === ''){this.formErrors['username'] = this.validationMessages.username.required;}
     else if(password === ''){this.formErrors['password'] = this.validationMessages.password.required;}

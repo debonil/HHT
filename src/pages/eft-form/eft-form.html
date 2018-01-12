@@ -6,8 +6,8 @@
 -->
 <ion-header>
 
-  <ion-navbar>
-    <ion-title>eftForm</ion-title>
+  <ion-navbar color="primary">
+    <ion-title>Input EFT Details</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -48,10 +48,10 @@
 
         <ion-row>
           <ion-col>
-            <ion-input placeholder = FARE type="number" [(ngModel)]="EFT.FARE" (ionChange)="updateTotal()"></ion-input>
+            <ion-input placeholder = FARE type="number" [(ngModel)]="EFT.FARE" (ionChange)="updateTotal()" (keypress)="keypressevt($event);"></ion-input>
           </ion-col>
           <ion-col>
-            <ion-input placeholder = EXCESS FARE type="number" [(ngModel)]="EFT.EXCESS_FARE" (ionChange)="updateTotal()"></ion-input>
+            <ion-input placeholder = EXCESS FARE type="number" [(ngModel)]="EFT.EXCESS_FARE" (ionChange)="updateTotal()" (keypress)="keypressevt($event);"></ion-input>
           </ion-col>
           <ion-col>
             <ion-input placeholder ="Total" type="number" [(ngModel)] = "EFT.TOTAL"></ion-input>
@@ -75,7 +75,7 @@
           <ion-input placeholder="Name" [(ngModel)]="EFT.PSGNLIST[i].NAME" maxlength="10"></ion-input>
         </ion-col>
         <ion-col>
-          <ion-input type="number" placeholder="Age" [(ngModel)]="EFT.PSGNLIST[i].AGE" min =5 max=150></ion-input>
+          <ion-input type="number" placeholder="Age" [(ngModel)]="EFT.PSGNLIST[i].AGE" min =5 max=150 (keypress)="keypressevt($event);"></ion-input>
         </ion-col>
         <ion-col>
           <ion-select style="max-width:100%" interface="popover" placeholder="Sex" [(ngModel)]="EFT.PSGNLIST[i].SEX">

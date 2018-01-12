@@ -53,6 +53,7 @@ export class ChartPage {
 
     this.menuCtrl.get('menu1').enable(false);
     this.menuCtrl.get('menu2').enable(true);
+    this.isNetworkAvailable='none'!=this.network.type;
     /*  this.username = this.navParams.get('user');
      this.noChart = this.navParams.get('noChart');
     // console.log("no chart" + this.noChart); */
@@ -419,6 +420,11 @@ export class ChartPage {
 
 
   ionViewWillEnter() {
+    // watch network for a disconnect
+    let changeSubscription = this.network.onchange().subscribe(() => {
+      //this.isNetworkAvailable=false;
+      alert('Network changed!!');
+    });
     // watch network for a disconnect
     let disconnectSubscription = this.network.onDisconnect().subscribe(() => {
       this.isNetworkAvailable=false;

@@ -54,6 +54,12 @@ export class EftFormPage {
     console.log('ionViewDidLoad EftFormPage');
   }
 
+  keypressevt(e){
+    if(e.charCode<48 || e.charCode>57){
+      return false;
+    }
+  }
+
   updateBerth(){
     if(this.trainAssignmentObject.ISL_ARR.indexOf(this.EFT.COACH_ID.trim().length>0 && this.EFT.TO)>this.trainAssignmentObject.ISL_ARR.indexOf(this.EFT.FROM) && this.trainAssignmentObject.ISL_ARR.indexOf(this.EFT.FROM)>-1){
       let srcArr = this.trainAssignmentObject.ISL_ARR.slice(0,this.trainAssignmentObject.ISL_ARR.indexOf(this.EFT.FROM)+1);
