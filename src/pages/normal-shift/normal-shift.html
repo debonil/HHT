@@ -16,8 +16,9 @@
 <ion-content padding>
   <ion-card>
     <ion-item *ngFor="let item of psgnData">
-      <ion-label>{{item.PSGN_NAME}}<br>{{item.PNR_NO}}</ion-label>
-     <!--  <ion-label>{{item.PNR_NO}}</ion-label> -->
+      <ion-label>{{item.PSGN_NAME}}
+        <br>{{item.PNR_NO}}</ion-label>
+      <!--  <ion-label>{{item.PNR_NO}}</ion-label> -->
       <ion-label>{{item.REL_POS}}</ion-label>
       <ion-label>{{item.BERTH_NO}}</ion-label>
       <ion-label>{{item.BOARDING_PT}}</ion-label>
@@ -25,20 +26,37 @@
 
     </ion-item>
   </ion-card>
-  <h2 align=center><font color=green>PLEASE SELECT VACANT BERTH BELOW</font></h2>
- <ion-card *ngIf="vcBerth.length>0">
+  <h2 align=center>
+    <font color=green>PLEASE SELECT VACANT BERTH BELOW</font>
+  </h2>
+  <ion-card *ngIf="vcBerth.length>0">
     <ion-item>
-          <ion-label><strong>VACANT BERTH :</strong></ion-label>
-          <ion-select interface="popover" placeholder="SELECT BERTH" [(ngModel)]="vacBerth" #D (ionChange)="confirmShift(vacBerth)" >
-              <ion-option *ngFor="let item of vcBerth" [value]="item">{{item.COACH_ID}} {{item.BERTH_NO}} {{item.SRC}} {{item.DEST}} {{item.ALLOTED}} {{item.REASON}}</ion-option>
-          </ion-select>
-        </ion-item>
-        
+      <ion-label>
+          <strong>VACANT BERTH : Click on icon </strong>
+        </ion-label>
+        <!--         <ion-label>select vaccant berth</ion-label>-->
+
+        <ion-label>
+          <ion-buttons end>
+            <a ion-button icon-only end id="boardedAtPsgn" (click)="vacantBerthList() ">
+              <ion-icon    name="open"  *ngIf="true"></ion-icon>
+              <!-- <img  src="src/assets/icon/vacant-berth.png"   *ngIf="true"/> -->
+            </a>
+          </ion-buttons>
+        </ion-label>
+    </ion-item>
+
   </ion-card>
-      <ion-card *ngIf="vcBerth==0">
-        <ion-item >
-           <h1 align=center><font color="red">No Vacant Berth Available</font></h1>           
-        </ion-item>
-         <button ion-button align=center (click)="closeModal()" round>CLOSE</button>
-      </ion-card>
+  <ion-card *ngIf="vcBerth==0">
+    <ion-item>
+      <h1 align=center>
+        <font color="red">No Vacant Berth Available</font>
+      </h1>
+    </ion-item>
+    <button ion-button align=center (click)="closeModal()" round>CLOSE</button>
+  </ion-card>
+  <ion-card *ngIf="vcBerth!=0">
+      <button ion-button align=center (click)="closeModal()" round>CLOSE</button>
+  </ion-card>
+ 
 </ion-content>

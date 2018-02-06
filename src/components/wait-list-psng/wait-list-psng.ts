@@ -20,19 +20,29 @@ export class WaitListPsngComponent {
   non_confirmed_waitlist: any =[];
 
   trainAssignmentObject : any;
+
+  class:any;
   
   constructor(private storageService : StorageServiceProvider, private modalCtrl : ModalController,
     private navCtrl: NavController, public navParams: NavParams,private pdsp: PsngDataServiceProvider) {
     this.trainAssignmentObject = this.pdsp.trainAssignmentObject;
       
-    var query = {
+    /* this.query = {
+      $equal : [{'CLASS' : navParams.data.class}],
+      $greaterThan : [{'BERTH_INDEX':0},{'WAITLIST_NO':0}]
+    };  
+    this.option = {
+      exact : true
+    }; */
+    this.class = navParams.data.class;
+    /* var query = {
       $equal : [{'CLASS' : navParams.data.class}],
       $greaterThan : [{'BERTH_INDEX':0},{'WAITLIST_NO':0}]
     };  
     var option = {
       exact : true
-    };
-    this.storageService.getDocumentsAdvanced(this.storageService.collectionName.PASSENGER_TABLE, query, option).then(res=>{
+    }; */
+    /* this.storageService.getDocumentsAdvanced(this.storageService.collectionName.PASSENGER_TABLE, query, option).then(res=>{
       this.confirmed_waitlist = res;
     });
 
@@ -42,6 +52,34 @@ export class WaitListPsngComponent {
 
     this.storageService.getDocumentsAdvanced(this.storageService.collectionName.PASSENGER_TABLE, query2, option).then(res=>{
       this.non_confirmed_waitlist = res;
+    }); */
+  }
+
+  ionViewDidEnter(){
+    var query = {
+      $equal : [{'CLASS' : this.class}],
+      $greaterThan : [{'BERTH_INDEX':0},{'WAITLIST_NO':0}]
+    };  
+    var option = {
+      exact : true
+    };
+
+    this.storageService.getDocumentsAdvanced(this.storageService.collectionName.PASSENGER_TABLE, query, option).then(res=>{
+      this.confirmed_waitlist = res;
+      this.confirmed_waitlist.sort((a,b)=>{
+        return a.json.WAITLIST_NO-b.json.WAITLIST_NO;
+      });
+    });
+
+    var query2 = {
+      $equal : [{'CLASS' : this.class},{'BERTH_INDEX':-1}]
+    };
+
+    this.storageService.getDocumentsAdvanced(this.storageService.collectionName.PASSENGER_TABLE, query2, option).then(res=>{
+      this.non_confirmed_waitlist = res;
+      this.non_confirmed_waitlist.sort((a,b)=>{
+        return a.json.WAITLIST_NO-b.json.WAITLIST_NO;
+      });
     });
   }
 

@@ -24,11 +24,18 @@ export class EftFormPage {
     REASON : '',
     FARE : '',
     EXCESS_FARE : '',
+    GST : '',
     TOTAL : 0,
     PSGNLIST : [],
     TRAIN_ID : '',
     CH_NUMBER : 1,
     USER_ID : ''
+  };
+
+  FARE ={
+    ADULT_FARE : 0,
+    CHILD_FARE : 0,
+    DISTANCE : 0 
   };
   trainAssignmentObject : any;
 
@@ -52,6 +59,20 @@ export class EftFormPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad EftFormPage');
+  }
+
+  showFare(){
+    if(this.EFT.FROM.length>0 && this.EFT.TO.length>0 && this.trainAssignmentObject.ISL_ARR.indexOf(this.EFT.FROM)<this.trainAssignmentObject.ISL_ARR.indexOf(this.EFT.TO)){
+      this.storageService.getDocuments(this.storageService.collectionName.DYNAMIC_FARE_TABLE,
+        {FROM_STN : this.EFT.FROM,TO_STN : this.EFT.TO},{exact : true}).then((res:any)=>{
+          //alert(JSON.stringify(res[0].json.ADULT_FARE) +' : '+ JSON.stringify(res[0].json.CHILD_FARE)+' : '+ JSON.stringify(res[0].json.DISTANCE));
+          //alert('RES ' + res);
+          this.FARE.ADULT_FARE = res.length==0?'NA' : res[0].json.ADULT_FARE;
+          this.FARE.CHILD_FARE = res.length==0?'NA' :res[0].json.CHILD_FARE;
+          this.FARE.DISTANCE = res.length==0?'NA' :res[0].json.DISTANCE;
+          console.log(res);
+        });
+    }
   }
 
   keypressevt(e){
@@ -79,7 +100,7 @@ export class EftFormPage {
   }
 
   updateTotal(){
-    this.EFT.TOTAL = Number.parseInt(this.EFT.FARE) + Number.parseInt(this.EFT.EXCESS_FARE);
+    this.EFT.TOTAL = Number.parseInt(this.EFT.FARE) + Number.parseInt(this.EFT.EXCESS_FARE) + Number.parseInt(this.EFT.GST);
   }
 
   addRow(){
@@ -172,6 +193,8 @@ export class EftFormPage {
       this.msg = 'Give fare';
     }else if(this.EFT.EXCESS_FARE.trim().length==0){
       this.msg = 'Give excess fare';
+    }else if(this.EFT.GST.trim().length==0){
+      this.msg = 'Give GST';
     }
   }
 
@@ -254,6 +277,7 @@ export class EftFormPage {
     if(index<this.EFT.PSGNLIST.length){
       let row = this.EFT.PSGNLIST[index];
       let obj = row.BSD;
+      let currentTime =  this.util.getCurrentDateString();
 
       if(obj!='S'){
         obj.json.ALLOTED = 'Y';
@@ -265,7 +289,6 @@ export class EftFormPage {
               CAB_CP : obj.json.CAB_CP,
               TRAIN_ID : obj.json.TRAIN_ID,
               SRC : this.EFT.TO,
-              SYSTIME : obj.json.SYSTIME,
               CLASS : obj.json.CLASS,
               PRIMARY_QUOTA : obj.json.PRIMARY_QUOTA,
               CAB_CP_ID : obj.json.CAB_CP_ID,
@@ -276,7 +299,10 @@ export class EftFormPage {
               CH_NUMBER : obj.json.CH_NUMBER,
               ALLOTED : 'N',
               REASON : 'V',
-              DEST : obj.json.DEST
+              DEST : obj.json.DEST,
+              SYSTIME : currentTime,
+              UPDATE_TIME : currentTime,
+              SYNC_TIME : ''
             }
             this.storageService.add(this.storageService.collectionName.VACANT_BERTH_TABLE,berthObj).then(res=>{
               this.addBerthToBackend(index+1);
@@ -292,7 +318,7 @@ export class EftFormPage {
   }
 
   addEftToBackend(){
-    
+    let currentTime =  this.util.getCurrentDateString();
     var obj = {
       TRAIN_ID : this.EFT.TRAIN_ID,
       REMOTE_LOC_NO : 1,
@@ -302,10 +328,14 @@ export class EftFormPage {
       DEST : this.EFT.TO,
       FARE : Number(this.EFT.FARE),
       FINE :  Number(this.EFT.EXCESS_FARE),
+      GST : Number(this.EFT.GST),
       NUM_OF_PSGN : this.EFT.PSGNLIST.length,
       CLASS : '',
       TICKET_NO : this.EFT.EFT_NO,
-      EFT_DATE : this.util.getCurrentDateString()
+      EFT_DATE : currentTime,
+      SYSTIME : currentTime,
+      UPDATE_TIME : currentTime,
+      SYNC_TIME : ''
     };
     this.storageService.add(this.storageService.collectionName.EFT_MASTER_TABLE,obj).then(res=>{
       this.navCtrl.pop();

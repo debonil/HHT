@@ -34,6 +34,8 @@ export class WaitlistPage {
       console.log(this.classArray);
       this.classArrayFound = true;
     }); */
+    this.classArray = [];
+    console.log(JSON.stringify(this.classArray.length));
     this.trainAssignmentObject = this.pdsp.trainAssignmentObject;
     this.classArray = this.trainAssignmentObject.CLASS;
     this.classArrayFound = true;

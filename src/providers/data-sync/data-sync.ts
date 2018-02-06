@@ -19,7 +19,7 @@ export class DataSyncProvider {
   trainAssignment : any;
   statusLog:string;
 
-
+ sync_time:any[]=[];
   dataSyncProcessRunning  : boolean = false;
 
   isPsngDataSyncIncomplete : boolean = false;
@@ -33,6 +33,17 @@ export class DataSyncProvider {
   dirtyPsngSyncFailureCount : number;
   differentialPsngDownloadedCount : number;
   
+  //dirty Vacant Berth
+  dirtyVacBerthCount: number;
+  dirtyVacBerthSyncSuccessCount: number;
+  dirtyVacSyncFailureCount : number;
+  differentialVacDownloadedCount : number;
+  
+  //dirty EFT Berth
+  dirtyEFTCount: number;
+  dirtyEFTSyncSuccessCount: number;
+  dirtyEFTSyncFailureCount : number;
+  differentialEFTDownloadedCount : number;
 
   constructor(
    // public storage: StorageProvider,
@@ -69,6 +80,7 @@ export class DataSyncProvider {
             ///Syncing Passenger
             this.syncPassenger().then(res=>{
               this.logLocal("completed syncPassenger at :"+this.getTimeInMili()/1000+" sec");
+              this.sync_time.push(this.getTimeInMili()/1000+" sec");              
               this.updateLoadTime().then(res=>{
                 if(res)resolve(true);
               });
@@ -91,6 +103,8 @@ export class DataSyncProvider {
             //Syncing Vacant Berth
             this.syncVacantberth().then(res=>{
               this.logLocal("completed syncVacantberth at :"+this.getTimeInMili()/1000+" sec");
+                            this.sync_time.push(this.getTimeInMili()/1000+" sec");              
+
               //if(res){
                 this.isVacantBerthDataSyncIncomplete = false;
                 this.updateLoadTime().then(res=>{
@@ -102,7 +116,8 @@ export class DataSyncProvider {
             //Syncing EFT 
             this.syncEFTMaster().then(res=>{
               this.logLocal("completed EFTMaster at :"+this.getTimeInMili()/1000+" sec");
-              
+                            this.sync_time.push(this.getTimeInMili()/1000+" sec");              
+
               //if(res){
                 this.isEFTMasterDataSyncIncomplete = false;
                 this.updateLoadTime().then(res=>{
@@ -193,8 +208,8 @@ export class DataSyncProvider {
            " DifferentialPassenger in fetchAndSaveNewDifferentialPsng at :"+this.getTimeInMili()/1000+" sec");
           this.differentialPsngDownloadedCount=response.data.resultSet.length;
           //debugger;
-          this.storage.add(this.storage.collectionName.PASSENGER_TABLE,
-            response.data.resultSet,true).then(res=>{
+          this.storage.addOrReplace(this.storage.collectionName.PASSENGER_TABLE,
+            response.data.resultSet,["PNR_NO","REL_POS"],true).then(res=>{
             console.log(res);
             resolve(res);
           });
@@ -211,7 +226,7 @@ export class DataSyncProvider {
       this.isVacantBerthDataSyncIncomplete = true;
       this.storage.getAllDirtyDocuments(this.storage.collectionName.VACANT_BERTH_TABLE).then((dirtyBerth:any)=>{
         console.log(dirtyBerth);
-        
+        this.dirtyVacBerthCount=dirtyBerth.length;
         this.logLocal("got ["+dirtyBerth.length+"] dirtyBerth in getDirtyRecords at :"+this.getTimeInMili()/1000+" sec");
         if(dirtyBerth.length>0){
           this.postDirtyBerth(dirtyBerth).then(res=>{
@@ -231,8 +246,11 @@ export class DataSyncProvider {
     return new Promise(resolve=>{
       this.backend.postVacantberthData(data).then((response:any)=>{
         this.logLocal("response vacantberth =>"+response.TEXT+" at :"+this.getTimeInMili()/1000+" sec");
+        console.log(JSON.stringify(response));
         if(response.CODE==200){
           try {
+             this.dirtyVacSyncFailureCount=response.data.failedToSavedIds.length;
+             this.dirtyVacBerthSyncSuccessCount=response.data.successfullSavedIds.length;
             this.storage.markClean('vacantberth',data).then(res=>{
               if(res){
                 this.getDifferentialBerth().then(res=>{
@@ -258,6 +276,7 @@ export class DataSyncProvider {
     return new Promise(resolve=>{
       this.backend.getDifferentialVacantberth(this.trainAssignment.TRAIN_ID, this.trainAssignment.LOAD_TIME,
       this.serverTimeAtProcessStart).then((response:any)=>{
+        console.log(JSON.stringify(response));
         if(response.CODE==200){
           //let data = this.util.convertIntoJson(response.TEXT);
           this.storage.addOrReplace(this.storage.collectionName.VACANT_BERTH_TABLE,
@@ -277,6 +296,8 @@ export class DataSyncProvider {
       this.isEFTMasterDataSyncIncomplete = true;
       this.storage.getAllDirtyDocuments(this.storage.collectionName.EFT_MASTER_TABLE
       ).then((dirtyEft:any)=>{
+         this.dirtyEFTCount=dirtyEft.length;
+
         this.logLocal("got ["+dirtyEft.length+"] dirtyEFT in syncEFTMaster at :"+this.getTimeInMili()/1000+" sec");
         if(dirtyEft.length>0){
           this.postDirtyEFT(dirtyEft).then(res=>{
@@ -293,7 +314,10 @@ export class DataSyncProvider {
     return new Promise(resolve=>{
       this.backend.postEftmasterdata(data).then((response:any)=>{
         this.logLocal("response eft =>"+response.TEXT+" at :"+this.getTimeInMili()/1000+" sec");
+        console.log(JSON.stringify(response));
         if(response.CODE==200){
+          this.dirtyEFTSyncFailureCount=response.data.failedToSavedIds.length;
+             this.dirtyEFTSyncSuccessCount=response.data.successfullSavedIds.length;
           this.storage.markClean('eftMaster',data).then(res=>{
             resolve(res);
           });
@@ -320,6 +344,12 @@ export class DataSyncProvider {
           console.log(this.trainAssignment);
           //resolve(res);
           if(!res)alert('Failed to update trainAssignment.LOAD_TIME');
+          
+          //added by Neeraj to update chart load info  
+          this.backend.getChartLoadInfo(this.trainAssignment.TRAIN_ID).then((res:any)=>{
+            this.storage.addOrReplace(this.storage.collectionName.CHART_LOAD_INFO,res.TEXT,['REMOTE_LOC']);
+          });
+
           resolve(true);
         });
       }else{

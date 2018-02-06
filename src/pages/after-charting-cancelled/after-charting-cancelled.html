@@ -1,34 +1,30 @@
 <ion-header>
-  <ion-navbar color="primary">
-    <button ion-button menuToggle>
+    <ion-navbar color="primary">
+        <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Cancelled After-Charting</ion-title>
-  </ion-navbar>
+        <ion-title>Cancelled After-Charting</ion-title>
+    </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-        <ion-list>
-            <ion-card>
-
+    <ion-list>
+        <ion-card padding>
             <ion-item>
-                <ion-label><strong>CAB<br>QT/RS</strong></ion-label>
-                <ion-label><strong>COACH<br>BN</strong></ion-label>
-                <ion-label ><strong>PNR</strong></ion-label>
-                <ion-label ><strong>NAME<br>S/A</strong></ion-label>
-                <ion-label><strong>SRC<br>BRD<br>DEST</strong></ion-label>
-            </ion-item>    </ion-card> 
+                <ion-label align="center"><strong>COACH<br>BN</strong></ion-label>
+                <ion-label align="center"><strong>PNR</strong></ion-label>
+                <ion-label align="center"><strong>NAME<br>S/A</strong></ion-label>
+                <ion-label align="center"><strong>BRD<br>DEST</strong></ion-label>
+            </ion-item>
+        </ion-card>
 
-                <ion-card>
-
-            <ion-item  *ngFor="let item of cnclArr">
-                <ion-label>{{ item.PRIMARY_QUOTA }}</ion-label>
-                <ion-label>{{item.COACH_ID}}<br>{{item.BERTH_NO}}</ion-label>
-                <ion-label>{{item.PNR_NO}}</ion-label>
-                <ion-label>{{item.PSGN_NAME}}<br>{{item.AGE_SEX}}</ion-label>
-                <ion-label>{{item.JRNY_FROM}}<br>{{item.BOARDING_PT}}<br>{{item.JRNY_TO}}</ion-label>               
-            </ion-item>    </ion-card> 
-
-        </ion-list>
- <button ion-button (click)="backToMain()" round>Back</button>
+        <ion-card *ngFor="let item of cnclArr" padding text-wrap>
+            <ion-item>
+                <ion-label align="center">{{item.COACH_ID}}<br>{{item.BERTH_NO}}</ion-label>
+                <ion-label align="center">{{item.PNR_NO}}</ion-label>
+                <ion-label align="center">{{item.PSGN_NAME}}<br>{{item.AGE_SEX}}</ion-label>
+                <ion-label align="center">{{item.BOARDING_PT}}<br>{{item.RES_UPTO}}</ion-label>
+            </ion-item>
+        </ion-card>
+    </ion-list>
 </ion-content>

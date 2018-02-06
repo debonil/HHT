@@ -5,7 +5,7 @@
   Ionic pages and navigation.
 -->
 <ion-header>
-  <ion-navbar color="primary" >
+  <ion-navbar color="primary">
     <button ion-button icon-only menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
@@ -33,50 +33,93 @@
 
 <ion-content padding>
   <ion-grid>
-      <!-- Sync status -->
+    <!-- Sync status -->
 
-      <ion-row justify-content-center>
-        <ion-col col-12>
-          <ion-card >
-            <ion-card-header color="primary" sm>
-              Sync Status:
-              <span float-right>{{syncProvider.statusLog}}</span>
-            </ion-card-header>
-            <ion-card-content >
-                <ion-list >
-                  <ion-item text-wrap *ngIf="syncProvider.dataSyncProcessRunning">
-                      <span><ion-spinner name="bubbles"></ion-spinner> 
+    <ion-row justify-content-center>
+      <ion-col col-12>
+        <ion-card>
+          <ion-card-header color="primary" sm>
+            Sync Status:
+            <span float-right>{{syncProvider.statusLog}}</span>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list>
+              <ion-item text-wrap *ngIf="syncProvider.dataSyncProcessRunning">
+                <span><ion-spinner name="bubbles"></ion-spinner> 
                          Data sync is running..</span>
-                         <ul>
-                          <li *ngIf="syncProvider.isPsngDataSyncIncomplete"><ion-spinner name="bubbles"></ion-spinner> 
-                            Passenger Data is syncing</li>
-                          <li *ngIf="syncProvider.isVacantBerthDataSyncIncomplete"><ion-spinner name="bubbles"></ion-spinner> 
-                            Passenger Data is syncing</li>
-                          <li *ngIf="syncProvider.isEFTMasterDataSyncIncomplete"><ion-spinner name="bubbles"></ion-spinner> 
-                            Passenger Data is syncing</li>
-                        </ul>
-                        
-                  </ion-item>
-                  <ion-item text-wrap *ngIf="!syncProvider.dataSyncProcessRunning">
-                      <ion-label><ion-icon name="done-all"></ion-icon> Data sync complete!!</ion-label>
-  
-                  </ion-item>
-                </ion-list>
-            </ion-card-content>
-          </ion-card>
-  
-        </ion-col>
-      </ion-row>
-      <!-- Sync status -->
+                <ul>
+                  <li *ngIf="syncProvider.isPsngDataSyncIncomplete">
+                    <ion-spinner name="bubbles"></ion-spinner>
+                    Passenger Data is syncing</li>
+                  <li *ngIf="syncProvider.isVacantBerthDataSyncIncomplete">
+                    <ion-spinner name="bubbles"></ion-spinner>
+                    Passenger Data is syncing</li>
+                  <li *ngIf="syncProvider.isEFTMasterDataSyncIncomplete">
+                    <ion-spinner name="bubbles"></ion-spinner>
+                    Passenger Data is syncing</li>
+                </ul>
 
-      <ion-row justify-content-center>
-        <ion-col col-12>
-          <ion-card >
-            <ion-card-header color="primary" sm>
-              Sync progress stats
-            </ion-card-header>
-            <ion-card-content >
-              <ion-list >
+              </ion-item>
+              <ion-item text-wrap *ngIf="!syncProvider.dataSyncProcessRunning">
+                <ion-label>
+                  <ion-icon name="done-all"></ion-icon> Data sync complete!!</ion-label>
+
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+
+      </ion-col>
+    </ion-row>
+    <!-- Sync status -->
+
+    <ion-row justify-content-center>
+      <ion-col col-12>
+        <ion-card>
+          <ion-card-header color="primary" sm>
+            <strong> Sync progress stats</strong>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-grid>
+              <ion-row>
+                <ion-col align="center"><strong>Module</strong></ion-col>
+                <ion-col align="center"><strong>Total Dirty Records</strong></ion-col>
+                <ion-col align="center"><strong>Sync Success</strong></ion-col>
+                <ion-col align="center"><strong>Sync Fail</strong></ion-col>
+                <ion-col align="center"><strong>New Data</strong></ion-col>
+                <ion-col align="center"><strong>Sync Time</strong></ion-col>
+
+              </ion-row>
+              <ion-row>
+                <ion-col align="center"><strong>Passenger</strong></ion-col>
+                <ion-col align="center">{{syncProvider.dirtyPsngCount}}</ion-col>
+                <ion-col align="center">{{syncProvider.dirtyPsngSyncSuccessCount}}</ion-col>
+                <ion-col align="center">{{syncProvider.dirtyPsngSyncFailureCount}}</ion-col>
+                <ion-col align="center">{{syncProvider.differentialPsngDownloadedCount}}</ion-col>
+                <ion-col align="center">{{syncProvider.sync_time[0]}}</ion-col>
+
+              </ion-row>
+              <ion-row>
+                <ion-col align="center"><strong>Vacant Berth</strong></ion-col>
+                <ion-col align="center">{{syncProvider.dirtyVacBerthCount}}</ion-col>
+                <ion-col align="center">{{syncProvider.dirtyVacBerthSyncSuccessCount}}</ion-col>
+                <ion-col align="center">{{syncProvider.dirtyVacSyncFailureCount}}</ion-col>
+                <ion-col align="center">{{syncProvider.differentialVacDownloadedCount}}</ion-col>
+                <ion-col align="center">{{syncProvider.sync_time[1]}}</ion-col>
+
+              </ion-row>
+              <ion-row>
+                <ion-col align="center"><strong>EFT</strong></ion-col>
+                <ion-col align="center">{{syncProvider.dirtyEFTCount}}</ion-col>
+                <ion-col align="center">{{syncProvider.dirtyEFTSyncSuccessCount}}</ion-col>
+                <ion-col align="center">{{syncProvider.dirtyEFTSyncFailureCount}}</ion-col>
+                <ion-col align="center">{{syncProvider.differentialPsngDownloadedCount}}</ion-col>
+                <ion-col align="center">{{syncProvider.sync_time[2]}}</ion-col>
+
+              </ion-row>
+
+            </ion-grid>
+            <!-- <ion-list >
                   <ion-item text-wrap>
                       <ion-label>No of Dirty Psng found : {{syncProvider.dirtyPsngCount}}</ion-label>
                   </ion-item>
@@ -90,30 +133,60 @@
                       <ion-label>No of Differential Psng Downloaded Count : {{syncProvider.differentialPsngDownloadedCount}}</ion-label>
                   </ion-item>
               </ion-list>
-            </ion-card-content>
-          </ion-card>
-  
-        </ion-col>
-      </ion-row>
-      <!-- Sync status -->
-
-      <ion-row justify-content-center>
-        <ion-col col-12>
-          <ion-card >
-            <ion-card-header color="primary" sm>
-              Sync progress log:
-              <span float-right>{{syncProvider.statusLog}}</span>
-            </ion-card-header>
-            <ion-card-content >
-              <ion-list >
-                <ion-item *ngFor="let log of syncProvider.logArray" text-wrap>
-                    {{log}}
-                </ion-item>
+                <hr>
+                <ion-list >
+                  <ion-item text-wrap>
+                      <ion-label>Dirty Vacant Berth found : {{syncProvider.dirtyVacBerthCount}}</ion-label>
+                  </ion-item>
+                  <ion-item text-wrap>
+                      <ion-label>Dirty Vacant Berth SyncSuccessCount : {{syncProvider.dirtyVacBerthSyncSuccessCount}}</ion-label>
+                  </ion-item>
+                  <ion-item text-wrap>
+                      <ion-label>Dirty Vacant Berth SyncFailureCount : {{syncProvider.dirtyVacSyncFailureCount}}</ion-label>
+                  </ion-item>
+                  <ion-item text-wrap>
+                      <ion-label>Differential Vacant Berth Downloaded Count : {{syncProvider.differentialVacDownloadedCount}}</ion-label>
+                  </ion-item>
               </ion-list>
-            </ion-card-content>
-          </ion-card>
-  
-        </ion-col>
-      </ion-row>
+                <hr>
+                <ion-list >
+                  <ion-item text-wrap>
+                      <ion-label>Dirty EFT found : {{syncProvider.dirtyEFTCount}}</ion-label>
+                  </ion-item>
+                  <ion-item text-wrap>
+                      <ion-label>Dirty EFT SyncSuccessCount : {{syncProvider.dirtyEFTSyncSuccessCount}}</ion-label>
+                  </ion-item>
+                  <ion-item text-wrap>
+                      <ion-label>Dirty EFT SyncFailureCount : {{syncProvider.dirtyEFTSyncFailureCount}}</ion-label>
+                  </ion-item>
+                   <ion-item text-wrap>
+                      <ion-label>Differential Psng Downloaded Count : {{syncProvider.differentialPsngDownloadedCount}}</ion-label>
+                  </ion-item> 
+              </ion-list> -->
+          </ion-card-content>
+        </ion-card>
+
+      </ion-col>
+    </ion-row>
+    <!-- Sync status -->
+
+    <ion-row justify-content-center>
+      <ion-col col-12>
+        <ion-card>
+          <ion-card-header color="primary" sm>
+            Sync progress log:
+            <span float-right>{{syncProvider.statusLog}}</span>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list>
+              <ion-item *ngFor="let log of syncProvider.logArray" text-wrap>
+                {{log}}
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+
+      </ion-col>
+    </ion-row>
   </ion-grid>
 </ion-content>

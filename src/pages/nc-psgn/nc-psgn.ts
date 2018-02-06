@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 import { NcPreviewPage } from '../nc-preview/nc-preview';
+import { LoadingController } from 'ionic-angular';
 
 declare var WL;
 declare var WLResourceRequest;
@@ -11,11 +12,13 @@ declare var WLResourceRequest;
   templateUrl : 'nc-psgn.html',
 })
 export class NcPsgnPage {
+  loading:any;
   coach;
   coachId: any[] = [];
     psgnArray: any[] = [];
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public modalCtrl : ModalController) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public modalCtrl : ModalController,
+     public loadingCtrl: LoadingController) {
         this.getCoaches();
 
   }
@@ -36,8 +39,21 @@ export class NcPsgnPage {
     }
   }
 
+  presentLoadingDefault() {
+     this.loading = this.loadingCtrl.create({
+      content: 'Loading Occupancy...'
+    });
+
+    this.loading.present();
+
+   /*  setTimeout(() => {
+      loading.dismiss();
+    }, 5000); */
+  }
+
 getNCPassenger(coachValue){
    try {
+     this.presentLoadingDefault();
       this.psgnArray = [];
       var query = { COACH_ID: coachValue.COACH_ID, ATTENDANCE_MARKER: "-" }
       WL.JSONStore.get('passenger').find(query).then((res) => {
@@ -84,7 +100,7 @@ getNCPassenger(coachValue){
           });
         }
       });
-
+ this.loading.dismiss();
     } catch (EX) {
       console.log(EX);
     }

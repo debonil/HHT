@@ -26,6 +26,7 @@ export class ChartBerthPassengerDetail {
   VIP_MARKER ;//= element.json.VIP_MARKER;
   CLASS ;//= element.json.CLASS;
   SUB_QUOTA;
+  MSG_STN;
   IS_CHECKED ;//= element.json.ATTENDANCE_MARKER!='-';
   _isLocked;//= element.json.ATTENDANCE_MARKER!='-';
   _hidden;
@@ -67,6 +68,7 @@ export class ChartBerthPassengerDetail {
   this.VIP_MARKER = element.json.VIP_MARKER;
   this.CLASS = element.json.CLASS;
   this.SUB_QUOTA = element.json.SUB_QUOTA;
+  this.MSG_STN = element.json.MSG_STN;
   this.IS_CHECKED = element.json.ATTENDANCE_MARKER!='-';
   this._isLocked= element.json.ATTENDANCE_MARKER!='-';
   this._hidden= false;

@@ -112,7 +112,9 @@ export class WaitlistModelPage {
         CH_NUMBER : this.bsd.json.CH_NUMBER,
         ALLOTED : 'N',
         REASON : 'V',
-        DEST : this.wlSrc.STN_CODE
+        DEST : this.wlSrc.STN_CODE,
+        UPDATE_TIME : this.bsd.json.SYSTIME,
+        SYNC_TIME : ''
       };
       berthAdd.push(berth);
     }
@@ -134,7 +136,9 @@ export class WaitlistModelPage {
         CH_NUMBER : this.bsd.json.CH_NUMBER,
         ALLOTED : 'N',
         REASON : 'V',
-        DEST : this.berthDest.STN_CODE
+        DEST : this.berthDest.STN_CODE,
+        UPDATE_TIME : this.bsd.json.SYSTIME,
+        SYNC_TIME : ''
       };
       berthAdd.push(berth1);
     }

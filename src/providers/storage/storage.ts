@@ -576,6 +576,7 @@ export class StorageProvider {
     return new Promise(resolve=>{
       WL.JSONStore.get(collectionName).getAllDirty().then((docs)=>{
         this.dirtyDocs = docs;
+        console.log(JSON.stringify(this.dirtyDocs));
         resolve(docs);
       },(failure)=>{
         resolve(failure);

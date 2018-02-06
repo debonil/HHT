@@ -1,64 +1,51 @@
 <ion-content overflow-scroll=true>
-    
-    <ion-card>
-        <ion-list *ngIf="!readonly">
-            <ion-card  *ngFor="let item of rows" [hidden]="item._hidden" [color]="item.color">
-            <button ion-item    [disabled]="item._isLocked" solid
-             (tap)="item.toggleStatus()" 
-             padding >
-            <!--  <ion-label color="secondary"  > 
-                    <ion-icon name="checkmark-circle" float-start></ion-icon>
-            </ion-label> -->
-                <!-- <ion-label col-2 *ngIf="!readonly" ><tristate-toggle [id] = "value"></tristate-toggle></ion-label> -->
-              <!-- <ion-checkbox no-padding checked="false"  color="primary"
-                 [(ngModel)]="item.IS_CHECKED" (ionChange)="item.TU_NT=item.IS_CHECKED" [disabled]="item._isLocked"></ion-checkbox>
-                <ion-toggle  no-padding color="secondary" *ngIf="!item._isLocked"
-                [(ngModel)]="item.TU_NT" [disabled]="!item.IS_CHECKED||item._isLocked"></ion-toggle> -->
-                <!-- <ion-label  no-padding >{{ item.BN }} {{ item.QT }} </ion-label> -->
-                <text-avatar item-start [text]="item.BN" [color]="item.color"></text-avatar>
-                <ion-label  no-padding col-3>{{ item.PNR }}<br>{{ item.QT }} {{ item.TKT }}</ion-label>
-                <ion-label  no-padding col-4>{{ item.NAME }}<br>{{ item.S_A }}-{{ item.MEAL }}</ion-label>
-                <ion-label  no-padding >{{ item.BRD }}<br>{{ item.DEST }}</ion-label>
-                <!-- <ion-label>{{ item.P_AMT }}<br>{{ item.REMARKS }}</ion-label> -->
-                <!-- <ion-label col-1 *ngIf="item._isLocked&&item.TU_NT" color="secondary">TU</ion-label>
-                <ion-label col-1 *ngIf="item._isLocked&&!item.TU_NT" color="danger">NT</ion-label> -->
-                <ion-label col-1 [color]="item.color" style="font-size:large"> 
-                        {{ item.status }}
-                </ion-label>
-            </button>
+    <ion-card *ngIf="!readonly">
+        <ion-list *ngIf="!this.passengerSelectorViewObj.isActive">
+            <ion-card *ngFor="let item of rows" [hidden]="item._hidden" [color]="item.color" (press)="onItemPressed(item)">
+                <button ion-item [disabled]="item._isLocked" solid (tap)="item.toggleStatus()" padding>
+                    <text-avatar item-start [text]="item.BN" [color]="item.color"></text-avatar>
+                    <ion-label  no-padding col-4>{{ item.NAME }}<br>{{ item.S_A }}-{{ item.MEAL }} :: {{ item.MSG_STN }}  :: {{ item.VIP_MARKER }} </ion-label>
+                    <ion-label  no-padding col-3>{{ item.PNR }}<br>{{ item.QT }} {{ item.TKT }}</ion-label>
+                    <ion-label  no-padding >{{ item.BRD }}<br>{{ item.DEST }}</ion-label>
+                    <ion-label text-nowrap>{{ item.REMARKS }}</ion-label>
+                    <ion-label *ngIf="item.P_AMT>0">Pend Amt:{{ item.P_AMT }}</ion-label>
+                    <ion-label *ngIf="item.P_AMT>0">Pend Amt:{{ item.P_AMT }}</ion-label>
+                </button>
 
-            
+
             </ion-card>
         </ion-list>
-        <ion-list  *ngIf="readonly">
-                <ion-card  *ngFor="let item of rows" [hidden]="item._hidden" [color]="item.color" >
-                        <button ion-item    [disabled]="item._isLocked" solid
-                         padding >
-                        <!--  <ion-label color="secondary"  > 
-                                <ion-icon name="checkmark-circle" float-start></ion-icon>
-                        </ion-label> -->
-                            <!-- <ion-label col-2 *ngIf="!readonly" ><tristate-toggle [id] = "value"></tristate-toggle></ion-label> -->
-                          <!-- <ion-checkbox no-padding checked="false"  color="primary"
-                             [(ngModel)]="item.IS_CHECKED" (ionChange)="item.TU_NT=item.IS_CHECKED" [disabled]="item._isLocked"></ion-checkbox>
-                            <ion-toggle  no-padding color="secondary" *ngIf="!item._isLocked"
-                            [(ngModel)]="item.TU_NT" [disabled]="!item.IS_CHECKED||item._isLocked"></ion-toggle> -->
-                            <!-- <ion-label  no-padding >{{ item.BN }} {{ item.QT }} </ion-label> -->
-                            <text-avatar item-start [text]="item.BN" [color]="item.color"></text-avatar>
-                            <ion-label  no-padding col-3>{{ item.PNR }}<br>{{ item.QT }} {{ item.TKT }}</ion-label>
-                            <ion-label  no-padding col-4>{{ item.NAME }}<br>{{ item.S_A }}-{{ item.MEAL }}</ion-label>
-                            <ion-label  no-padding >{{ item.BRD }}<br>{{ item.DEST }}</ion-label>
-                            <!-- <ion-label>{{ item.P_AMT }}<br>{{ item.REMARKS }}</ion-label> -->
-                            <!-- <ion-label col-1 *ngIf="item._isLocked&&item.TU_NT" color="secondary">TU</ion-label>
-                            <ion-label col-1 *ngIf="item._isLocked&&!item.TU_NT" color="danger">NT</ion-label> -->
-                            <ion-label col-1 [color]="item.color" style="font-size:large"> 
-                                    {{ item.status }}
-                            </ion-label>
-                        </button>
-            
-                        
-                        </ion-card>
-            
+
+        <ion-list *ngIf="this.passengerSelectorViewObj.isActive">
+            <ion-card *ngFor="let item of rows" [hidden]="item._hidden" [color]="item.selected?'favorite':'light'" [attr.padding-left]="item.selected?' ':null">
+                <button ion-item solid (tap)="checkBoxChanged(item)" (press)="checkBoxChanged(item)" padding>
+                    <text-avatar item-start [text]="item.BN" [color]="item.color"></text-avatar>
+                    <ion-label  no-padding col-4>{{ item.NAME }}<br>{{ item.S_A }}-{{ item.MEAL }} :: {{ item.MSG_STN }}  :: {{ item.VIP_MARKER }} </ion-label>
+                    <ion-label  no-padding col-3>{{ item.PNR }}<br>{{ item.QT }} {{ item.TKT }}</ion-label>
+                    <ion-label  no-padding >{{ item.BRD }}<br>{{ item.DEST }}</ion-label>
+                    <ion-label text-nowrap>{{ item.REMARKS }}</ion-label>
+                    <ion-label *ngIf="item.P_AMT>0">Pend Amt:{{ item.P_AMT }}</ion-label>
+                    <ion-label *ngIf="item.P_AMT>0">Pend Amt:{{ item.P_AMT }}</ion-label>
+                </button>
+
+
+            </ion-card>
         </ion-list>
-    </ion-card>  
-    <div class="spacer"  style="height: 60px;" ></div>
+        
+    </ion-card>
+    <ion-card *ngIf="readonly">
+        <ion-list>
+            <ion-item *ngFor="let item of rows" [hidden]="item._hidden" padding>
+
+                <text-avatar item-start [text]="item.BN" [color]="item.color"></text-avatar>
+                <ion-label  no-padding col-4>{{ item.NAME }}<br>{{ item.S_A }}-{{ item.MEAL }} :: {{ item.MSG_STN }}  :: {{ item.VIP_MARKER }} </ion-label>
+                <ion-label  no-padding col-3>{{ item.PNR }}<br>{{ item.QT }} {{ item.TKT }}</ion-label>
+                <ion-label  no-padding >{{ item.BRD }}<br>{{ item.DEST }}</ion-label>
+                <ion-label text-nowrap>{{ item.REMARKS }}</ion-label>
+                <ion-label *ngIf="item.P_AMT>0">Pend Amt:{{ item.P_AMT }}</ion-label>
+                <ion-label *ngIf="item.P_AMT>0">Pend Amt:{{ item.P_AMT }}</ion-label>
+            </ion-item>
+        </ion-list>
+    </ion-card>
+    <div class="spacer" style="height: 60px;"></div>
 </ion-content>

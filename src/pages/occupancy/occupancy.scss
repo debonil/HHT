@@ -1,10 +1,35 @@
 page-occupancy {
+    .scroll-zoom-wrapper {
+        white-space: nowrap;
+    }
+
+    ion-card {
+        width: 1000px !important;
+        //height: 1000px !important;
+
+        display: inline-block;
+    }
+
     ion-scroll {
+        min-height: 100%; 
+        height: auto;
+
+            .scroll-content {
+            padding: 0px !important;
+        }    
+    }
+    .occ{
+        overflow: scroll;
+    }
+    .scroll { 
+  min-width: 100%;
+}
+   /*  ion-scroll {
     white-space: nowrap;
     height: 100%;
     width: 100%;
 
-}
+} */
 tbody{tr:nth-child(odd) {
     background-color:#eee;
 }
@@ -15,23 +40,11 @@ tr:nth-child(even) {
     background-color:lightblue;
     cursor: pointer; 
     font-weight: bold; 
-   // font-size:20px;
     background-repeat: no-repeat; 
     background-position: center left; 
     padding-left: 20px; 
     border-right: 1px solid #dad9c7; 
     margin-left: -1px; 
-    overflow-x:auto;
 } 
-/* tbody { 
-    background-color:lightblue;
-    cursor: pointer; 
-    font-size:15px;
-    background-repeat: no-repeat; 
-    background-position: center left; 
-    padding-left: 20px; 
-    border-right: 1px solid #dad9c7; 
-    margin-left: -1px; 
-    overflow-x:auto;
-}   */
+
 }

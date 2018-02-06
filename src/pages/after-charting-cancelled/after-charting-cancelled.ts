@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-declare var WL;
+import { StorageServiceProvider } from "../../providers/storage-service/storage-service";
+
 /**
  * Generated class for the AfterChartingCancelledPage page.
  *
@@ -15,7 +16,7 @@ declare var WL;
 })
 export class AfterChartingCancelledPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,private storage: StorageServiceProvider) {
     this.getAfterChartingCancelled();
   }
   cnclArr: any = [];
@@ -24,7 +25,7 @@ export class AfterChartingCancelledPage {
     try {
       var query = { CANCEL_PASS_FLAG: 'C' };
       var options = { exact: true };
-      WL.JSONStore.get('passenger').find(query, options).then((res) => {
+       this.storage.getDocuments(this.storage.collectionName.PASSENGER_TABLE,query,options).then((res) => {
         for (let i = 0; i < res.length; i++) {
           this.cnclArr.push({
             PRIMARY_QUOTA: res[i].json.PRIMARY_QUOTA,
@@ -35,7 +36,9 @@ export class AfterChartingCancelledPage {
             AGE_SEX: res[i].json.AGE_SEX,
             JRNY_FROM: res[i].json.JRNY_FROM,
             JRNY_TO: res[i].json.JRNY_TO,
-            BOARDING_PT: res[i].json.BOARDING_PT
+            BOARDING_PT: res[i].json.BOARDING_PT,
+            RES_UPTO: res[i].json.RES_UPTO
+
           });
         }
       });

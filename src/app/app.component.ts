@@ -31,6 +31,7 @@ import { WaitListTabsPage } from '../pages/wait-list-tabs/wait-list-tabs';
 import { SuperTabsModule } from 'ionic2-super-tabs';
 import { DroppedETktPassengerPage } from '../pages/dropped-e-tkt-passenger/dropped-e-tkt-passenger';
 import { PsngDataServiceProvider } from '../providers/psng-data-service/psng-data-service';
+import { SearchPage } from '../pages/search/search';
 import { RacTabPage } from '../pages/rac-tab/rac-tab';
 import { StorageServiceProvider } from '../providers/storage-service/storage-service';
 

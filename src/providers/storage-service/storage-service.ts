@@ -31,6 +31,7 @@ private collectionConfigInitOption = {
     EFT_MASTER_TABLE:'eftMaster',
     DROP_ETCKT_PSNG_TABLE:'droptEticketPassenger',
     DYNAMIC_FARE_TABLE:'dynamicFare',
+    CHART_LOAD_INFO : 'chartLoadInfo'
   };
   private collectionConfig = {
     trainAssignment :{},
@@ -55,6 +56,9 @@ private collectionConfigInitOption = {
                       JRNY_TO : 'string',VIP_MARKER : 'string', TICKET_TYPE : 'string', REL_POS : 'integer',
                       REMARKS : 'string',RES_UPTO : 'string',BERTH_NO :'string', PRIMARY_QUOTA : 'string', 
                       CANCEL_PASS_FLAG : 'string', WAITLIST_NO : 'string', CLASS : 'string', _op : 'integer'}
+    },
+    chartLoadInfo : {
+      searchFields : {REMOTE_LOC_NO : 'integer', REMOTE_LOC : 'string'}
     }
   };
   public operationCode={
@@ -68,7 +72,7 @@ private collectionConfigInitOption = {
   }
   
   init():Promise<boolean>{
-    console.log('--> StorageProvider init called');
+    console.log('--> StorageProvider init called'+JSON.stringify(this.collectionConfig));
     return new Promise(resolve=>{
       if(WL.JSONStore){
         WL.JSONStore.init(this.collectionConfig,this.collectionConfigInitOption).then((success)=>{
@@ -157,6 +161,8 @@ private collectionConfigInitOption = {
   }
 
   replace(collectionName:string,dataToSave:any,markClean?:boolean){
+    console.log("dataToSave");
+    console.log(dataToSave);
     return new Promise(resolve=>{
       if(!(dataToSave instanceof Array))
       dataToSave=[dataToSave];
@@ -167,7 +173,14 @@ private collectionConfigInitOption = {
 
         for (let i = 0, len = dataToSave.length; i < len; i++) {
           if(dataToSave[i])dataToSave[i].json._op=options.markDirty?
-          this.operationCode.REPLACE:this.operationCode.UN_MODIFIED;
+          (
+            dataToSave[i].json._op==this.operationCode.ADD?this.operationCode.ADD:this.operationCode.REPLACE
+          )
+          :this.operationCode.UN_MODIFIED;
+
+
+          /* if(dataToSave[i])dataToSave[i].json._op=options.markDirty&&dataToSave[i].json._op==0?
+          this.operationCode.REPLACE:this.operationCode.ADD; */
         }
 
       WL.JSONStore.get(collectionName).replace(dataToSave,options).then((success)=>{
@@ -288,5 +301,7 @@ private collectionConfigInitOption = {
       
     });
   }
+
+ 
 
 }

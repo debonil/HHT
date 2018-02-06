@@ -129,6 +129,7 @@ export class BackendProvider {
         };
         resolve(OBJ);
         //resolve(response.responseText);
+        console.log(JSON.stringify(OBJ));
       },(failure)=>{
         resolve(failure);
       });
@@ -148,6 +149,8 @@ export class BackendProvider {
           data : response.responseJSON
         };
         resolve(OBJ);
+                console.log(JSON.stringify(OBJ));
+
       },failure=>{
         resolve(failure);
       });
@@ -666,6 +669,27 @@ getWaitlist(trainId, loadTime) {
         }
     )
   })
+}
+
+getChartLoadInfo(trainId){
+  try{
+    return new Promise(resolve=>{
+      let resourceRequest = new WLResourceRequest("/adapters/ADAPTER_HHT/getChartLoadInfo",WLResourceRequest.GET);
+      resourceRequest.setQueryParameter("params", [trainId]);
+      resourceRequest.send().then(response=>{
+        console.log('getChartLoadInfo: ',response);
+        var obj = {
+          CODE : response.status,
+          TEXT : response.responseJSON
+        };
+        resolve(obj);
+      },failure=>{
+        resolve(failure);
+      });
+    });
+  }catch(ex){
+    alert('Exception in getChartLoadInfo' + ex);
+  }
 }
 
 

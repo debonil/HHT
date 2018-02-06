@@ -4,33 +4,117 @@ import { ChartPsngPage } from '../chart-psng/chart-psng';
 //import { StorageProvider } from '../../providers/storage/storage';
 import { LoggerProvider } from '../../providers/logger/logger';
 import { BackendProvider } from '../../providers/backend/backend';
-import { StorageServiceProvider } from '../../providers/storage-service/storage-service';
+import { StorageServiceProvider } from "../../providers/storage-service/storage-service";
+import { PsngDataServiceProvider } from '../../providers/psng-data-service/psng-data-service';
+
+
+interface CoachChartStatus{
+  coachId:string;
+  tuCount :number;
+  ntCount :number;
+  ncCount :number;
+}
 
 @IonicPage()
 @Component({
   selector: 'page-chart-preview',
   templateUrl: 'chart-preview.html',
 })
+
 export class ChartPreviewPage {
+  load: any;
+  currNtTotal : number = 0 ;
+  currTuTotal : number = 0 ;
+  curr_TU: any[] = [];
+  curr_NT: any[] = [];
 
-  chartComponent: any = ChartPsngPage;
+  coachWiseChartStatus :CoachChartStatus[]=[];
 
-  coachwiseChartData = [];
-  psngObjArr: Array<any> = [];
-  vbObjArr: Array<any> = [];
-  loader: any;
-  completion: number = 0;
-
-
-  constructor(public navCtrl: NavController, public navParams: NavParams,
-    public viewCtrl: ViewController, private loading: LoadingController,
-    private alert: AlertController, private logger: LoggerProvider,
-    private backend: BackendProvider, public toastCtrl: ToastController) {
-
+  constructor(
+    public navCtrl: NavController, 
+    public navParams: NavParams,
+    public viewCtrl: ViewController, 
+    private pdsp: PsngDataServiceProvider,
+    //private storage: StorageServiceProvider, 
+    private loading: LoadingController,
+    private alert: AlertController, 
+    private logger: LoggerProvider,
+    private backend: BackendProvider, 
+    public toastCtrl: ToastController) {
+    
   }
+
+
+  presentLoadingDefault() {
+    this.load = this.loading.create({
+      content: 'Loading Preview...'
+    });
+
+    this.load.present();
+  }
+
+  status(val) {
+
+    val.forEach(element => {
+      let curr_TU_count = 0;
+      let curr_NT_count = 0;
+      console.log(element.key);
+     let cStatus:CoachChartStatus= {
+        coachId:"",
+        tuCount : 0,
+        ntCount : 0,
+        ncCount :0
+    }
+    cStatus.coachId=element.key;
+      element.value.forEach(data => {
+        if (data._isLocked) {
+          if (data._status == 1) {
+            cStatus.tuCount++;
+          }
+          else if (data._status == 2) {
+            cStatus.ntCount++;
+          }
+        }
+
+        if (!(data._isLocked)) {
+          cStatus.ncCount++;
+          if (data._status == 1) {
+            curr_TU_count++;
+            this.currTuTotal++;
+          }
+          else if (data._status == 2) {
+            curr_NT_count++;
+            this.currNtTotal++;
+          }
+        }
+
+      });
+      this.coachWiseChartStatus.push(cStatus);
+      if (curr_TU_count > 0) {
+        this.curr_TU.push({
+          count: curr_TU_count,
+          key: element.key
+        });
+      }
+
+      if (curr_NT_count > 0) {
+        this.curr_NT.push({
+          count: curr_NT_count,
+          key: element.key
+        });
+      }
+
+    });
+
+
+    this.load.dismiss();
+    console.log(this.coachWiseChartStatus);
+    
+  }
+
   ionViewDidEnter() {
-    this.coachwiseChartData = this.navParams.data.coachwiseChartData;
     console.log(this.navParams.data.coachwiseChartData);
+    this.status(this.navParams.data.coachwiseChartData);
   }
   alertToast(msg) {
     let toast = this.toastCtrl.create({
@@ -40,80 +124,33 @@ export class ChartPreviewPage {
     toast.present();
   }
   showLoader(msg) {
-    if (!this.loader) {
-      this.loader = this.loading.create({ content: msg });
+    if (!this.load) {
+      this.load = this.loading.create({ content: msg });
     } else {
-      this.loader.dismiss();
-      this.loader = this.loading.create({ content: msg });
+      this.load.dismiss();
+      this.load = this.loading.create({ content: msg });
     }
 
-    this.loader.present();
+    this.load.present();
 
   }
+  
   savePsngBerthDataLocally() {
     this.showLoader("Saving data... ");
-    this.coachwiseChartData.forEach((coachpsngbrth, ind1) => {
-      coachpsngbrth.value.forEach((psngbrth, ind2) => {
-        if (!psngbrth._isLocked && psngbrth._status > 0) {
-          psngbrth._isLocked = true;
-          this.psngObjArr.push(psngbrth);
-          if (psngbrth._status == 2)
-            this.vbObjArr.push(this.convertPsngToVBerth(psngbrth));
-        }
-      });
-    });
-    /* this.storage.replacePassenger(this.psngObjArr.map(p => p.dbObj)).then(success => {
-      this.loader.dismiss();
-      this.alertToast("Data saved successfully!!");
-      this.modal_Close();
-      this.storage.appendVacantBerth(this.vbObjArr).then((success) => {
-        if (success) {
-          this.alertToast("Generated vacant berths!!");
+    this.pdsp.savePsngBerthDataLocally()
+      .then((resp) => {
+        this.load.dismiss();
+        this.modal_Close() 
+        if (resp["success"]) {
+          this.alertToast("Data saved successfully!!");
         } else {
-          this.alertToast("Data Saved Failed!!" + JSON.stringify(success));
+          alert("Data could not be saved!! \n ERROR : " + JSON.stringify(resp));
         }
+      })
+      .catch((error) => {
+        this.load.dismiss();
+        alert("Data could not be saved!! \n ERROR : " + JSON.stringify(error));
       });
-    }); */
-    
-
-  }
-
-  private convertPsngToVBerth(psngbrth) {
-    return {
-      TRAIN_ID: psngbrth.TRAIN_ID,
-      COACH_ID: psngbrth.COACH,
-      BERTH_NO: psngbrth.BN,
-      CLASS: psngbrth.CLASS,
-      REMOTE_LOC_NO: psngbrth.REMOTE_LOC_NO,
-      BERTH_INDEX: psngbrth.BERTH_INDEX,
-      SRC: psngbrth.BRD,
-      DEST: psngbrth.DEST,
-      ALLOTED: "N",
-      REASON: "V",
-      CAB_CP: psngbrth.CAB_CP,
-      CAB_CP_ID: psngbrth.CAB_CP_ID,
-      CH_NUMBER: psngbrth.CH_NUMBER,
-      PRIMARY_QUOTA: psngbrth.QT,
-      SUB_QUOTA: psngbrth.SUB_QUOTA,
-      SYSTIME: psngbrth.SYSTIME,
-
-      // CAB_CP: psngbrth.CAB_CP,
-      // TRAIN_ID: psngbrth.TRAIN_ID,
-      // SRC: psngbrth.BOARDING_PT,
-      // SYSTIME: psngbrth.SYSTIME,
-      // CLASS: psngbrth.CLASS,
-      // PRIMARY_QUOTA: psngbrth.QT,
-      // CAB_CP_ID: psngbrth.CAB_CP_ID,
-      // SUB_QUOTA: psngbrth.SUB_QUOTA,
-      // REMOTE_LOC_NO: psngbrth.REMOTE_LOC_NO,
-      // BERTH_NO: psngbrth.BN,
-      // COACH_ID: psngbrth.COACH,
-      // CH_NUMBER: psngbrth.CH_NUMBER,
-      // ALLOTED: 'N',
-      // REASON: 'V',
-      // DEST: psngbrth.JRNY_TO,
-      // BERTH_INDEX: psngbrth.BERTH_INDEX
-    };
   }
 
   modal_Close() {

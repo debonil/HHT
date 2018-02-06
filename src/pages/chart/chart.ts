@@ -34,6 +34,7 @@ export class ChartPage {
   isChartLoadComplete: boolean = false;
   progressval: number = 0;
   savedChartCoachList: Array<any>;
+  chartLoadInfo: any;
 
   constructor(public navCtrl: NavController, 
     public navParams: NavParams,
@@ -54,10 +55,19 @@ export class ChartPage {
     this.menuCtrl.get('menu1').enable(false);
     this.menuCtrl.get('menu2').enable(true);
     this.isNetworkAvailable='none'!=this.network.type;
-    /*  this.username = this.navParams.get('user');
-     this.noChart = this.navParams.get('noChart');
-    // console.log("no chart" + this.noChart); */
   }
+
+  ionViewDidEnter(){
+    var arr = [];
+    this.storage.getDocuments(this.storage.collectionName.CHART_LOAD_INFO).then((result:any)=>{
+      result.forEach(val=>{
+        var obj = val.json;
+        arr.push(obj);
+      });
+      this.chartLoadInfo = arr;
+    });
+  }
+
   ionViewDidLoad() {
     this.storage.getDocuments(
       this.storage.collectionName.TRAIN_ASSNGMNT_TABLE
@@ -65,6 +75,7 @@ export class ChartPage {
       this.trainAssignment = result[0].json;
       this.username = this.trainAssignment.USER_ID;
     });
+
     this.pdsp.findAll().subscribe(data => {
      // console.log(data);
       this.savedChartCoachList = data.coachwiseChartData;
@@ -101,7 +112,7 @@ export class ChartPage {
   confirmAlert() {
     let alert = this.alert.create({
       title: 'Confirm New Duty',
-      message: 'Do you want to switch to new Duty or fresh copy of current one ? Doing this would clean all unsynced changes. It is suggested to sync yor work before doing this. ',
+      message: 'Do you want to switch to new Duty or fresh copy of current one ? Doing this would clean all unsynced changes. It is suggested to sync your work before doing this. ',
       buttons: [
         {
           text: 'Cancel',
@@ -158,9 +169,10 @@ export class ChartPage {
       this.loadDynamicFare( this.loader);
       this.loadEFTMaster( this.loader);
       //this.addPassenger(this.trainAssignment.TRAIN_ID, this.trainAssignment.ASSIGNED_COACHES[0],0,this.loader, this.trainAssignment.LOAD_TIME);
-      
+      /* this.loadVacantberth(); */
       this.addVacantBerth(this.trainAssignment.TRAIN_ID, this.trainAssignment.ASSIGNED_COACHES[0], 0,this.loader, this.trainAssignment.LOAD_TIME);
       //this.addWaitlist(loader);
+      this.loadChartLoadInfo();
      this.loader.dismiss();
     } else {
       this.alertToast("No Train Assigned!! Could not download chart.");
@@ -344,6 +356,39 @@ export class ChartPage {
     });
   }
 
+  loadVacantberth(){
+    try{
+      var downloadStartTime=new Date();
+      let coachList = new Array<any>();
+      let coachArray = this.trainAssignment.TS_FLAG?this.trainAssignment.TOTAL_COACH.map(coach=>coach.COACH_ID):this.trainAssignment.ASSIGNED_COACHES.slice();
+      console.log('coachArry for VAC: ' + JSON.stringify(coachArray));
+      coachArray.forEach((coachId, index) => {
+        this.loader.present();
+        this.storage.getDocumentCount(this.storage.collectionName.VACANT_BERTH_TABLE,{ COACH_ID: coachId }, { exact: true }).then(count=>{
+          if (count == 0) {
+            let loadTime = this.trainAssignment.LOAD_TIME;
+            let trainId = this.trainAssignment.TRAIN_ID;
+            this.backend.getVacantBerth(trainId, coachId, loadTime).then((response:any)=>{
+              if (response.CODE == 200) {
+                coachList.push({ key: coachId, value: response.TEXT.resultSet });
+                //this.progressval = (this.savedChartCoachList.length + 1) * 100 / (coachArry.length + 1);
+              }else{
+                if (response.CODE == 500) {
+
+                }else {
+                  this.loader.dismiss();
+                  alert('UNHANDLED RESPONSE IN LOAD VACANT BERTH : ' + response.CODE);
+                }
+              }
+            });
+          }
+        });
+      });
+    }catch(ex){
+      alert('Exception loadVacantberth : ' + ex);
+    }
+  }
+
   loadPassenger() {
     var downloadStartTime=new Date();
     //let index = 0;
@@ -406,7 +451,7 @@ export class ChartPage {
                 this.loadPassenger();
               } else {
                 this.loader.dismiss();
-                alert('UNHANDLED ERROR ' + response.CODE);
+                alert('UNHANDLED RESPONSE IN LOAD PSGN : ' + response.CODE);
               }
             }
           }, failure => {
@@ -418,31 +463,51 @@ export class ChartPage {
 
   }
 
+  loadChartLoadInfo(){
+    let trainId = this.trainAssignment.TRAIN_ID;
+    this.backend.getChartLoadInfo(trainId).then((res:any)=>{
+      if(res.CODE==200){
+        this.chartLoadInfo = res.TEXT;
+        this.storage.add(this.storage.collectionName.CHART_LOAD_INFO, res.TEXT, true).then(success=>{
+          if(success){
+            //alert('chart_load_info loaded' + JSON.stringify(this.chartLoadInfo ));
+          }
+        });
+      }else{
+        if(res.CODE==500){
+          this.loadChartLoadInfo();
+        }else{
+          alert('Unhandled Exception : loadChartLoadInfo : ' + res.CODE);
+        }
+      }
+    });
+  }
+
 
   ionViewWillEnter() {
     // watch network for a disconnect
     let changeSubscription = this.network.onchange().subscribe(() => {
-      //this.isNetworkAvailable=false;
-      alert('Network changed!!');
+      this.isNetworkAvailable='none'!=this.network.type;
+      //alert('Network changed!!');
     });
     // watch network for a disconnect
     let disconnectSubscription = this.network.onDisconnect().subscribe(() => {
       this.isNetworkAvailable=false;
-      alert('Network was disconnected :-(');
+      //alert('Network was disconnected :-(');
     });
 
     // watch network for a connection
     let connectSubscription = this.network.onConnect().subscribe(() => {
       this.isNetworkAvailable=true;
-      alert('Network connected!');
+      //alert('Network connected!');
       // We just got a connection but we need to wait briefly
       // before we determine the connection type. Might need to wait.
       // prior to doing any api requests as well.
-      setTimeout(() => {
+     /*  setTimeout(() => {
         if (this.network.type === 'wifi') {
           alert('we got a wifi connection, woohoo!');
         }
-      }, 3000);
+      }, 3000); */
     });
   }
 

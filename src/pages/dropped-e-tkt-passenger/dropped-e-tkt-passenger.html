@@ -1,44 +1,42 @@
 <ion-header>
-  <ion-navbar color="primary">
-    <button ion-button menuToggle>
+    <ion-navbar color="primary">
+        <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Dropped Passengers</ion-title>
-  </ion-navbar>
+        <ion-title>Dropped Passengers</ion-title>
+    </ion-navbar>
 </ion-header>
 <ion-content padding>
-    
-        <ion-list>
-            <ion-card padding align=center>
+ <ion-searchbar  (ionInput)="getItems($event)" autocomplete="on" spellcheck="true"></ion-searchbar>      
+    <ion-list>
+        <ion-card padding align=center>
             <ion-item>
                 <ion-label col-3 no-padding><strong>PNR</strong></ion-label>
                 <ion-label no-padding><strong>WL NO</strong></ion-label>
-
                 <ion-label col-4 no-padding><strong>NAME<br>S/A</strong></ion-label>
-<!--                 <ion-label><strong>S/A</strong></ion-label>
- -->
                 <ion-label><strong>SRC</strong></ion-label>
                 <ion-label><strong>DEST</strong></ion-label>
-
             </ion-item>
-                </ion-card>  
-            <ion-card *ngFor="let item of droppedPsgnArr" padding>
+        </ion-card>
+        <ion-card *ngFor="let item of droppedPsgnArr" padding>
+           <!--  <ion-item>
+                <ion-label>{{item.PSGN_NAME}}</ion-label>
+                                <ion-label>{{item.PNR_NO}}</ion-label>
 
-            <ion-item  align=center >
-                <ion-label col-3 no-padding>{{ item.json.PNR_NO }}</ion-label>
-                <ion-label no-padding>{{ item.json.WAITLIST_NO }}</ion-label>
-
-                <ion-label col-4 no-padding>{{ item.json.PSGN_NAME }}<br>{{ item.json.AGE_SEX }}</ion-label>
-<!--                 <ion-label>{{ item.AGE_SEX }}</ion-label>
- -->
-                <ion-label>{{ item.json.BOARDING_POINT }}</ion-label>
-                <ion-label>{{ item.json.RES_UPTO }}</ion-label>
-
-            </ion-item>
-                </ion-card>  
-
-        </ion-list>
-
+            </ion-item> -->
+             <ion-item align=center >
+                <ion-label col-3 no-padding>{{ item.PNR_NO }}</ion-label>
+                <ion-label no-padding>{{ item.WAITLIST_NO }}</ion-label>
+                <ion-label col-4 no-padding>{{ item.PSGN_NAME }}<br>{{ item.AGE_SEX }}</ion-label>
+                <ion-label>{{ item.BOARDING_POINT }}</ion-label>
+                <ion-label>{{ item.RES_UPTO }}</ion-label>
+            </ion-item> 
+        </ion-card>
+    </ion-list> 
+    <!-- <ion-searchbar (ionInput)="getItems($event)"></ion-searchbar>
+  <ion-list>
+    <ion-item *ngFor="let item of items">
+      {{ item }}
+    </ion-item>
+  </ion-list> -->
 </ion-content>
-    
-

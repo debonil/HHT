@@ -45,6 +45,7 @@ import { DataLoadProvider } from '../providers/data-load/data-load';
 import { NormalShiftPageModule } from '../pages/normal-shift/normal-shift.module';
 import { MutualShiftPageModule } from '../pages/mutual-shift/mutual-shift.module';
 import { RacTabPageModule } from '../pages/rac-tab/rac-tab.module';
+import { SearchPageModule } from '../pages/search/search.module';
 
 import { NtPassengersPageModule } from '../pages/nt-passengers/nt-passengers.module';
 import { DoctorsPageModule } from '../pages/doctors/doctors.module';
@@ -98,7 +99,8 @@ import { StorageServiceProvider } from '../providers/storage-service/storage-ser
     NtPassengersPageModule,
     DoctorsPageModule,
     DataSyncStatusPageModule,
-	RacTabPageModule,
+    RacTabPageModule,
+    SearchPageModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [

@@ -212,9 +212,9 @@ export class PsngDataServiceProvider {
     
   });
   }
+  //private convertPsngToVBerth(psngbrth){
 
-
-  private convertPsngToVBerth(psngbrth) {
+  convertPsngToVBerth(psngbrth) {
     return {
       TRAIN_ID: psngbrth.TRAIN_ID,
       COACH_ID: psngbrth.COACH,
@@ -232,6 +232,8 @@ export class PsngDataServiceProvider {
       PRIMARY_QUOTA: psngbrth.QT,
       SUB_QUOTA: psngbrth.SUB_QUOTA,
       SYSTIME: psngbrth.SYSTIME,
+      UPDATE_TIME : psngbrth.SYSTIME,
+      SYNC_TIME : ''
     };
   }
   get trainAssignmentObject(){
