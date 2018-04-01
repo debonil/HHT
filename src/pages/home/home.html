@@ -19,6 +19,15 @@
           </div>
         </ion-navbar>
 
+        <!--  following 2 divs are added by Neeraj on 31Jan2018-->
+         <div *ngIf = "isInvalidCredentials" class="label label-danger">
+          <b>Warning : invalid credential </b>
+        </div><br>
+        <div *ngIf = "isChartNotAssigned" class="label label-danger">
+          <b>Warning : chart not assigned yet </b>
+        </div><br>
+        <!--  end by Neeraj on 31Jan2018-->
+
         <ion-list  class="cris-input">
           <ion-item>
             <ion-label><img src="assets/icon/usericon.png"/></ion-label>
@@ -32,6 +41,19 @@
             <ion-input type="password" #myInput ngModel placeholder ="Password" name=" password" #password required></ion-input>
             <button (click) ="changeInput()"><ion-icon name="eye"></ion-icon></button>
           </ion-item>
+          
+          <br>
+          <!-- <ion-item>
+              <ion-label><img src="assets/icon/hand.png"/></ion-label>
+            <ion-input type="text" ngModel placeholder ="Captcha" name="captcha"  #captcha required></ion-input>
+          </ion-item> -->
+
+          <!-- <ion-item>
+            <ion-label></ion-label>
+            <ion-label><img src=" http://10.64.0.15/cttel/Captcha.jpg" /></ion-label>
+            <ion-label></ion-label>
+          </ion-item> -->
+          
           <div *ngIf = "formErrors.password" class="label label-danger">
               <b> {{ formErrors.password }}</b>
           </div><br>
@@ -42,10 +64,15 @@
           <ion-checkbox class="showpassword " (click)="showPassword(password)"><ion-icon name = "eye" style =" font-size: 20px;color : black"></ion-icon></ion-checkbox>
         </ion-item>
 
+        <!-- <ion-item>
+          <button ion-button (tap)="authenticate(username.value , password.value, captcha.value)">authenticate</button>
+        </ion-item> -->
+
       </ion-scroll>
       <ion-footer>
         <button ion-button class ="submit"  (tap)="onSubmit2(username.value , password.value)">Login</button>
       </ion-footer>
+
     </form>
   </div>
 </div>

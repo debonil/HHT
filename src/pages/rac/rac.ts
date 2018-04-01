@@ -34,7 +34,7 @@ export class RacPage {
   constructor(public navCtrl: NavController, public navParams: NavParams, public modalCtrl: ModalController,
     public loadingCtrl: LoadingController, public viewCtrl: ViewController, private storage: StorageServiceProvider
   ) {
-    console.log(JSON.stringify(this.navParams.data));
+  //  console.log(JSON.stringify(this.navParams.data));
     this.navParams.data.sort(function (a, b) {
       return a.berthNo - b.berthNo;
     });
@@ -54,7 +54,7 @@ export class RacPage {
 
           });
         }
-        console.log(JSON.stringify(this.islArray));
+    //    console.log(JSON.stringify(this.islArray));
 
       });
     } catch (ex) {
@@ -63,15 +63,16 @@ export class RacPage {
   }
 
 
-  replacePassenger(coachId, berthNo) {
+  replacePassenger(coachId, berthNo,pnr,rel_pos) {
     var option = { exact: true };
-    var query = { COACH_ID: coachId, BERTH_NO: berthNo };
+    var query = { PNR_NO: pnr, REL_POS: rel_pos };
     this.storage.getDocuments(this.storage.collectionName.PASSENGER_TABLE, query).then((res: any[]) => {
 
       //this.storage.findPassenger(query).then((res) => {
       res[0].json.NEW_COACH_ID = res[0].json.COACH_ID;
       res[0].json.NEW_BERTH_NO = res[0].json.BERTH_NO;
       res[0].json.REMARKS = 'CNF';
+      console.log(JSON.stringify(res));
       this.storage.replace(this.storage.collectionName.PASSENGER_TABLE, res).then((success) => {
         console.log("passenger updated successfully" + JSON.stringify(success));
       }, (fail) => {
@@ -130,7 +131,7 @@ export class RacPage {
           });
 
         }
-        else if ((JSON.stringify(this.islArray).indexOf(item.value[0].RES_UPTO)) === (JSON.stringify(this.islArray).indexOf(item.value[0].RES_UPTO))) {
+        else if ((JSON.stringify(this.islArray).indexOf(item.value[0].RES_UPTO)) == (JSON.stringify(this.islArray).indexOf(item.value[0].RES_UPTO))) {
           this.vacBerth.push({
             CLASS: item.value[0].CLASS,
             CAB_CP_ID: item.value[0].CAB_CP_ID,
@@ -142,7 +143,7 @@ export class RacPage {
             SYSTIME: item.value[0].SYSTIME,
             SUB_QUOTA: item.value[0].SUB_QUOTA,
             BERTH_INDEX: item.value[0].BERTH_INDEX,
-            SRC: item.value[0].RES_UPTO,
+            SRC: item.value[0].BOARDING_PT,
             TRAIN_ID: item.value[0].TRAIN_ID,
             PRIMARY_QUOTA: '-',
             CH_NUMBER: item.value[0].CH_NUMBER,
@@ -172,8 +173,12 @@ export class RacPage {
       }
 
   /**********************SECOND PASSENGERS NOT PRESENT******************************/    
-
+      console.log("first:: "+item.value[0].ATTENDANCE_MARKER+" : "+item.value[1].ATTENDANCE_MARKER)
       if (item.value[0].ATTENDANCE_MARKER === 'P' && item.value[1].ATTENDANCE_MARKER === 'A') {
+        if(item.value[0].REMARKS=='CNF'||item.value[1].REMARKS=='CNF'){
+          alert("berth already provided")
+        }else{
+        console.log("first passenger")
         if ((JSON.stringify(this.islArray).indexOf(item.value[0].RES_UPTO)) < (JSON.stringify(this.islArray).indexOf(item.value[1].RES_UPTO))) {
           this.vacBerth.push({
             CLASS: item.value[0].CLASS,
@@ -227,16 +232,20 @@ export class RacPage {
 
           });
         }
-        this.replacePassenger(item.value[0].COACH_ID, item.value[0].BERTH_NO);
+        this.replacePassenger(item.value[0].COACH_ID, item.value[0].BERTH_NO,item.value[0].PNR_NO,item.value[0].REL_POS);
         item.value[0].REMARKS = 'CNF';
         item.value[0].NEW_PRIMARY_QUOTA = "CNF";
-
+         }
       }
 
 
   /**********************FIRST PASSENGERS NOT PRESENT******************************/    
 
       if (item.value[0].ATTENDANCE_MARKER === 'A' && item.value[1].ATTENDANCE_MARKER === 'P') {
+                console.log("second passenger")
+         if(item.value[0].REMARKS=='CNF'||item.value[1].REMARKS=='CNF'){
+          alert("berth already provided")
+        }else{
         if ((JSON.stringify(this.islArray).indexOf(item.value[1].RES_UPTO)) < (JSON.stringify(this.islArray).indexOf(item.value[0].RES_UPTO))) {
           this.vacBerth.push({
             CLASS: item.value[0].CLASS,
@@ -290,15 +299,24 @@ export class RacPage {
 
           });
         }
-        this.replacePassenger(item.value[1].COACH_ID, item.value[1].BERTH_NO);
+        this.replacePassenger(item.value[1].COACH_ID, item.value[1].BERTH_NO,item.value[1].PNR_NO,item.value[1].REL_POS);
         item.value[1].REMARKS = 'CNF';
         item.value[1].NEW_PRIMARY_QUOTA = "CNF";
-
+        }
       }
+
+   /**********************BOTH ANY PASSENGER NOT CHECKED******************************/    
+     if (item.value[0].ATTENDANCE_MARKER === '-' || item.value[1].ATTENDANCE_MARKER === '-') {
+
+           alert("please check both the passengers first");
+     }
 
   /**********************BOTH PASSENGERS PRESENT******************************/    
 
       if (item.value[0].ATTENDANCE_MARKER === 'P' && item.value[1].ATTENDANCE_MARKER === 'P') {
+         if(item.value[0].REMARKS=='CNF'||item.value[1].REMARKS=='CNF'){
+          alert("berth already provided")
+        }else{
         this.psgnArr = item;
         let myModal = this.modalCtrl.create(RacmodalPage, item);
         myModal.onDidDismiss(data => {
@@ -327,7 +345,7 @@ export class RacPage {
 
         });
         myModal.present();
-
+        }
       }
 
 
@@ -340,11 +358,11 @@ export class RacPage {
   }
 
 
-  ionViewDidEnter() {
+  /* ionViewDidEnter() {
     console.log("page loaded---");
-    var temp = this.racBerth;
+     var temp = this.racBerth;
     this.racBerth = [];
-    this.racBerth = temp;
-  }
+    this.racBerth = temp; 
+  } */
 
 }

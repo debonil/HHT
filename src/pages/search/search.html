@@ -17,18 +17,16 @@
 
 
 <ion-content padding>
-<ion-searchbar [(ngModel)]="myInput" (ionInput)="onInput($event)"(ionCancel)="onCancel($event)" padding-top popover>
+<ion-searchbar [(ngModel)]="myInput" (ionInput)="onInput($event)"(ionCancel)="onCancel($event)"  padding-top popover>
  </ion-searchbar >
-<!-- <ion-list>
- -->  
-<!-- <ion-list *ngIf="psgnArr.length>0&&countCheck.length>3">
- --><ion-card *ngFor="let item of items" padding>
+
+<!-- <ion-list *ngIf="">
+ --> <ion-card *ngFor="let item of items" padding>
   <ion-item text-wrap>
     <ion-label>{{item.COACH_ID}}<br>{{item.BERTH_NO}}</ion-label>
     <ion-label>{{item.PNR_NO}}</ion-label>
     <ion-label>{{item.PSGN_NAME}}<br>{{item.AGE_SEX}}</ion-label>
     <ion-label>{{item.BOARDING_PT}}<br>{{item.RES_UPTO}}</ion-label>
-<!--     <ion-label>{{item.}}</ion-label>-->
    </ion-item>
   </ion-card>
 <!-- </ion-list>

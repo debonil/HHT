@@ -8,40 +8,43 @@
 </ion-header>
 
 <ion-content padding responsive-sm>
-  <ion-card>
+ <!--  <ion-card>
     <ion-item>
       <ion-label><strong>Select Coach</strong></ion-label>
       <ion-select [(ngModel)]="coachValue" #C (ionChange)="getNCPassenger(C.value)">
         <ion-option *ngFor="let option of coachId" [value]="option">{{option.COACH_ID}}</ion-option>
       </ion-select>
     </ion-item>
-  </ion-card>
-  
-    <ion-list *ngIf="psgnArray.length>0">
-      <ion-card>
-          <ion-item floating text-wrap>
-            <ion-label align=center ><strong>BERTH NO</strong></ion-label>
-            <ion-label align=center ><strong>NAME</strong></ion-label>
-            <ion-label align=center ><strong>PNR<br>AGE/SEX</strong></ion-label>
-            
-            <ion-label align=center><strong>SRC<br>DEST</strong></ion-label>
-<!--             <ion-label align=center><strong>DEST</strong></ion-label>
- -->            <ion-label align=center><strong>REMARKS</strong></ion-label>
-          </ion-item>
-          </ion-card>
-              <ion-card *ngFor="let item of psgnArray" padding>
+  </ion-card> -->
 
-          <ion-item  align=center floating text-wrap>
-            <ion-label align=center >{{item.BERTH_NO}}</ion-label>
+  <ion-list >
+    <ion-card>
+      <ion-item floating text-wrap>
+        <ion-label align=center><strong>COACH<br>BERTH NO</strong></ion-label>
+        <ion-label align=center><strong>NAME</strong></ion-label>
+        <ion-label align=center><strong>PNR<br>AGE/SEX</strong></ion-label>
 
-            <ion-label align=center >{{item.PSGN_NAME}}</ion-label>
-            <ion-label align=center >{{item.PNR_NO}}<br>{{item.AGE_SEX}}</ion-label>
-            <ion-label align=center>{{item.BOARDING_PT}}<br>{{item.RES_UPTO}}</ion-label>
-<!--             <ion-label align=center>{{item.RES_UPTO}}</ion-label>
- -->            <ion-label align=center>{{item.REMARKS}}</ion-label>
-          </ion-item>
-          </ion-card>
-    </ion-list>
-   
-  
+        <ion-label align=center><strong>SRC<br>DEST</strong></ion-label>
+        <!--             <ion-label align=center><strong>DEST</strong></ion-label>
+ -->
+        <ion-label align=center><strong>REMARKS</strong></ion-label>
+      </ion-item>
+    </ion-card>
+    <ion-card *ngFor="let item of psgnArray" padding>
+
+      <ion-item align=center floating text-wrap>
+        <ion-label align=center>{{item.COACH_ID}}<br>{{item.BERTH_NO}}</ion-label>
+<!--         <ion-label align=center>{{item.COACH_ID}}</ion-label>
+ -->
+        <ion-label align=center>{{item.PSGN_NAME}}</ion-label>
+        <ion-label align=center>{{item.PNR_NO}}<br>{{item.AGE_SEX}}</ion-label>
+        <ion-label align=center>{{item.BOARDING_PT}}<br>{{item.RES_UPTO}}</ion-label>
+        <!--             <ion-label align=center>{{item.RES_UPTO}}</ion-label>
+ -->
+        <ion-label align=center>{{item.REMARKS}}</ion-label>
+      </ion-item>
+    </ion-card>
+  </ion-list>
+
+
 </ion-content>

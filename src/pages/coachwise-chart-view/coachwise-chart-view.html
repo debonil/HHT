@@ -3,51 +3,77 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title *ngIf="!passengerSelectorViewObj.isActive"></ion-title>
-    <ion-title>Chart of {{selectedCoach}}</ion-title>
+    <!--  <ion-title *ngIf="!passengerSelectorViewObj.isActive"></ion-title> -->
+    <!--  <ion-title  *ngIf="!passengerSelectorViewObj.isActive">Chart of {{selectedCoach}} {{this.totalPsgnState}} {{totalPsgn}}</ion-title> -->
+    <ion-title *ngIf="!passengerSelectorViewObj.isActive">
+      <pre>[{{totalPsgnState}}{{totalPsgn}} ] {{assignedSelectedCoach}}</pre>
+    </ion-title>
     <ion-title *ngIf="passengerSelectorViewObj.isActive"> {{passengerSelectorViewObj.selectedPassengerItems.length}} item selected</ion-title>
+    
+    <ion-buttons end>
+      <a ion-button icon-only (click)="updateRemark()">
+        <ion-icon name="create" *ngIf="passengerSelectorViewObj.selectedPassengerItems.length==1  && passengerSelectorViewObj.selectedPassengerItems[0].dbObj.json.ATTENDANCE_MARKER =='P'"></ion-icon>
+      </a>
+    </ion-buttons>
+    <ion-buttons end>
+      <a ion-button icon-only (click)="modalEFT()">
+        <ion-icon name="cash" *ngIf="passengerSelectorViewObj.selectedPassengerItems.length==1 && passengerSelectorViewObj.selectedPassengerItems[0].dbObj.json.ATTENDANCE_MARKER =='P'"></ion-icon>
+      </a>
+    </ion-buttons>
+
+    <ion-buttons end>
+      <a ion-button icon-only (click)="searchPsgn()">
+        <ion-icon name="search"></ion-icon>
+      </a>
+    </ion-buttons>
+
+    <ion-buttons end>
+      <a ion-button icon-only (click)="pnrSearch()">
+        <ion-icon name="information-circle" *ngIf="passengerSelectorViewObj.selectedPassengerItems.length==1"></ion-icon>
+      </a>
+    </ion-buttons>
 
     <ion-buttons end>
       <a ion-button icon-only id="normalshift" (click)="normalShift()">
-        <ion-icon name="contact" *ngIf="passengerSelectorViewObj.selectedPassengerItems.length==1"></ion-icon>
+        <ion-icon name="contact" *ngIf="passengerSelectorViewObj.selectedPassengerItems.length==1 && passengerSelectorViewObj.selectedPassengerItems[0].dbObj.json.ATTENDANCE_MARKER =='P'"></ion-icon>
       </a>
     </ion-buttons>
     <ion-buttons end>
       <a ion-button icon-only id="gotDownPsgn" (click)="gotDownPsgn()">
-        <ion-icon name="walk" *ngIf="passengerSelectorViewObj.selectedPassengerItems.length==1"></ion-icon>
+        <ion-icon name="walk" *ngIf="passengerSelectorViewObj.selectedPassengerItems.length==1 && passengerSelectorViewObj.selectedPassengerItems[0].dbObj.json.ATTENDANCE_MARKER =='P'"></ion-icon>
       </a>
     </ion-buttons>
     <ion-buttons end>
       <a ion-button icon-only id="boardedAtPsgn" (click)="boardedAtPsgn()">
 
-        <ion-icon name="train" *ngIf="passengerSelectorViewObj.selectedPassengerItems.length==1"></ion-icon>
+        <ion-icon name="train" *ngIf="passengerSelectorViewObj.selectedPassengerItems.length==1 && passengerSelectorViewObj.selectedPassengerItems[0].dbObj.json.ATTENDANCE_MARKER =='P'"></ion-icon>
       </a>
     </ion-buttons>
 
     <ion-buttons end>
       <a ion-button icon-only id="mutualshift" (click)="mutualShift()">
 
-        <ion-icon name="contacts" *ngIf="passengerSelectorViewObj.selectedPassengerItems.length==2"></ion-icon>
+        <ion-icon name="contacts" *ngIf="passengerSelectorViewObj.selectedPassengerItems.length==2 && passengerSelectorViewObj.selectedPassengerItems[0].dbObj.json.ATTENDANCE_MARKER =='P'"></ion-icon>
       </a>
     </ion-buttons>
-    
 
 
-  
-      <ion-buttons end>
+
+
+    <!--  <ion-buttons end>
         <a ion-button icon-only id="sync" (click)="refreshChart()">
           <ion-icon name="sync"></ion-icon>
         </a>
-      </ion-buttons>
-      <ion-buttons end>
-        <a ion-button icon-only (click)="openPopover($event)">
-          <ion-icon name="more"></ion-icon>
-        </a>
-      </ion-buttons>
-      <ion-buttons ion-button icon-only id="eft" style="display:none">        
-          <ion-icon name="folder-open"></ion-icon>       
-      </ion-buttons>
- 
+      </ion-buttons> -->
+    <ion-buttons end>
+      <a ion-button icon-only (click)="openPopover($event)">
+        <ion-icon name="more"></ion-icon>
+      </a>
+    </ion-buttons>
+    <ion-buttons ion-button icon-only id="eft" style="display:none">
+      <ion-icon name="folder-open"></ion-icon>
+    </ion-buttons>
+
   </ion-navbar>
 </ion-header>
 
@@ -105,11 +131,19 @@
   <!-- <ion-list ng-if="coachwiseChartData!=null&&coachwiseChartData.length>0">
     <ion-item *ngFor="let tab of coachwiseChartData">{{tab.key}}=>{{tab.value.length}}</ion-item> 
   </ion-list> -->
-  <super-tabs *ngIf="coachwiseChartDataLoaded" [scrollTabs]="coachwiseChartData.length>10" (tabSelect)="onTabSelect($event)">
-        <super-tab *ngFor="let tab of coachwiseChartData" [root]="chartComponent" title="{{tab.key}}" id="{{tab.key}}" [rootParams]="{psngdata:tab.value,readonly:tab.readOnly,psngSelectorViewObj:passengerSelectorViewObj}" ></super-tab>  
+  <super-tabs *ngIf="coachwiseChartDataLoaded " [scrollTabs]="coachwiseChartData.length>10" (tabSelect)="onTabSelect($event)">
+
+    <super-tab *ngFor="let tab of coachwiseChartData" [root]="chartComponent" title="{{tab.key}}" id="{{tab.key}}" badge="{{tab.noOfVisibleRecord>0?tab.noOfVisibleRecord:null}}"
+      [rootParams]="{psngdata:tab.value,readonly:tab.readOnly,psngSelectorViewObj:passengerSelectorViewObj}"></super-tab>
+  </super-tabs>
+  <!-- <super-tab *ngFor="let tab of coachwiseChartData2" [root]="chartComponent" title="{{tab.key}}" [rootParams]="tab.value" ></super-tab> -->
+
+
+  <!-- <super-tabs *ngIf="coachwiseChartDataLoaded " [scrollTabs]="coachwiseChartData.length>10" (tabSelect)="onTabSelect($event)">
+        <super-tab *ngFor="let tab of assignedPsgnData" [root]="chartComponent" title="{{tab.key}}" id="{{tab.key}}"   badge="{{tab.noOfVisibleRecord>0?tab.noOfVisibleRecord:null}}" [rootParams]="{psngdata:tab.value,readonly:tab.readOnly,psngSelectorViewObj:passengerSelectorViewObj}" ></super-tab>  
     
-      <!-- <super-tab *ngFor="let tab of coachwiseChartData2" [root]="chartComponent" title="{{tab.key}}" [rootParams]="tab.value" ></super-tab> -->
-    </super-tabs>
+      
+    </super-tabs> -->
   <!-- <div *ngIf="coachwiseChartData.length==0" style="width: 100%; height: 100%;">
     <ion-img  style="width: 100%; height: 100%;"   src="assets/images/Ball.gif"></ion-img>
   </div> -->

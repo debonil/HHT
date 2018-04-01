@@ -28,7 +28,7 @@
     <ion-label text-wrap>{{ item.json.COACH_ID!=''?item.json.COACH_ID:'NA' }} - {{ item.json.BERTH_NO!='-1'?item.json.BERTH_NO:'NA' }}</ion-label>
   </button>
 </ion-card>
-<ion-card *ngFor="let item of confirmed_waitlist" padding-left color="mediumgraycustom">
+<ion-card *ngFor="let item of confirmed_waitlist" padding-left color="{{item.json.ATTENDANCE_MARKER=='A'?'danger': 'mediumgraycustom'}}">
   <button ion-item padding>
     <ion-label text-wrap>{{ item.json.PRIMARY_QUOTA!='--'?item.json.PRIMARY_QUOTA:''}}  {{item.json.SUB_QUOTA!='--'?'('+item.json.SUB_QUOTA+')':''}}  {{item.json.WAITLIST_NO}}
       <br>{{ item.json.PNR_NO }}</ion-label>
@@ -38,4 +38,14 @@
     <hr>
   </button>
 </ion-card>
+<ion-card *ngFor="let item of confirmed_waitlist_standing" padding-left color="{{item.json.ATTENDANCE_MARKER=='A'?'danger': 'mediumgraycustom'}}">
+    <button ion-item padding>
+      <ion-label text-wrap>{{ item.json.PRIMARY_QUOTA!='--'?item.json.PRIMARY_QUOTA:''}}  {{item.json.SUB_QUOTA!='--'?'('+item.json.SUB_QUOTA+')':''}}  {{item.json.WAITLIST_NO}}
+        <br>{{ item.json.PNR_NO }}</ion-label>
+      <ion-label text-wrap>{{ item.json.PSGN_NAME }}<br>{{ item.json.AGE_SEX }}</ion-label>
+      <ion-label text-wrap>{{ item.json.JRNY_FROM }}<br>{{item.json.JRNY_TO}}</ion-label>
+      <ion-label text-wrap>{{ item.json.COACH_ID!=''?item.json.COACH_ID:'NA' }} - {{ item.json.BERTH_NO!='-1'?item.json.BERTH_NO:'NA' }}</ion-label>
+      <hr>
+    </button>
+  </ion-card>
 </ion-content>

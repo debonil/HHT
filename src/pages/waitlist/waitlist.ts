@@ -28,17 +28,23 @@ export class WaitlistPage {
     //private storage : StorageProvider,
     private storageService : StorageServiceProvider,private pdsp: PsngDataServiceProvider
   ) {
-    /* this.storage.getTrainAssignment().then((res:any)=>{
-      console.log(res.CLASS);
-      this.classArray = res.CLASS;
-      console.log(this.classArray);
-      this.classArrayFound = true;
-    }); */
     this.classArray = [];
     console.log(JSON.stringify(this.classArray.length));
-    this.trainAssignmentObject = this.pdsp.trainAssignmentObject;
+    /* this.trainAssignmentObject = this.pdsp.trainAssignmentObject;
     this.classArray = this.trainAssignmentObject.CLASS;
-    this.classArrayFound = true;
+    this.classArrayFound = true; */
+  }
+
+  ionViewDidLoad() {
+    this.pdsp.findAll(true).subscribe(data => {
+      this.classArrayFound = true;
+      data.trainAssignmentObj.CLASS.reduce((acc,currentVal)=>{
+        if(this.classArray.indexOf(currentVal.CLASS)<0){
+          this.classArray.push(currentVal.CLASS);
+        }
+        return this.classArray;
+      });
+    });
   }
 
 }

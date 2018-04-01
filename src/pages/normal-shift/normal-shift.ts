@@ -3,8 +3,10 @@ import { IonicPage, NavController, NavParams, ToastController } from 'ionic-angu
 import { ViewController } from 'ionic-angular';
 import { AlertController } from 'ionic-angular/components/alert/alert-controller';
 import { StorageServiceProvider } from '../../providers/storage-service/storage-service';
-declare var WL;
-declare var WLResourceRequest;
+import { UtilProvider } from '../../providers/util/util';
+import { PsngDataServiceProvider } from "../../providers/psng-data-service/psng-data-service";
+//declare var WL;
+//declare var WLResourceRequest;
 /**
  * Generated class for the NormalShiftPage page.
  *
@@ -34,13 +36,19 @@ export class NormalShiftPage {
   routes: any[] = [];
   vcData: any[] = [];
   newPostVacBerh: any[] = [];
+  trainAssignmentObject: any;
+  vacantBerthClass;
+  updRemark;
+  oldRemark;
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController, public toastCtrl: ToastController, public alertCtrl: AlertController
-    , public storageserviceprovider: StorageServiceProvider
+    , public storageserviceprovider: StorageServiceProvider,private pdsp:PsngDataServiceProvider,
+    public utils: UtilProvider
   ) {
     this.psgnArr = this.navParams.data;
     this.psgnData.push(this.psgnArr[0].dbObj.json);
 
     this.getISLList();
+    this.trainAssignmentObject=pdsp.trainAssignmentObject;
   }
 
   getISLList() {
@@ -84,7 +92,9 @@ export class NormalShiftPage {
             CAB_CP_ID: res[i].json.CAB_CP_ID,
             CH_NUMBER: res[i].json.CH_NUMBER,
             PRIMARY_QUOTA: res[i].json.PRIMARY_QUOTA,
-            SYSTIME: res[i].json.SYSTIME
+            SUB_QUOTA: res[i].json.SUB_QUOTA,
+            SYSTIME: res[i].json.SYSTIME,
+            UPDATE_TIME: res[i].json.UPDATE_TIME
           });
         }
 
@@ -95,10 +105,13 @@ export class NormalShiftPage {
     }
   }
 
-
+  
   confirmShift(value) {
-    //console.log("vacant berth "+JSON.stringify(value));
+    console.log(this.psgnArr[0].dbObj.json.REMARKS);
 
+
+    //console.log("vacant berth "+JSON.stringify(value));
+    this.vacantBerthClass = value.CLASS;
     let alertbox = this.alertCtrl.create();
     alertbox.setTitle('Warning');
     alertbox.setMessage('Are you sure want do normal shift?');
@@ -107,81 +120,118 @@ export class NormalShiftPage {
     alertbox.addButton({
       text: 'Okay',
       handler: data => {
+
+        /* console.log("--> " + JSON.stringify(value));
+        console.log("--> " + JSON.stringify(data));
+        console.log("--> " + JSON.stringify(this.psgnArr)); */
+
+
+        console.log("Sucess");
         let tempVacantPosition;
+        let tempSrcVacantPosition;
+        let tempDestVacantPosition;
         let tempStn;
         let tempPsgnPosition;
+        let tempDestPsgnPosition;
+        let tempSrcPsgnPosition
         let tempPsgnStn;
         try {
-         
-          for (let start = 0; start < this.routes.length; start++) {
-            
-            if (this.routes[start].STN.indexOf(value.DEST) == 0) {
-              tempVacantPosition = start;
-              tempStn = value.DEST;
 
+
+          for (let start = 0; start < this.trainAssignmentObject.ISL.length; start++) {
+
+            if (this.psgnArr[0].SRC === this.trainAssignmentObject.ISL[start].STN_CODE.trim()) {
+              tempSrcPsgnPosition = this.trainAssignmentObject.ISL[start].STN_SRL_NO
+              //alert("See src " + tempSrcPsgnPosition);
             }
-            if (this.routes[start].STN.indexOf(this.psgnArr[0].DEST) == 0) {
-              tempPsgnPosition = start;
-              tempPsgnStn = this.psgnArr[0].DEST;
+            if (this.psgnArr[0].DEST === this.trainAssignmentObject.ISL[start].STN_CODE.trim()) {
+              tempDestPsgnPosition = this.trainAssignmentObject.ISL[start].STN_SRL_NO
+              //alert("See  dest" + tempDestPsgnPosition);
             }
+            if (value.DEST === this.trainAssignmentObject.ISL[start].STN_CODE.trim()) {
+
+              tempDestVacantPosition = this.trainAssignmentObject.ISL[start].STN_SRL_NO
+              //alert("vacnt  src" + tempDestVacantPosition);
+            }
+
+            if (value.SRC === this.trainAssignmentObject.ISL[start].STN_CODE.trim()) {
+
+              tempSrcVacantPosition = this.trainAssignmentObject.ISL[start].STN_SRL_NO
+              //alert("Vacant  dest" + tempSrcVacantPosition);
+            }
+
           }
+          // console.log(tempSrcVacantPosition + " " + tempDestVacantPosition + "  - " + tempDestPsgnPosition + " " + tempSrcPsgnPosition)
 
 
-          if (tempVacantPosition > tempPsgnPosition) {           
+          tempStn = value.DEST;
+          tempPsgnStn = this.psgnArr[0].DEST;
+
+          console.log(tempSrcVacantPosition + " " + tempDestVacantPosition + "  - " + tempDestPsgnPosition + " " + tempSrcPsgnPosition)
+
+          if (tempSrcVacantPosition <= tempDestPsgnPosition && tempDestVacantPosition >= tempDestPsgnPosition) {
 
             this.newVacBerh.push(value); // vacant seat value
             this.updateVacantBerth(value);
             this.updatePassenger(this.psgnArr);
             this.vcArr.push(value);
-            this.temp = this.vcArr;
+            //this.temp = this.vcArr;
+            this.temp = Object.assign([], this.vcArr);
+
             value.SRC = tempPsgnStn;
             value.DEST = tempStn;
-            this.newPostVacBerh.push(value);
-            this.addNewPostVacantBerth(this.newPostVacBerh);
+            if (tempDestVacantPosition != tempDestPsgnPosition) {
+              this.newPostVacBerh.push(value);
+            }
 
+            // commented on 6 march 2018 double vaccant berth solve
+            //this.addNewPostVacantBerth(this.newPostVacBerh);
             //alert('bye not same');
-          } else if (tempVacantPosition == tempPsgnPosition) {
-            //console.log("--->"+JSON.stringify(value));
-            this.newVacBerh.push(value); // vacant seat value
-
-            this.updatePassenger(this.psgnArr);
-            this.updateVacantBerth(value);
-            this.vcArr.push(value)
-            this.temp = this.vcArr;
-          } else {
-            alert("you Can't shift  pgsn")
+          }
+          else {
+            // alert("you can't shift  pgsn")
+            this.normalShirtAlert()
           }
 
 
         } catch (ex) {
           console.log("Exception thrown:: " + ex)
         }
+        // this.updateRemark(value, this.psgnArr);
 
       }
     });
     alertbox.present();
 
-
-
-
   }
 
+  normalShirtAlert() {
+    let alert = this.alertCtrl.create({
+      title: 'Warning Alert',
+      subTitle: " you can't shift  pgsn",
+      buttons: ['Ok']
+    });
+    alert.present();
+  }
 
+ 
 
   updatePassenger(psgn) {
-  
 
     try {
 
-      var query = { PNR_NO: psgn[0].dbObj.json.PNR_NO, REL_POS: psgn[0].dbObj.json.REL_POS, BERTH_INDEX: psgn[0].dbObj.json.BERTH_INDEX };
+      var query = {
+        PNR_NO: psgn[0].dbObj.json.PNR_NO, REL_POS: psgn[0].dbObj.json.REL_POS,
+        BERTH_INDEX: psgn[0].dbObj.json.BERTH_INDEX
+      };
 
       var option = { exact: true };
 
-      console.log("\n" + JSON.stringify(query));
+      //console.log("\n" + JSON.stringify(query));
 
       this.storageserviceprovider.getDocuments(this.storageserviceprovider.collectionName.PASSENGER_TABLE, query, option).then((res) => {
         //WL.JSONStore.get('passenger').find(query, option).then((res) => {
-        //  console.log("------->" + JSON.stringify(res));
+        //console.log("------->" + JSON.stringify(res));
 
         var coachId = res[0].json.COACH_ID;
         var berthNo = res[0].json.BERTH_NO;
@@ -192,10 +242,84 @@ export class NormalShiftPage {
         res[0].json.NEW_COACH_ID = coachId;
         res[0].json.NEW_BERTH_NO = berthNo;
 
+        if (res[0].json.NEW_BERTH_NO == '0' || res[0].json.BERTH_NO == '0') {
 
-        res[0].json.REMARKS = "SHIFTED FROM " + res[0].json.NEW_COACH_ID + " - " + res[0].json.NEW_BERTH_NO + " To " + res[0].json.COACH_ID + " - " + res[0].json.BERTH_NO;
+          if (res[0].json.NEW_BERTH_NO == '0') {
+            console.log(JSON.stringify(psgn[0]));
 
-        this.storageserviceprovider.replace('passenger', res).then(() => {
+            if (psgn[0].dbObj.json.REMARKS == "-") {
+              if (this.vacantBerthClass == res[0].json.CLASS) {
+                res[0].json.REMARKS = "SH " + res[0].json.NEW_COACH_ID + "-" + " ST" + " To " + res[0].json.COACH_ID + "-" + res[0].json.BERTH_NO;
+              } else {
+                res[0].json.CLASS = this.vacantBerthClass;
+                var tempRemarks = "CT " + res[0].json.NEW_COACH_ID + "-" + " ST" + " To " + res[0].json.COACH_ID + "-" + res[0].json.BERTH_NO;
+                res[0].json.REMARKS = tempRemarks;
+              }
+
+            } else {
+              if (this.vacantBerthClass == res[0].json.CLASS) {
+                res[0].json.REMARKS = "SH " + res[0].json.NEW_COACH_ID + "-" + " ST" + " To " + res[0].json.COACH_ID + "-" + res[0].json.BERTH_NO;
+              } else {
+                res[0].json.CLASS = this.vacantBerthClass;
+                let tempRemarks = this.updRemark + " : " + " " + "CT " + res[0].json.NEW_COACH_ID + "-" + " ST" + " To " + res[0].json.COACH_ID + "-" + res[0].json.BERTH_NO;
+                res[0].json.REMARKS = tempRemarks;
+              }
+
+            }
+            // res[0].json.REMARKS = "SH " + res[0].json.NEW_COACH_ID + "-" + " ST" + " To " + res[0].json.COACH_ID + "-" + res[0].json.BERTH_NO;
+          }
+          if (res[0].json.BERTH_NO == '0') {
+            if (psgn[0].dbObj.json.REMARKS == "-") {
+              if (this.vacantBerthClass == res[0].json.CLASS) {
+                res[0].json.REMARKS = "SH " + res[0].json.NEW_COACH_ID + "-" + res[0].json.NEW_BERTH_NO + " To " + res[0].json.COACH_ID + "-" + " ST";
+              } else {
+                res[0].json.CLASS = this.vacantBerthClass;
+                let tempRemarks = "CT " + res[0].json.NEW_COACH_ID + "-" + res[0].json.NEW_BERTH_NO + " To " + res[0].json.COACH_ID + "-" + " ST";
+                res[0].dbObj.json.REMARKS = tempRemarks;
+              }
+
+            } else {
+              if (this.vacantBerthClass == res[0].json.CLASS) {
+
+
+                res[0].json.REMARKS = res[0].json.REMARKS + " : " + "SH " + res[0].json.NEW_COACH_ID + "-" + res[0].json.NEW_BERTH_NO + " To " + res[0].json.COACH_ID + "-" + " ST";
+              } else {
+
+                res[0].json.CLASS = this.vacantBerthClass;
+                let tempRemarks = res[0].json.REMARKS + " : " + this.updRemark + " : " + "CT " + res[0].json.NEW_COACH_ID + "-" + res[0].json.NEW_BERTH_NO + " To " + res[0].json.COACH_ID + "-" + " ST";
+                res[0].json.REMARKS = tempRemarks;
+              }
+
+            }
+            // res[0].json.REMARKS = "SH " + res[0].json.NEW_COACH_ID + "-" + res[0].json.NEW_BERTH_NO + " To " + res[0].json.COACH_ID + "-" + " ST";
+          }
+        } else {
+
+          if (psgn[0].dbObj.json.REMARKS == "-") {
+            if (this.vacantBerthClass == res[0].json.CLASS) {
+              res[0].json.REMARKS = "SH " + res[0].json.NEW_COACH_ID + "-" + res[0].json.NEW_BERTH_NO + " To " + res[0].json.COACH_ID + "-" + res[0].json.BERTH_NO;
+            } else {
+              res[0].json.CLASS = this.vacantBerthClass;
+              let tempRemarks = "CT " + res[0].json.NEW_COACH_ID + "-" + res[0].json.NEW_BERTH_NO + " To " + res[0].json.COACH_ID + "-" + res[0].json.BERTH_NO;
+              res[0].json.REMARKS = tempRemarks;
+            }
+            //res[0].json.REMARKS = "SH " + res[0].json.NEW_COACH_ID + "-" + res[0].json.NEW_BERTH_NO + " To " + res[0].json.COACH_ID + "-" + res[0].json.BERTH_NO;
+          } else {
+            if (this.vacantBerthClass == res[0].json.CLASS) {
+              res[0].json.REMARKS = "SH " + res[0].json.NEW_COACH_ID + "-" + res[0].json.NEW_BERTH_NO + " To " + res[0].json.COACH_ID + "-" + res[0].json.BERTH_NO;
+            } else {
+              res[0].json.CLASS = this.vacantBerthClass;
+              let tempRemarks = this.updRemark + " : " + "CT " + res[0].json.NEW_COACH_ID + "-" + res[0].json.NEW_BERTH_NO + " To " + res[0].json.COACH_ID + "-" + res[0].json.BERTH_NO;
+              res[0].json.REMARKS = tempRemarks;
+            }
+
+          }
+
+        }
+
+        //res[0].json.REMARKS = "SHFT " + res[0].json.NEW_COACH_ID + "-" + res[0].json.NEW_BERTH_NO + " To " + res[0].json.COACH_ID + "-" + res[0].json.BERTH_NO;
+
+        this.storageserviceprovider.replace(this.storageserviceprovider.collectionName.PASSENGER_TABLE, res).then(() => {
           // WL.JSONStore.get('passenger').replace(res).then(() => {
           console.log("passenger updated successfully" + JSON.stringify(res));
           this.closeModal(res);
@@ -212,7 +336,7 @@ export class NormalShiftPage {
 
   updateVacantBerth(value) {
     //console.log("presentToast----->" + JSON.stringify(value));
-
+    let currenTime = this.utils.getCurrentDateString();
     try {
 
       var query = { COACH_ID: value.COACH_ID, BERTH_NO: value.BERTH_NO, SRC: value.SRC, DEST: value.DEST, ALLOTED: 'N' };
@@ -222,14 +346,15 @@ export class NormalShiftPage {
       var option = { exact: true };
       this.storageserviceprovider.getDocuments(this.storageserviceprovider.collectionName.VACANT_BERTH_TABLE, query, option).then((res) => {
         // WL.JSONStore.get('vacantberth').find(query, option).then((res) => {
-
-        console.log("check------>" + JSON.stringify(res));
+        //console.log("check------>" + JSON.stringify(res));
 
         res[0].json.ALLOTED = "Y";
-        res[0].json.REMARKS = "SHIFTED";
+        res[0].json.REMARKS = " SHIFTED ";
+        res[0].UPDATE_TIME = currenTime;
+        res[0].SYSTIME = currenTime;
         this.vcData = res;
-
-        this.storageserviceprovider.replace('vacantberth', this.vcData).then(() => {
+        //res[0].REASON="S";
+        this.storageserviceprovider.replace(this.storageserviceprovider.collectionName.VACANT_BERTH_TABLE, this.vcData).then(() => {
           // WL.JSONStore.get('vacantberth').replace(this.vcData).then(() => {
           this.addVacantBerth();
         }, (fail) => {
@@ -245,16 +370,20 @@ export class NormalShiftPage {
 
   addVacantBerth() {
 
+    let currenTime = this.utils.getCurrentDateString();
 
     try {
       var vacIndex = this.routes.findIndex(x => x.STN == this.vcArr[0].DEST);
       var psgnIndex = this.routes.findIndex(x => x.STN == this.psgnData[0].RES_UPTO);
       if (vacIndex > psgnIndex) {
         this.temp[0].SRC = this.psgnData[0].RES_UPTO;
-        this.storageserviceprovider.add('vacantberth', this.temp).then((res) => {
+        this.temp[0].UPDATE_TIME = currenTime;
+        this.temp[0].SYSTIME = currenTime;
+
+        this.storageserviceprovider.add(this.storageserviceprovider.collectionName.VACANT_BERTH_TABLE, this.temp).then((res) => {
           // WL.JSONStore.get('vacantberth').add(this.temp).then((res) => {
           console.log("vacant berth created successfully" + JSON.stringify(res));
-          this.addNewVacantBerth();
+          //this.addNewVacantBerth();
         }, (fail) => {
           console.log("failed to create new vacant berth " + JSON.stringify(fail));
         });
@@ -269,44 +398,53 @@ export class NormalShiftPage {
 
 
   addNewVacantBerth() {
+    if (this.psgnData[0].BERTH_NO > 0) {
+      try {
+        let currenTime = this.utils.getCurrentDateString();
 
-    try {
+        this.newVacBerh[0].COACH_ID = this.psgnData[0].COACH_ID;
+        this.newVacBerh[0].BERTH_NO = this.psgnData[0].BERTH_NO;
+        this.newVacBerh[0].SRC = this.psgnData[0].BOARDING_PT;
+        this.newVacBerh[0].DEST = this.psgnData[0].RES_UPTO;
+        this.newVacBerh[0].UPDATE_TIME = currenTime;
+        this.newVacBerh[0].SYSTIME = currenTime;
+        this.newVacBerh[0].SUB_QUOTA = this.psgnData[0].SUB_QUOTA;
+        //this.newVacBerh[0].REASON="S"; 
 
-
-      this.newVacBerh[0].COACH_ID = this.psgnData[0].COACH_ID;
-      this.newVacBerh[0].BERTH_NO = this.psgnData[0].BERTH_NO;
-      this.newVacBerh[0].SRC = this.psgnData[0].BOARDING_PT;
-      this.newVacBerh[0].DEST = this.psgnData[0].RES_UPTO;
-      this.storageserviceprovider.add('vacantberth', this.newVacBerh).then((res) => {
-        //WL.JSONStore.get('vacantberth').add(this.newVacBerh).then((res) => {
-        //this.closeModal();
-        //this.closeModal(this.newVacBerh);
-      }, (fail) => {
-        console.log("failed to add vacant berth " + JSON.stringify(fail));
-      });
-    } catch (ex) {
-      console.log("Exception thrown:: " + ex)
+        this.storageserviceprovider.add(this.storageserviceprovider.collectionName.VACANT_BERTH_TABLE, this.newVacBerh).then((res) => {
+          //WL.JSONStore.get('vacantberth').add(this.newVacBerh).then((res) => {
+          //this.closeModal();
+          //this.closeModal(this.newVacBerh);
+        }, (fail) => {
+          console.log("failed to add vacant berth " + JSON.stringify(fail));
+        });
+      } catch (ex) {
+        console.log("Exception thrown:: " + ex)
+      }
     }
   }
 
 
   addNewPostVacantBerth(newPostVacBerh) {
+    if (this.newPostVacBerh[0].BERTH_NO > 0) {
+      try {
 
-    try {
-
-      this.storageserviceprovider.add('vacantberth', this.newPostVacBerh).then((res) => {
-        //WL.JSONStore.get('vacantberth').add(this.newPostVacBerh).then((res) => {
-        //this.closeModal();
-        //this.closeModal(this.newVacBerh);
-      }, (fail) => {
-        console.log("failed to add vacant berth " + JSON.stringify(fail));
-      });
-    } catch (ex) {
-      console.log("Exception thrown:: " + ex)
+        this.storageserviceprovider.add(this.storageserviceprovider.collectionName.VACANT_BERTH_TABLE, this.newPostVacBerh).then((res) => {
+          //WL.JSONStore.get('vacantberth').add(this.newPostVacBerh).then((res) => {
+          //this.closeModal();
+          //this.closeModal(this.newVacBerh);
+        }, (fail) => {
+          console.log("failed to add vacant berth " + JSON.stringify(fail));
+        });
+      } catch (ex) {
+        console.log("Exception thrown:: " + ex)
+      }
     }
   }
 
   vacantBerthList() {
+    //console.log(JSON.stringify(this.vcBerth[0]));
+
     let alert = this.alertCtrl.create();
     alert.setTitle('Vacant Berth List');
     alert.addInput({
@@ -317,18 +455,24 @@ export class NormalShiftPage {
     });
 
     for (var i = 0; i < this.vcBerth.length; i++) {
+      if (this.vcBerth[i].CLASS == this.psgnArr[0].CLASS) {
+        console.log("true");
+        alert.addInput({
+          type: 'radio',
+          label: this.vcBerth[i].COACH_ID + " "
+            + this.vcBerth[i].BERTH_NO + " "
+            + this.vcBerth[i].SRC + " "
+            + this.vcBerth[i].DEST,
+          /* + " " + this.vcBerth[i].ALLOTED + " "
+           + this.vcBerth[i].REASON, */
+          value: this.vcBerth[i],
+          checked: false
+        });
 
-      alert.addInput({
-        type: 'radio',
-        label: this.vcBerth[i].COACH_ID + " "
-          + this.vcBerth[i].BERTH_NO + " "
-          + this.vcBerth[i].SRC + " "
-          + this.vcBerth[i].DEST + " "
-          + this.vcBerth[i].ALLOTED + " "
-          + this.vcBerth[i].REASON,
-        value: this.vcBerth[i],
-        checked: false
-      });
+      } else {
+        console.log("false");
+      }
+
     }
 
     alert.addButton('Cancel');

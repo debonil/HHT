@@ -9,7 +9,8 @@ import { Injectable } from '@angular/core';
 */
 @Injectable()
 export class UtilProvider {
-
+ appVer= "2.1.0";
+ releaseDate="08-02-2018";
   constructor() {
     
   }
@@ -94,6 +95,22 @@ getCurrentDateString(){
       ss = '0' + ss;
     }
     return yyyy + '-' + mm + '-' + dd +' ' + hh + ':' + mi + ':' + ss + '.' + (new Date()).getMilliseconds();
+}
+
+getAppVersion(){
+  return this.appVer;
+}
+getReleaseDate(){
+  return this.releaseDate;
+}
+
+getClassObject(coachId, classArray){
+  var obj = classArray.find(res=>{
+    if(res.COACH_ID==coachId){
+      return res;
+    }
+  });
+  return obj;
 }
 
 }

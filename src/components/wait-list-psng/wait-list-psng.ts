@@ -18,6 +18,7 @@ export class WaitListPsngComponent {
   waitlist:any=[];
   confirmed_waitlist: any =[];
   non_confirmed_waitlist: any =[];
+  confirmed_waitlist_standing: any =[];
 
   trainAssignmentObject : any;
 
@@ -78,6 +79,17 @@ export class WaitListPsngComponent {
     this.storageService.getDocumentsAdvanced(this.storageService.collectionName.PASSENGER_TABLE, query2, option).then(res=>{
       this.non_confirmed_waitlist = res;
       this.non_confirmed_waitlist.sort((a,b)=>{
+        return a.json.WAITLIST_NO-b.json.WAITLIST_NO;
+      });
+    });
+
+    var query3 = {
+      $equal : [{'CLASS' : this.class},{REMARKS : 'WLSTND'},{BERTH_INDEX:0}]
+    };
+
+    this.storageService.getDocumentsAdvanced(this.storageService.collectionName.PASSENGER_TABLE, query3, option).then(res=>{
+      this.confirmed_waitlist_standing = res;
+      this.confirmed_waitlist_standing.sort((a,b)=>{
         return a.json.WAITLIST_NO-b.json.WAITLIST_NO;
       });
     });

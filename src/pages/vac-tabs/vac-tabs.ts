@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { VacantberthPage } from '../../pages/vacantberth/vacantberth';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-//import { StorageProvider } from '../../providers/storage/storage';
 import { StorageServiceProvider } from "../../providers/storage-service/storage-service";
 
 declare var WL;
 /**
  * Generated class for the MyTabsComponent component.
- *
+ * @Author Ashutosh
  * See https://angular.io/docs/ts/latest/api/core/index/ComponentMetadata-class.html
  * for more info on Angular Components.
  */
@@ -21,7 +20,7 @@ export class VacTabsPage {
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage: StorageServiceProvider) {
     this.getCoaches();
   }
-  temp:any[]=[];
+  temp: any[] = [];
   tabparams = { title: null };
   tab1Root = VacantberthPage;
   coach;
@@ -47,18 +46,34 @@ export class VacTabsPage {
  */
   getCoaches() {
     try {
-       // var Collection='trainAssignment';
-        this.storage.getDocuments(this.storage.collectionName.TRAIN_ASSNGMNT_TABLE).then((res:any)=>{
-     //   this.storage.getTrainAssignment().then((res:any)=>{  
-       console.log(JSON.stringify(res));    
-         this.coach=res[0].json.ASSIGNED_COACHES;
+      this.storage.getDocuments(this.storage.collectionName.TRAIN_ASSNGMNT_TABLE).then((res: any) => {
+        console.log(res);
+        /* this.coach = res[0].json.TS_FLAG?res[0].json.TOTAL_COACH.map(coach=>coach.COACH_ID):
+        res[0].json.ASSIGNED_COACHES.slice(); */
+        this.coach = res[0].json.TOTAL_COACH.map(coach => coach.COACH_ID);
+        this.coach.sort(function (a, b) {
+          var cca = a.replace(/[^A-Z\.]/g, '');
+          var ccb = b.replace(/[^A-Z\.]/g, '');
+          if (cca < ccb)
+            return -1;
+          if (cca > ccb)
+            return 1;
+
+          var cna = parseInt(a.replace(/[^0-9\.]/g, ''), 10);
+          var cnb = parseInt(b.replace(/[^0-9\.]/g, ''), 10);
+          if (cna < cnb)
+            return -1;
+          if (cna > cnb)
+            return 1;
+          return 0;
+        });
         for (let i = 0; i < this.coach.length; i++) {
           this.vacBerth[this.coach[i]] = [];
         }
         this.getValue();
-        },(fail)=>{
-
-        })
+      }, (fail) => {
+        alert('FAILS_TRAIN_ASSNGMNT_TABLE_LOAD ' + JSON.stringify(fail));
+      })
     } catch (EX) {
       console.log(EX);;
     }
@@ -68,10 +83,7 @@ export class VacTabsPage {
     try {
       var query = { ALLOTED: "N" };
       var option = { exact: true };
-     // var Collection='vacantberth';
-      this.storage.getDocuments(this.storage.collectionName.VACANT_BERTH_TABLE,query,option).then((res:any) => {
-        console.log(JSON.stringify(res));
-    //  this.storage.getVacantBerth(query,option).then((res:any) => {
+      this.storage.getDocuments(this.storage.collectionName.VACANT_BERTH_TABLE, query, option).then((res: any) => {
         for (let i = 0; i < res.length; i++) {
           this.vacBerth[res[i].json.COACH_ID].push({
             COACH_ID: res[i].json.COACH_ID,
@@ -82,7 +94,6 @@ export class VacTabsPage {
             DEST: res[i].json.DEST,
             REASON: res[i].json.REASON
           });
-          console.log(this.vacBerth);
         }
         for (let rowkey in this.vacBerth) {
           var rowval = this.vacBerth[rowkey];
@@ -92,7 +103,6 @@ export class VacTabsPage {
             badge: rowval.length
           });
           console.log(this.tabs);
-
         }
       });
     } catch (EX) {

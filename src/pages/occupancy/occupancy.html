@@ -10,16 +10,47 @@
 </ion-header>
 <ion-content padding class="md" >
 <ion-scroll scrollX="true"  scrollY="true" >  
-  <ion-card>
+    <ion-card>
+         <table id="myTable" class="tablesorter" padding width=100% >
+      <thead>
+        <tr height=40px>
+          <td align=center>FROM-TO</td>
+          <td  *ngFor="let td of coach" align=center  colspan="2">{{td.COACH_ID}}</td>      
+          <td align=center>TOTAL</td>
+        </tr>
+        <tr height=40px>
+          <td align=center>FOOD</td>
+          <td *ngFor="let td of foodArr" align=center>{{td}}</td>
+          <td></td>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr *ngFor="let tr of finalArr">
+          <td align=center >{{tr.key}} ({{tr.badge}})</td>
+          <td *ngFor="let cnt of tr.value" align=center padding>{{cnt}}</td>
+        </tr>
+      </tbody>
+    </table>
+   </ion-card>  
+    <!-- <ion-card>
     <table id="myTable" class="tablesorter" padding width=100% >
       <thead>
         <tr height=40px>
           <td align=center>FROM-TO</td>
-          <td *ngFor="let td of coach" align=center>{{td.COACH_ID}}</td>
+          <td  *ngFor="let td of coach" align=center>
+            <tr padding>{{td.COACH_ID}}</tr>
+            <tr>
+               <td padding>F</td>
+               <td padding>D</td>
+            </tr>
+          
+          </td>
           <td align=center>TOTAL</td>
         </tr>
       </thead>
       <tbody>
+
         <tr *ngFor="let tr of finalArr">
           <td align=center>{{tr.key}}</td>
           <td *ngFor="let cnt of tr.value" align=center padding>{{cnt}}</td>
@@ -29,6 +60,6 @@
     <script>
 
     </script>
-  </ion-card>
+  </ion-card>   -->
   </ion-scroll>
 </ion-content>

@@ -6,7 +6,7 @@ import { BackendProvider } from '../../providers/backend/backend';
 import { StorageServiceProvider } from "../../providers/storage-service/storage-service";
 /**
  * Generated class for the DroppedETktPassengerPage page.
- *
+ * @Author Ashutosh
  * See https://ionicframework.com/docs/components/#navigation for more info on
  * Ionic pages and navigation.
  */
@@ -17,7 +17,6 @@ import { StorageServiceProvider } from "../../providers/storage-service/storage-
   templateUrl: 'dropped-e-tkt-passenger.html',
 })
 export class DroppedETktPassengerPage {
- // droppedPsgnArr: any = [];
   droppedPsgnArr;
   searchTerm: string = '';
   val :any;
@@ -25,12 +24,10 @@ export class DroppedETktPassengerPage {
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage: StorageServiceProvider) {
     this.getDroppedETicketPassenger();
     this.loadDroppedPassenger();
-  // this.initializeItems();
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad DroppedETktPassengerPage');
-    //this.getDroppedETicketPassenger();
   }
 
   loadDroppedPassenger(){

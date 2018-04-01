@@ -19,11 +19,11 @@ export class NcPsgnPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public modalCtrl : ModalController,
      public loadingCtrl: LoadingController) {
-        this.getCoaches();
-
+      //  this.getCoaches();
+     this.getNCPassenger();
   }
 
-  getCoaches() {
+ /*  getCoaches() {
     try {
       WL.JSONStore.get('trainAssignment').findAll().then((res) => {
         this.coach = res[0].json.ASSIGNED_COACH
@@ -37,11 +37,11 @@ export class NcPsgnPage {
     } catch (EX) {
       console.log(EX);;
     }
-  }
+  } */
 
   presentLoadingDefault() {
      this.loading = this.loadingCtrl.create({
-      content: 'Loading Occupancy...'
+      content: 'Loading NC Passengers...'
     });
 
     this.loading.present();
@@ -51,12 +51,16 @@ export class NcPsgnPage {
     }, 5000); */
   }
 
-getNCPassenger(coachValue){
+//getNCPassenger(coachValue){
+  getNCPassenger(){
+
    try {
      this.presentLoadingDefault();
       this.psgnArray = [];
-      var query = { COACH_ID: coachValue.COACH_ID, ATTENDANCE_MARKER: "-" }
-      WL.JSONStore.get('passenger').find(query).then((res) => {
+     // var query = { COACH_ID: coachValue.COACH_ID, ATTENDANCE_MARKER: "-",CANCEL_PASS_FLAG:"-" }
+      var query = {ATTENDANCE_MARKER: "-",CANCEL_PASS_FLAG:"-" };
+      var option={exact : true};
+      WL.JSONStore.get('passenger').find(query,option).then((res) => {
         for (let i = 0; i < res.length; i++) {
           this.psgnArray.push({
             WAITLIST_NO: res[i].json.WAITLIST_NO,
@@ -99,7 +103,11 @@ getNCPassenger(coachValue){
             JRNY_FROM: res[i].json.JRNY_FROM
           });
         }
+        this.psgnArray.sort(function (a, b) {
+      return a.COACH_ID - b.COACH_ID;
+    }); 
       });
+      
  this.loading.dismiss();
     } catch (EX) {
       console.log(EX);

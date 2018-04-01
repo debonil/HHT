@@ -1,0 +1,19 @@
+page-fare-chart {
+tbody{tr:nth-child(odd) {
+    background-color:#eee;
+}
+tr:nth-child(even) {
+    background-color:#fff;
+}}
+ thead { 
+    background-color:lightblue;
+    cursor: pointer; 
+    font-weight: bold; 
+    background-repeat: no-repeat; 
+    background-position: center left; 
+    padding-left: 20px; 
+    border-right: 1px solid #dad9c7; 
+    margin-left: -1px; 
+} 
+
+}

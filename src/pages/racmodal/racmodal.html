@@ -6,10 +6,14 @@
 -->
 <ion-header>
 
-  <ion-navbar>
-    <ion-title>RacModal</ion-title>
+  <ion-navbar color="primary">
+    <ion-title>RAC Page</ion-title>
+    <ion-buttons end>
+      <a ion-button icon-only (click)="close()">
+        <ion-icon name="close"></ion-icon>
+      </a>
+    </ion-buttons>
   </ion-navbar>
-
 </ion-header>
 
 
@@ -51,9 +55,11 @@
   <ion-card *ngIf="vacArr.length>0">
 
     <ion-item>
+      
       <ion-label><strong> PLEASE SELECT VACANT BERTH :</strong></ion-label>
       <ion-select interface="popover" placeholder="SELECT BERTH" [(ngModel)]="vacBerth">
         <ion-option *ngFor="let item of vacArr" [value]="item">{{item.json.COACH_ID}} {{item.json.BERTH_NO}} {{item.json.CLASS}} {{item.json.SRC}} {{item.json.DEST}} {{item.json.ALLOTED}}</ion-option>
+
       </ion-select>
     </ion-item>
   </ion-card>

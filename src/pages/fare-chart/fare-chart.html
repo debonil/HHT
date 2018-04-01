@@ -1,0 +1,66 @@
+<!--
+  Generated template for the FareChartPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar color="primary">
+   <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>FareChart</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <!-- <ion-card>
+ <table>
+    <thead padding>
+      <tr>
+        <td>SRC</td>
+        <td>DEST</td>
+         <td *ngFor="let td of classArray">{{td}}</td>
+       
+ <td>CLASS</td>
+ <td>ADULT</td>
+ <td>CHILD</td>
+</tr>
+  </thead>
+    <tbody padding>
+      <tr *ngFor="let tr of fareArray">
+        <td>{{tr.SRC}}</td>
+        <td>{{tr.DEST}}</td>
+        <td>{{tr.CLASS}}</td>
+        <td>{{tr.ADULT}}</td>
+        <td>{{tr.CHILD}}</td>
+      </tr>
+    </tbody>
+ </table>
+</ion-card> -->
+
+<ion-card >
+  <table id="myTable" class="tablesorter"  width=100%>
+    <thead padding>
+      <tr height=30px>
+         <td align=center>CLASSES</td>
+         <td *ngFor="let td of classArray" colspan="2" align=center>{{td}}</td>
+      </tr>
+      <tr height=30px >
+        <td align=center>STATION</td>
+        <td *ngFor="let td of category" align=center>{{td}}</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let tr of finalArr" height=30px>
+        <td align=center>{{tr.key}}</td>
+         <td *ngFor="let td of tr.value" align=center>{{td}}
+         </td>
+      </tr>
+    </tbody>
+  </table>
+</ion-card>
+</ion-content>

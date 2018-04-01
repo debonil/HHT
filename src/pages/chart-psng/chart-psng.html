@@ -1,49 +1,64 @@
 <ion-content overflow-scroll=true>
     <ion-card *ngIf="!readonly">
         <ion-list *ngIf="!this.passengerSelectorViewObj.isActive">
-            <ion-card *ngFor="let item of rows" [hidden]="item._hidden" [color]="item.color" (press)="onItemPressed(item)">
-                <button ion-item [disabled]="item._isLocked" solid (tap)="item.toggleStatus()" padding>
-                    <text-avatar item-start [text]="item.BN" [color]="item.color"></text-avatar>
-                    <ion-label  no-padding col-4>{{ item.NAME }}<br>{{ item.S_A }}-{{ item.MEAL }} :: {{ item.MSG_STN }}  :: {{ item.VIP_MARKER }} </ion-label>
-                    <ion-label  no-padding col-3>{{ item.PNR }}<br>{{ item.QT }} {{ item.TKT }}</ion-label>
-                    <ion-label  no-padding >{{ item.BRD }}<br>{{ item.DEST }}</ion-label>
-                    <ion-label text-nowrap>{{ item.REMARKS }}</ion-label>
-                    <ion-label *ngIf="item.P_AMT>0">Pend Amt:{{ item.P_AMT }}</ion-label>
-                    <ion-label *ngIf="item.P_AMT>0">Pend Amt:{{ item.P_AMT }}</ion-label>
-                </button>
-
+                <!-- <ion-card *ngFor="let item of rows" [hidden]="item._hidden" [color]="item.color" (press)=onItemPressed(item) -->
+            <ion-card *ngFor="let item of rows" [hidden]="item._hidden" [color]="item.color">
+                <div ion-long-press [interval]="40" (onPressStart)="pressed()" (onPressing)="active(item)" (onPressEnd)="released(item)">
+                    <button ion-item [disabled]="item._isLocked" solid (tap)="item.toggleStatus()" padding>
+                        <text-avatar item-start [text]="item.BN" [color]="item.color"></text-avatar>
+                        <ion-label no-padding col-4 [color]='item.FONT_COLOR'>{{ item.NAME }}
+                            <br>{{ item.S_A }}- {{ item.MSG_STN }}- {{ item.VIP_MARKER }} </ion-label>
+                        <ion-label no-padding col-3 [color]='item.FONT_COLOR'>{{ item.PNR }}
+                            <br>{{item.TKT_NO}} {{ item.QT }}</ion-label>
+                        <ion-label no-padding [color]='item.FONT_COLOR'>{{ item.BRD }}
+                            <br>{{ item.DEST }}</ion-label>
+                        <!-- <ion-label text-nowrap [color]='item.FONT_COLOR'>{{ item.REMARKS }}</ion-label> -->
+                        <ion-label text-wrap [color]='item.FONT_COLOR'>{{ item.REMARKS }}</ion-label>
+                        <ion-label *ngIf="item.P_AMT>0" [color]='item.FONT_COLOR'>Pend Amt:{{ item.P_AMT }}</ion-label>
+                        <ion-label *ngIf="item.P_AMT>0" [color]='item.FONT_COLOR'>Pend Amt:{{ item.P_AMT }}</ion-label>
+                    </button>
+                </div>
 
             </ion-card>
+
         </ion-list>
 
         <ion-list *ngIf="this.passengerSelectorViewObj.isActive">
             <ion-card *ngFor="let item of rows" [hidden]="item._hidden" [color]="item.selected?'favorite':'light'" [attr.padding-left]="item.selected?' ':null">
                 <button ion-item solid (tap)="checkBoxChanged(item)" (press)="checkBoxChanged(item)" padding>
                     <text-avatar item-start [text]="item.BN" [color]="item.color"></text-avatar>
-                    <ion-label  no-padding col-4>{{ item.NAME }}<br>{{ item.S_A }}-{{ item.MEAL }} :: {{ item.MSG_STN }}  :: {{ item.VIP_MARKER }} </ion-label>
-                    <ion-label  no-padding col-3>{{ item.PNR }}<br>{{ item.QT }} {{ item.TKT }}</ion-label>
-                    <ion-label  no-padding >{{ item.BRD }}<br>{{ item.DEST }}</ion-label>
-                    <ion-label text-nowrap>{{ item.REMARKS }}</ion-label>
-                    <ion-label *ngIf="item.P_AMT>0">Pend Amt:{{ item.P_AMT }}</ion-label>
-                    <ion-label *ngIf="item.P_AMT>0">Pend Amt:{{ item.P_AMT }}</ion-label>
+                    <ion-label no-padding col-4 [color]='item.FONT_COLOR'>{{ item.NAME }}
+                        <br>{{ item.S_A }}- {{ item.MSG_STN }}- {{ item.VIP_MARKER }} </ion-label>
+                    <ion-label no-padding col-3 [color]='item.FONT_COLOR'>{{ item.PNR }}
+                        <br>{{item.TKT_NO}} {{ item.QT }}</ion-label>
+                    <ion-label no-padding [color]='item.FONT_COLOR'>{{ item.BRD }}
+                        <br>{{ item.DEST }}</ion-label>
+                    <!-- <ion-label text-nowrap [color]='item.FONT_COLOR'>{{ item.REMARKS }}</ion-label> -->
+                    <ion-label text-wrap [color]='item.FONT_COLOR'>{{ item.REMARKS }}</ion-label>
+                    <ion-label *ngIf="item.P_AMT>0" [color]='item.FONT_COLOR'>Pend Amt:{{ item.P_AMT }}</ion-label>
+                    <ion-label *ngIf="item.P_AMT>0" [color]='item.FONT_COLOR'>Pend Amt:{{ item.P_AMT }}</ion-label>
                 </button>
 
 
             </ion-card>
         </ion-list>
-        
+
     </ion-card>
     <ion-card *ngIf="readonly">
         <ion-list>
             <ion-item *ngFor="let item of rows" [hidden]="item._hidden" padding>
 
                 <text-avatar item-start [text]="item.BN" [color]="item.color"></text-avatar>
-                <ion-label  no-padding col-4>{{ item.NAME }}<br>{{ item.S_A }}-{{ item.MEAL }} :: {{ item.MSG_STN }}  :: {{ item.VIP_MARKER }} </ion-label>
-                <ion-label  no-padding col-3>{{ item.PNR }}<br>{{ item.QT }} {{ item.TKT }}</ion-label>
-                <ion-label  no-padding >{{ item.BRD }}<br>{{ item.DEST }}</ion-label>
-                <ion-label text-nowrap>{{ item.REMARKS }}</ion-label>
-                <ion-label *ngIf="item.P_AMT>0">Pend Amt:{{ item.P_AMT }}</ion-label>
-                <ion-label *ngIf="item.P_AMT>0">Pend Amt:{{ item.P_AMT }}</ion-label>
+                <ion-label no-padding col-4 [color]='item.FONT_COLOR'>{{ item.NAME }}
+                    <br>{{ item.S_A }}- {{ item.MSG_STN }}- {{ item.VIP_MARKER }} </ion-label>
+                <ion-label no-padding col-3 [color]='item.FONT_COLOR'>{{ item.PNR }}
+                    <br>{{item.TKT_NO}} {{ item.QT }}</ion-label>
+                <ion-label no-padding [color]='item.FONT_COLOR'>{{ item.BRD }}
+                    <br>{{ item.DEST }}</ion-label>
+                <!-- <ion-label text-nowrap [color]='item.FONT_COLOR'>{{ item.REMARKS }}</ion-label> -->
+                <ion-label text-wrap [color]='item.FONT_COLOR'>{{ item.REMARKS }}</ion-label>
+                <ion-label *ngIf="item.P_AMT>0" [color]='item.FONT_COLOR'>Pend Amt:{{ item.P_AMT }}</ion-label>
+                <ion-label *ngIf="item.P_AMT>0" [color]='item.FONT_COLOR'>Pend Amt:{{ item.P_AMT }}</ion-label>
             </ion-item>
         </ion-list>
     </ion-card>

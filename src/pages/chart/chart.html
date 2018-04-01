@@ -9,7 +9,9 @@
     <button ion-button icon-only menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>EHHT </ion-title>
+    <!-- modified by Neeraj -->
+    <ion-title>EHHT {{appVer}} </ion-title>
+    <!-- end -->
     <ion-buttons end>
       <!-- <button ion-button icon-only (tap)="clearChartData()">
         <ion-icon name="trash"></ion-icon>
@@ -21,7 +23,7 @@
         <ion-icon name="cloud-upload"></ion-icon>
       </button> -->
       <button ion-button icon-only (tap)="syncData()">
-        <ion-icon name="git-compare"></ion-icon>
+        <ion-icon name="git-compare" [color]="syncColor"></ion-icon>
       </button>
       <!-- <button ion-button icon-only (tap)="backend.postPassengerData2()">
         <ion-icon name="bug"></ion-icon>
@@ -30,7 +32,8 @@
   </ion-navbar>
 </ion-header>
 <ion-content >
-  <ion-grid class="grid-full">
+<!--   <ion-scroll  scrollY="true" > 
+ -->  <ion-grid class="grid-full">
     <ion-row *ngIf="!trainAssignment" justify-content-center>
       <ion-col col-12>
         <ion-card >
@@ -160,7 +163,8 @@
                     <ion-label  >No of Coaches downloaded:</ion-label>
                   </ion-col>
                   <ion-col col-6>
-                    <ion-label  >{{savedChartCoachList.length}} out of {{trainAssignment.ASSIGNED_COACHES.length+1}} </ion-label>
+                    <!-- <ion-label  >{{savedChartCoachList.length}} out of {{trainAssignment.ASSIGNED_COACHES.length+1}} </ion-label> -->
+                    <ion-label  >{{savedChartCoachList.length}} out of {{trainAssignment.TS_FLAG?(trainAssignment.TOTAL_COACH.length+1):trainAssignment.ASSIGNED_COACHES.length+1}} </ion-label>
                   </ion-col>
                 </ion-row>
             <ion-row >
@@ -241,12 +245,12 @@
       </ion-col>
     </ion-row>
   </ion-grid>
-
-</ion-content>
+<!--   </ion-scroll>
+ --></ion-content>
 <ion-footer>
   <ion-row>
     <ion-col col no-padding>
-      <button ion-button full (tap)="confirmAlert()"><ion-icon name="cloud-download"></ion-icon>&nbsp; New Chart/Duty</button>
+      <button ion-button full (tap)="confirmAlert()" ><ion-icon name="cloud-download"></ion-icon>&nbsp; New Chart/Duty</button>
     </ion-col>
     <div class="partition-line"></div>
     <ion-col col no-padding>

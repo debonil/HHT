@@ -32,8 +32,12 @@ import { SuperTabsModule } from 'ionic2-super-tabs';
 import { DroppedETktPassengerPage } from '../pages/dropped-e-tkt-passenger/dropped-e-tkt-passenger';
 import { PsngDataServiceProvider } from '../providers/psng-data-service/psng-data-service';
 import { SearchPage } from '../pages/search/search';
+import { PnrDataPage } from '../pages/pnr-data/pnr-data';
+
 import { RacTabPage } from '../pages/rac-tab/rac-tab';
 import { StorageServiceProvider } from '../providers/storage-service/storage-service';
+import { AboutUsPage } from '../pages/about-us/about-us';
+import { FareChartPage } from "../pages/fare-chart/fare-chart";
 
 
 @Component({
@@ -63,13 +67,16 @@ export class MyApp {
   ntpassengers=NtPassengersPage;
   doctors=DoctorsPage;
   //pages: Array<{title: string, component: any}>;
-
+  about=AboutUsPage;
+fareChart=FareChartPage;
+  doCaptcha : boolean = false;
   constructor(
     public platform: Platform, 
     public statusBar: StatusBar, 
     public splashScreen: SplashScreen ,
     public renderer : Renderer, 
     //public storageProvider: StorageProvider,
+    
     public event : Events, 
     public storageServiceProvider:StorageServiceProvider,
     public menuCtrl : MenuController,
@@ -79,33 +86,39 @@ export class MyApp {
     this.initializeApp();
     
     this.renderer.listenGlobal('document','mfpjsonjsloaded',()=>{
-      //alert('MFP LOADED');
       console.log('--> mfpjsonjsloaded rendered');
       this.storageServiceProvider.init().then(s=>{
         this.storageServiceProvider.getDocuments(
           this.storageServiceProvider.collectionName.TRAIN_ASSNGMNT_TABLE
         ).then(result=>{
-              //console.log(result);
+             //console.log(result);
                if(result[0]&&result[0]["json"]&&result[0]["json"]["USER_ID"]){
                 this.username=result["USER_ID"];
+                console.log(this.username);
                 this.pdsp.findAll().subscribe(data => {
+                  //alert('subscribed in APPComponent');
                   //console.log(data.coachwiseChartData.length);
                 });
                 this.alertToast("Auto login successfull!!");
                 this.nav.setRoot(this.downloadChartPage, {user : this.username});
                }
+               /* else{
+                this.alertToast("Bring code to login !!");
+               } */
               });
         this.splashScreen.hide();
         //this.ionViewDidLoad();
       });
     });
-
+    
     this.event.subscribe('userEntered',userName=>{
       if(userName!=undefined && userName !== "" ){
         this.username = userName;
       }
     });
-
+    
+  
+    
   }
 
   initializeApp() {
@@ -120,7 +133,9 @@ export class MyApp {
   }
 
   onLoad(page: any){
-   // alert('Page load ' + page.html());
+    //console.log(page);
+    
+    //alert('Page load ' + page.html());
     //this.nav.setRoot(page, {user : this.username});
     this.nav.push(page, {user : this.username});
     this.menuCtrl.close();

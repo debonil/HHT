@@ -80,7 +80,7 @@
             <strong> Sync progress stats</strong>
           </ion-card-header>
           <ion-card-content>
-            <ion-grid>
+            <!-- <ion-grid>
               <ion-row>
                 <ion-col align="center"><strong>Module</strong></ion-col>
                 <ion-col align="center"><strong>Total Dirty Records</strong></ion-col>
@@ -118,7 +118,56 @@
 
               </ion-row>
 
-            </ion-grid>
+            </ion-grid> -->
+            <table width=100%>
+              <thead>
+                <tr>
+                  <td align="center">Module</td>
+                  <td align="center">Total Dirty <br>Records</td>
+                  <td align="center">Sync <br>Success</td>
+                  <td align="center">Sync <br>Fail</td>
+                  <td align="center">New <br>Data</td>
+                  <td align="center">Sync<br> Time</td>
+                </tr>
+              </thead>             
+              <tbody>
+                <tr>
+                  <td align="center">Passenger</td>
+                  <td align="center">{{syncProvider.dirtyPsngCount}}</td>
+                  <td align="center">{{syncProvider.dirtyPsngSyncSuccessCount}}</td>
+                  <td align="center">{{syncProvider.dirtyPsngSyncFailureCount}}</td>
+                  <td align="center">{{syncProvider.differentialPsngDownloadedCount}}</td>
+                  <td align="center">{{syncProvider.sync_time[0]}}</td>
+                </tr>
+                <tr>
+                  <td align="center">Vacant Berth</td>
+                  <td align="center">{{syncProvider.dirtyVacBerthCount}}</td>
+
+                  <td align="center" *ngIf="dirtyVacSyncSuccess.length==0">{{syncProvider.dirtyVacBerthSyncSuccessCount}}</td>
+                  <td align="center" *ngIf="dirtyVacSyncSuccess.length>0">0</td>
+
+                  <td align="center" *ngIf="dirtyVacSyncFail.length==0">{{syncProvider.dirtyVacBerthSyncFailureCount}}</td>
+                  <td align="center" *ngIf="dirtyVacSyncFail.length>0">0</td>
+
+                  <td align="center" *ngIf="dirtyVacDiffData.length==0">{{syncProvider.differentialVacBerthDownloadedCount}}</td>
+                  <td align="center" *ngIf="dirtyVacDiffData.length>0">0</td>
+
+                  <td align="center">{{syncProvider.sync_time[1]}}</td>
+                </tr>
+                <tr>
+                  <td align="center">EFT</td>
+                  <td align="center">{{syncProvider.dirtyEFTCount}}</td>
+                  <td align="center" *ngIf="dirtyEFTSuccess.length==0">{{syncProvider.dirtyEFTSyncSuccessCount}}</td>
+                  <td align="center" *ngIf="dirtyEFTSuccess.length>0">0</td>
+
+                  <td align="center" *ngIf="dirtyEFTFail.length==0">{{syncProvider.dirtyEFTSyncFailureCount}}</td>
+                  <td align="center" *ngIf="dirtyEFTFail.length>0">0</td>
+                  <td align="center"></td>
+<!--                   <td align="center">{{syncProvider.differentialPsngDownloadedCount}}</td>
+ -->                  <td align="center">{{syncProvider.sync_time[2]}}</td>
+                </tr>
+              </tbody>
+            </table>
             <!-- <ion-list >
                   <ion-item text-wrap>
                       <ion-label>No of Dirty Psng found : {{syncProvider.dirtyPsngCount}}</ion-label>

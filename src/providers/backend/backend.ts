@@ -5,6 +5,7 @@
 
 import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
+import { provideModuleLoader } from 'ionic-angular/util/module-loader';
 
 declare var WLResourceRequest;
 
@@ -181,19 +182,22 @@ export class BackendProvider {
     console.log(username+password);
      return new Promise(
       resolve => {
+       // alert(username+password);
         let resourceRequest = new WLResourceRequest("/adapters/ADAPTER_HHT/userAuthentication",WLResourceRequest.GET);
         
         resourceRequest.setQueryParameter("params", [username,password]);
         resourceRequest.send().then((response) => {
+          console.log(response);
           //alert("AUTH::"+JSON.stringify(response));
-          var OBJ = {
+         /*  var OBJ = {
             CODE : response.status,
             TEXT : response.responseText,
             data : response.responseJSON
           };
-          resolve(OBJ);
+          resolve(OBJ); */
+          resolve(response);
         },(failure) => {
-          alert("OBJ::"+JSON.stringify(failure));
+          alert("authenticateUser Failure : "+JSON.stringify(failure));
           resolve(failure);
         }
     )
@@ -213,21 +217,47 @@ getTrainAssignment(userId){
         response.responseJSON['ASSIGNED_COACHES']
         =response.responseJSON.ASSIGNED_COACH.map(val=>val.COACH_ID).sort(function (a,b) {
           //console.log(this.util);
-          var cca=  a.replace(/[^A-Z\.]/g, '');
-          var ccb= b.replace(/[^A-Z\.]/g, '');
-          if (cca < ccb)
-          return -1;
-        if (cca > ccb)
-          return 1;
-
-          var cna= parseInt(a.replace(/[^0-9\.]/g, ''), 10);
-          var cnb= parseInt(b.replace(/[^0-9\.]/g, ''), 10);
-          if (cna < cnb)
+            var cca=  a.replace(/[^A-Z\.]/g, '');
+            var ccb= b.replace(/[^A-Z\.]/g, '');
+            if (cca < ccb)
             return -1;
-          if (cna > cnb)
+          if (cca > ccb)
             return 1;
-         return 0;
-      });
+
+            var cna= parseInt(a.replace(/[^0-9\.]/g, ''), 10);
+            var cnb= parseInt(b.replace(/[^0-9\.]/g, ''), 10);
+            if (cna < cnb)
+              return -1;
+            if (cna > cnb)
+              return 1;
+          return 0;
+        });
+
+        var TOTAL_COACH = response.responseJSON.TOTAL_COACH.map(coach=>coach.COACH_ID);
+       /*  TOTAL_COACH.sort(function (a,b) {
+          //console.log(this.util);
+            var cca=  a.replace(/[^A-Z\.]/g, '');
+            var ccb= b.replace(/[^A-Z\.]/g, '');
+            if (cca < ccb)
+            return -1;
+          if (cca > ccb)
+            return 1;
+
+            var cna= parseInt(a.replace(/[^0-9\.]/g, ''), 10);
+            var cnb= parseInt(b.replace(/[^0-9\.]/g, ''), 10);
+            if (cna < cnb)
+              return -1;
+            if (cna > cnb)
+              return 1;
+          return 0;
+        }); */
+        console.log(TOTAL_COACH);
+        response.responseJSON.FOREIGN_COACHES = [];
+        response.responseJSON.TOTAL_COACHES = [];
+        TOTAL_COACH.forEach(coach=>{
+          response.responseJSON.TOTAL_COACHES .push(coach);
+          response.responseJSON.ASSIGNED_COACHES.indexOf(coach)==-1?response.responseJSON.FOREIGN_COACHES.push(coach):'';
+        });
       }
       
       //Added by DG for adding new field  ISL_ARR to it.
@@ -236,11 +266,12 @@ getTrainAssignment(userId){
         =response.responseJSON.ISL.map(val=>val.STN_CODE.trim());
       }
       
-      var obj = {
+      /* var obj = {
         CODE : response.status,
         TEXT : response.responseJSON
       };
-      resolve(obj);
+      resolve(obj); */
+      resolve(response);
     },failure=>{
       console.log('get train assignment failure ' + JSON.stringify(failure));
       resolve(failure);
@@ -326,6 +357,49 @@ addNewPassenger(dirtyPassenger) {
   })
 }
 
+getDifferentialWaitList(train_id, lastLoadTime, currentTime){
+  return new Promise(resolve=>{
+    let resourceRequest = new WLResourceRequest("/adapters/ADAPTER_HHT/getDifferentialWaitList",WLResourceRequest.GET);
+      resourceRequest.setQueryParameter("params", [train_id, lastLoadTime, currentTime]);
+      resourceRequest.send().then((response)=>{
+        resolve(response);
+      },failure=>{
+        alert('BKEND DIFFERENTIAL_WL FAILURE: ' + JSON.stringify(failure));
+        resolve(failure);
+      });  
+  });
+}
+
+getForeignWaitList(train_id,coach_id, loadTime){
+  return new Promise(resolve=>{
+    let resourceRequest = new WLResourceRequest("/adapters/ADAPTER_HHT/getForeignWaitList",WLResourceRequest.GET);
+      resourceRequest.setQueryParameter("params", [train_id,coach_id,loadTime]);
+      resourceRequest.send().then((response)=>{
+        resolve(response);
+      },failure=>{
+        alert('BKEND FOREIGN_WL FAILURE: ' + JSON.stringify(failure));
+        resolve(failure);
+      });  
+  });
+}
+
+getDifferentialForeignWaitList(train_id, coachList, lastLoadTime, currentTime){
+  return new Promise(resolve=>{
+    /* let resourceRequest = new WLResourceRequest("/adapters/ADAPTER_HHT/getDifferentialForeignWaitList",WLResourceRequest.GET, 1000); */
+    let resourceRequest = new WLResourceRequest("/adapters/ADAPTER_HHT/getDifferentialForeignWaitList",WLResourceRequest.GET);
+      resourceRequest.setQueryParameter("params", [train_id, coachList, lastLoadTime, currentTime]);
+      resourceRequest.send().then((response)=>{
+        //resolve(response);
+        response.responseJSON = response.responseJSON.reduce((a,b)=>{
+          return a.concat(b);
+        },[]);
+        resolve(response);
+      },failure=>{
+        alert('BKEND FOREIGN_WL FAILURE: ' + JSON.stringify(failure));
+        resolve(failure);
+      });  
+  });
+}
 
 /*
  * Load passengers for train 
@@ -333,15 +407,20 @@ addNewPassenger(dirtyPassenger) {
 getPassenger(train_id,coach_id, loadTime) {
      return new Promise(
       resolve => {
+        /* let resourceRequest = new WLResourceRequest("/adapters/ADAPTER_HHT/getPassengers",WLResourceRequest.GET, 1000); */
         let resourceRequest = new WLResourceRequest("/adapters/ADAPTER_HHT/getPassengers",WLResourceRequest.GET);
         resourceRequest.setQueryParameter("params", [train_id,coach_id,loadTime]);
         resourceRequest.send().then((response) => {
-          var OBJ = {
+          console.log(response);
+          
+          /* var OBJ = {
             CODE : response.status,
             TEXT : response.responseJSON
           };
-          resolve(OBJ);
+          resolve(OBJ); */
+          resolve(response);
         },(failure) => {
+          alert(train_id + '-' +coach_id+ '-' + loadTime + ' BKEND PSGN failure: ' + JSON.stringify(failure));
           resolve(failure);
         }
     )
@@ -352,18 +431,23 @@ getPassenger(train_id,coach_id, loadTime) {
 /*
  * loading Differential passenger
  */
-getDifferentialPassenger(train_id, lastLoadtime, currentTime) {
+getDifferentialPassenger(train_id, coachList, lastLoadtime, currentTime) {
      return new Promise(
       resolve => {
         let resourceRequest = new WLResourceRequest("/adapters/ADAPTER_HHT/getDifferentialPassengers",WLResourceRequest.GET);
-        resourceRequest.setQueryParameter("params", [train_id, lastLoadtime, currentTime]);
+        resourceRequest.setQueryParameter("params", [train_id, coachList, lastLoadtime, currentTime]);
         resourceRequest.send().then((response) => {
-            var OBJ = {
+          
+            /* var OBJ = {
               CODE : response.status,
               TEXT : response.responseText,
               data : response.responseJSON
             };
-            resolve(OBJ);
+            resolve(OBJ); */
+            response.responseJSON = response.responseJSON.reduce((a,b)=>{
+              return a.concat(b);
+            },[]);
+            resolve(response);
         },(failure) => {
           resolve(failure);
         }
@@ -439,13 +523,13 @@ getVacantBerth(train_id, coach_id, loadTime) {
         let resourceRequest = new WLResourceRequest("/adapters/ADAPTER_HHT/getVacantberths",WLResourceRequest.GET);
         resourceRequest.setQueryParameter("params", [train_id, coach_id, loadTime]);
         resourceRequest.send().then((response) => {
-          var OBJ = {
+          /* var OBJ = {
             CODE : response.status,
             TEXT : response.responseText,
             data : response.responseJSON
           };
-          resolve(OBJ);
-            //resolve(response.responseText);
+          resolve(OBJ); */
+          resolve(response);
         },(failure) => {
           resolve(failure);
         }
@@ -584,18 +668,32 @@ getDynamicFare(trainId) {
         let resourceRequest = new WLResourceRequest("/adapters/ADAPTER_HHT/getDynamicFare",WLResourceRequest.GET);
         resourceRequest.setQueryParameter("params", [trainId]);
         resourceRequest.send().then((response) => {
-          var OBJ = {
+          /* var OBJ = {
             CODE : response.status,
             TEXT : response.responseText,
             data : response.responseJSON
           };
-          resolve(OBJ);
-            //resolve(response.responseText);
+          resolve(OBJ); */
+          resolve(response);
         },(failure) => {
           resolve(failure);
         }
     )
   })
+}
+
+getDifferentialDynamicFare(trainId, lastLoadtime, currentTime) {
+  return new Promise(
+   resolve => {
+     let resourceRequest = new WLResourceRequest("/adapters/ADAPTER_HHT/getDynamicFare",WLResourceRequest.GET);
+     resourceRequest.setQueryParameter("params", [trainId, lastLoadtime, currentTime]);
+     resourceRequest.send().then((response) => {
+       resolve(response);
+     },(failure) => {
+       resolve(failure);
+     }
+    );
+  });
 }
 
 /*
@@ -607,13 +705,13 @@ getEFTDetails(trainId) {
         let resourceRequest = new WLResourceRequest("/adapters/ADAPTER_HHT/getEFTDetails",WLResourceRequest.GET);
         resourceRequest.setQueryParameter("params", [trainId]);
         resourceRequest.send().then((response) => {
-          var OBJ = {
+          /* var OBJ = {
             CODE : response.status,
             TEXT : response.responseText,
             data : response.responseJSON
           };
-          resolve(OBJ);
-            //resolve(response.responseText);
+          resolve(OBJ); */
+          resolve(response);
         },(failure) => {
           resolve(failure);
         }
@@ -674,15 +772,11 @@ getWaitlist(trainId, loadTime) {
 getChartLoadInfo(trainId){
   try{
     return new Promise(resolve=>{
+      /* let resourceRequest = new WLResourceRequest("/adapters/ADAPTER_HHT/getChartLoadInfo",WLResourceRequest.GET, 15000); */
       let resourceRequest = new WLResourceRequest("/adapters/ADAPTER_HHT/getChartLoadInfo",WLResourceRequest.GET);
       resourceRequest.setQueryParameter("params", [trainId]);
       resourceRequest.send().then(response=>{
-        console.log('getChartLoadInfo: ',response);
-        var obj = {
-          CODE : response.status,
-          TEXT : response.responseJSON
-        };
-        resolve(obj);
+        resolve(response);
       },failure=>{
         resolve(failure);
       });
@@ -702,17 +796,36 @@ loaddroppedETickets(train_id) {
         let resourceRequest = new WLResourceRequest("/adapters/ADAPTER_HHT/droppedETickets",WLResourceRequest.GET);
         resourceRequest.setQueryParameter("params", [train_id]);
         resourceRequest.send().then((response) => {
-          var OBJ = {
+          /* var OBJ = {
             CODE : response.status,
             TEXT : response.responseText
           };
-          resolve(OBJ);
-            //resolve(response.responseText);
+          resolve(OBJ); */
+          resolve(response);
         },(failure) => {
           resolve(failure);
         }
     )
   })
+}
+
+getDroppedETickets(train_id) {
+  return new Promise(
+   resolve => {
+     let resourceRequest = new WLResourceRequest("/adapters/ADAPTER_HHT/droppedETickets",WLResourceRequest.GET);
+     resourceRequest.setQueryParameter("params", [train_id]);
+     resourceRequest.send().then((response) => {
+       /* var OBJ = {
+         CODE : response.status,
+         TEXT : response.responseText
+       };
+       resolve(OBJ); */
+       resolve(response);
+     },(failure) => {
+       resolve(failure);
+     }
+ )
+})
 }
 
 

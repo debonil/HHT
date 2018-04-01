@@ -35,7 +35,7 @@ import { ChartPsngPage } from '../pages/chart-psng/chart-psng';
 import { GotDownPsgnPageModule } from '../pages/got-down-psgn/got-down-psgn.module';
 import { BoardedAtPsgnPageModule } from '../pages/boarded-at-psgn/boarded-at-psgn.module';
 import { ChartPreviewPageModule } from '../pages/chart-preview/chart-preview.module';
-import { PopoverPageModule} from '../pages/popover/popover.module'
+import { PopoverPageModule } from '../pages/popover/popover.module'
 import { WaitlistPageModule } from '../pages/waitlist/waitlist.module';
 import { WaitlistModelPageModule } from '../pages/waitlist-model/waitlist-model.module';
 import { PsngDataServiceProvider } from '../providers/psng-data-service/psng-data-service';
@@ -52,19 +52,36 @@ import { DoctorsPageModule } from '../pages/doctors/doctors.module';
 import { DirectivesModule } from '../directives/directives.module';
 import { ComponentsModule } from '../components/components.module';
 import { WaitListPsngComponent } from '../components/wait-list-psng/wait-list-psng';
+
+//import { ExpandableComponent } from '../components/expandable/expandable';
 import { DataSyncStatusPageModule } from '../pages/data-sync-status/data-sync-status.module';
 import { EftServiceProvider } from '../providers/eft-service/eft-service';
 import { EftFormPage } from '../pages/eft-form/eft-form';
+import { AboutUsPageModule } from '../pages/about-us/about-us.module';
+import { FareChartPageModule } from '../pages/fare-chart/fare-chart.module';
+
+import { PnrDataPageModule } from '../pages/pnr-data/pnr-data.module';
+import { Device } from '@ionic-native/device';
+//import { PnrDataPage } from '../pages/pnr-data/pnr-data';
+import { Uid } from '@ionic-native/uid';
+import { AndroidPermissions } from '@ionic-native/android-permissions'; 
 import { StorageServiceProvider } from '../providers/storage-service/storage-service';
+import { LongPressModule } from 'ionic-long-press';
+//import { HTTP } from '@ionic-native/http';
+//import { HttpClientModule } from '@angular/common/http';
+//import { RestProvider } from '../providers/rest/rest';
+import { EftWithPnrPage } from '../pages/eft-with-pnr/eft-with-pnr';
 
 @NgModule({
   declarations: [
-     MyApp,
-     HomePage,
-     ChartPage,
-     ChartPsngPage,
-     EftFormPage
-     //ComponentsModule,
+    MyApp,
+    HomePage,
+    ChartPage,
+    ChartPsngPage,
+    EftFormPage,
+    EftWithPnrPage
+    //ComponentsModule,
+    //,ExpandableComponent
   ],
   imports: [
     BrowserModule,
@@ -100,7 +117,12 @@ import { StorageServiceProvider } from '../providers/storage-service/storage-ser
     DoctorsPageModule,
     DataSyncStatusPageModule,
     RacTabPageModule,
-    SearchPageModule
+    SearchPageModule,
+    PnrDataPageModule,
+    AboutUsPageModule,
+    FareChartPageModule,
+    //HttpClientModule,
+    LongPressModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -109,13 +131,16 @@ import { StorageServiceProvider } from '../providers/storage-service/storage-ser
     ChartPage,
     ChartPsngPage,
     WaitListPsngComponent,
-    EftFormPage
+    EftFormPage,
+    //ExpandableComponent,
+    EftWithPnrPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    { provide: ErrorHandler, useClass: IonicErrorHandler },
     Network,
+    
     //StorageProvider,
     LoggerProvider,
     BackendProvider,
@@ -127,7 +152,12 @@ import { StorageServiceProvider } from '../providers/storage-service/storage-ser
     // SQLite,
     Vibration,
     DataLoadProvider,
-    EftServiceProvider
+    EftServiceProvider,
+    Device,
+    Uid,
+    AndroidPermissions,
+    //HTTP,
+    //RestProvider
   ]
 })
-export class AppModule {}
+export class AppModule { }

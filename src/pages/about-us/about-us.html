@@ -1,0 +1,921 @@
+<!--
+  Generated template for the AboutUsPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-navbar>
+      <ion-title>About </ion-title>
+      <ion-buttons end>
+        <a ion-button icon-only (click)="close()">
+          <ion-icon name="close"></ion-icon>
+        </a>
+      </ion-buttons>
+    </ion-navbar>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content>
+  <ion-card>
+
+  </ion-card>
+
+
+  <ion-card>
+    <br>
+    <br>
+    <h1 text-center>App Information</h1>
+    <br>
+
+
+    <!-- Header -->
+    <ion-list>
+      <ion-row>
+        <ion-col>
+          <ion-label text-right>
+            <h2>
+              IMEI Number
+            </h2>
+          </ion-label>
+        </ion-col>
+        <ion-col>
+          <ion-label text-wrap>
+            <h2>
+              {{getIMEINo()}}
+            </h2>
+          </ion-label>
+        </ion-col>
+      </ion-row>
+    </ion-list>
+    <ion-list>
+      <ion-row>
+        <ion-col>
+          <ion-label text-right>
+            <h2>
+              App Version
+            </h2>
+          </ion-label>
+        </ion-col>
+        <ion-col>
+          <ion-label>
+            <h2>
+              {{getAppVer()}}
+            </h2>
+          </ion-label>
+        </ion-col>
+      </ion-row>
+    </ion-list>
+
+    <ion-list>
+      <ion-row>
+        <ion-col>
+          <ion-label text-right>
+            <h2>
+              os version
+            </h2>
+          </ion-label>
+        </ion-col>
+        <ion-col>
+          <ion-label>
+            <h2>
+              {{getOSVer()}}
+            </h2>
+          </ion-label>
+        </ion-col>
+      </ion-row>
+    </ion-list>
+    <ion-list>
+      <ion-row>
+        <ion-col>
+          <ion-label text-right>
+            <h2>
+              Release Date
+            </h2>
+          </ion-label>
+        </ion-col>
+        <ion-col>
+          <ion-label>
+            <h2>
+              {{getReleaseDate()}}
+            </h2>
+          </ion-label>
+        </ion-col>
+      </ion-row>
+    </ion-list>
+
+    <ion-list>
+      <ion-row>
+        <ion-col>
+          <ion-label text-right>
+            <h2>
+              Hardware Serial No
+            </h2>
+          </ion-label>
+        </ion-col>
+        <ion-col>
+          <ion-label>
+            <h2>
+              <!--   <a class="item" (click)="iconInfo()">click me for icon description</a> -->
+              {{getSerialNo()}}
+            </h2>
+          </ion-label>
+        </ion-col>
+      </ion-row>
+    </ion-list>
+
+    <!--  <ion-card padding>
+      <ion-row>
+        <ion-col>
+          <ion-label>
+            <h2>
+              IMEI Number
+            </h2>
+          </ion-label>
+          
+        </ion-col>
+        <ion-col>
+          <ion-label text-wrap>
+            <h2>
+              {{getIMEINo()}}
+            </h2>
+          </ion-label>
+        </ion-col>
+      </ion-row>
+    </ion-card>
+ -->
+    <!-- <ion-card padding>
+      <ion-row>
+        <ion-col>
+          <ion-label>
+            <h2>
+              App Version
+            </h2>
+          </ion-label>
+         
+        </ion-col>
+        <ion-col>
+          <ion-label>
+            <h2>
+              {{getAppVer()}}
+            </h2>
+          </ion-label>
+        </ion-col>
+      </ion-row>
+    </ion-card> -->
+
+    <!-- <ion-card padding>
+      <ion-row>
+        <ion-col>
+          <ion-label>
+            <h2>
+              os version
+            </h2>
+          </ion-label>
+        </ion-col>
+        <ion-col>
+          <ion-label>
+            <h2>
+              {{getOSVer()}}
+            </h2>
+          </ion-label>
+        </ion-col>
+      </ion-row>
+    </ion-card> -->
+
+    <!--   <ion-card padding>
+      <ion-row>
+        <ion-col>
+          <ion-label>
+            <h2>
+              Release Date
+            </h2>
+          </ion-label>
+
+        </ion-col>
+        <ion-col>
+          <ion-label>
+            <h2>
+              {{getReleaseDate()}}
+            </h2>
+          </ion-label>
+        </ion-col>
+      </ion-row>
+    </ion-card>
+ -->
+    <!--   <ion-card padding>
+      <ion-row>
+        <ion-col>
+          <ion-label>
+            <h2>
+              Hardware Serial No
+            </h2>
+          </ion-label>
+         
+        </ion-col>
+        <ion-col>
+          <ion-label>
+            <h2>
+             
+              {{getSerialNo()}}
+            </h2>
+          </ion-label>
+        </ion-col>
+      </ion-row>
+    </ion-card>
+ -->
+    <!--  <ion-card padding>
+      <ion-row>
+        <ion-col>
+          <ion-label>
+            <h2>
+              Icon Link
+            </h2>
+          </ion-label>
+         
+        </ion-col>
+        <ion-col>
+          <ion-label>
+            <h2>
+              <a class="item" (click)="iconInfo()">click me for icon description</a>
+
+            </h2>
+          </ion-label>
+        </ion-col>
+      </ion-row>
+    </ion-card> -->
+
+
+  </ion-card>
+  <!--  Next Part -->
+
+  <ion-card>
+
+    <br>
+    <br>
+    <h1 text-center>Remarks Symbols Information</h1>
+    <br>
+
+    <ion-row>
+      <ion-col>
+        <ion-item>
+          <ion-col>
+            <a>
+              SH
+            </a>
+          </ion-col>
+          <ion-col>
+            Shifted
+          </ion-col>
+        </ion-item>
+      </ion-col>
+
+      <ion-col>
+        <ion-item>
+          <ion-col>
+            <a>
+              GA
+            </a>
+          </ion-col>
+          <ion-col>
+            Got Down At
+          </ion-col>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <ion-item>
+          <ion-col>
+            <a>
+              BA
+            </a>
+          </ion-col>
+          <ion-col>
+            Boarded At
+          </ion-col>
+        </ion-item>
+      </ion-col>
+
+      <ion-col>
+        <ion-item>
+          <ion-col>
+            <a>
+              EFT
+            </a>
+          </ion-col>
+          <ion-col>
+            EFT
+          </ion-col>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <ion-item>
+          <ion-col>
+            <a>
+              WC
+            </a>
+          </ion-col>
+          <ion-col>
+            Waitlist Confirm
+          </ion-col>
+        </ion-item>
+      </ion-col>
+
+      <ion-col>
+        <ion-item>
+          <ion-col>
+            <a>
+              WS
+            </a>
+          </ion-col>
+          <ion-col>
+            Waitlist standing
+          </ion-col>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <ion-item>
+          <ion-col>
+            <a>
+              ST
+            </a>
+          </ion-col>
+          <ion-col>
+            Standing
+          </ion-col>
+        </ion-item>
+      </ion-col>
+
+      <ion-col>
+        <ion-item>
+          <ion-col>
+            <a>
+              RCNF
+            </a>
+          </ion-col>
+          <ion-col>
+            RAC Confirm
+          </ion-col>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+  </ion-card>
+  
+  <br>
+  <br>
+  <h1 text-center>Symbols Information</h1>
+  <br>
+
+
+
+
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            <ion-icon name="sync"></ion-icon>
+          </a>
+        </ion-col>
+        <ion-col>
+          Refresh page
+        </ion-col>
+      </ion-item>
+    </ion-col>
+
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            <ion-icon name="contacts"></ion-icon>
+          </a>
+          <!--  <ion-img src="assets/icon/vacant-berth.png"  width="5" height="5"/> -->
+        </ion-col>
+        <ion-col>
+          Mutual shift for passengers
+        </ion-col>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
+
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            <ion-icon name="contact"></ion-icon>
+          </a>
+        </ion-col>
+        <ion-col>
+          Normal shift for passengers
+        </ion-col>
+      </ion-item>
+    </ion-col>
+
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            <ion-icon name="walk"></ion-icon>
+          </a>
+          <!--  <ion-img src="assets/icon/vacant-berth.png"  width="5" height="5"/> -->
+        </ion-col>
+        <ion-col>
+          Got down passengers
+        </ion-col>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
+
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            <ion-icon name="train"></ion-icon>
+          </a>
+        </ion-col>
+        <ion-col>
+          Boarding passengers
+        </ion-col>
+      </ion-item>
+    </ion-col>
+
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            <ion-icon name="git-compare"></ion-icon>
+          </a>
+          <!--  <ion-img src="assets/icon/vacant-berth.png"  width="5" height="5"/> -->
+        </ion-col>
+        <ion-col>
+          Sync data
+        </ion-col>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
+  <ion-row>
+
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            <ion-icon name="information-circle"></ion-icon>
+          </a>
+        </ion-col>
+        <ion-col>
+          Information of PNR
+        </ion-col>
+      </ion-item>
+    </ion-col>
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            ~
+          </a>
+          <!--  <ion-img src="assets/icon/vacant-berth.png"  width="5" height="5"/> -->
+        </ion-col>
+        <ion-col>
+          Etkt Passenger
+        </ion-col>
+      </ion-item>
+    </ion-col>
+
+  </ion-row>
+
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            <ion-icon name="archive"></ion-icon>
+          </a>
+        </ion-col>
+        <ion-col>
+          Save chart page in device
+        </ion-col>
+      </ion-item>
+    </ion-col>
+
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            <ion-icon name="eye"></ion-icon>
+          </a>
+          <!--  <ion-img src="assets/icon/vacant-berth.png"  width="5" height="5"/> -->
+        </ion-col>
+        <ion-col>
+          Preview before save
+        </ion-col>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
+
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            E
+          </a>
+        </ion-col>
+        <ion-col>
+          Etkt Passengers
+        </ion-col>
+      </ion-item>
+    </ion-col>
+
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            V
+          </a>
+          <!--  <ion-img src="assets/icon/vacant-berth.png"  width="5" height="5"/> -->
+        </ion-col>
+        <ion-col>
+          Veg Meal
+        </ion-col>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
+
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            C
+          </a>
+        </ion-col>
+        <ion-col>
+          Credit card
+        </ion-col>
+      </ion-item>
+    </ion-col>
+
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            Z
+          </a>
+          <!--  <ion-img src="assets/icon/vacant-berth.png"  width="5" height="5"/> -->
+        </ion-col>
+        <ion-col>
+          Concession Ticket
+        </ion-col>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
+
+
+
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            ES
+          </a>
+        </ion-col>
+        <ion-col>
+          Escorting Staff
+        </ion-col>
+      </ion-item>
+    </ion-col>
+
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            $
+          </a>
+          <!--  <ion-img src="assets/icon/vacant-berth.png"  width="5" height="5"/> -->
+        </ion-col>
+        <ion-col>
+          Original passenger upgraded
+        </ion-col>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            e
+          </a>
+        </ion-col>
+        <ion-col>
+          Ticket lost
+        </ion-col>
+      </ion-item>
+    </ion-col>
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            ENV
+          </a>
+        </ion-col>
+        <ion-col>
+
+          Etkt Non Veg Passenger
+        </ion-col>
+      </ion-item>
+    </ion-col>
+
+
+  </ion-row>
+
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            P
+          </a>
+        </ion-col>
+        <ion-col>
+          Pre bought Ticket
+        </ion-col>
+      </ion-item>
+    </ion-col>
+
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            Y
+          </a>
+          <!--  <ion-img src="assets/icon/vacant-berth.png"  width="5" height="5"/> -->
+        </ion-col>
+        <ion-col>
+          YTSK Booked Ticket
+        </ion-col>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            D
+          </a>
+        </ion-col>
+        <ion-col>
+          Deny meal
+        </ion-col>
+      </ion-item>
+    </ion-col>
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            NV
+          </a>
+          <!--  <ion-img src="assets/icon/vacant-berth.png"  width="5" height="5"/> -->
+        </ion-col>
+        <ion-col>
+          Non Veg Food Choice
+        </ion-col>
+      </ion-item>
+    </ion-col>
+
+  </ion-row>
+
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            &
+          </a>
+        </ion-col>
+        <ion-col>
+          Non Veg Etkt Passenger
+        </ion-col>
+      </ion-item>
+    </ion-col>
+
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            %
+          </a>
+          <!--  <ion-img src="assets/icon/vacant-berth.png"  width="5" height="5"/> -->
+        </ion-col>
+        <ion-col>
+          Non Veg non Etkt Passenger
+        </ion-col>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            ^
+          </a>
+        </ion-col>
+        <ion-col>
+          Veg Etkt Passenger
+        </ion-col>
+      </ion-item>
+    </ion-col>
+
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            #
+          </a>
+          <!--  <ion-img src="assets/icon/vacant-berth.png"  width="5" height="5"/> -->
+        </ion-col>
+        <ion-col>
+          Non Veg non Etkt Passenger
+        </ion-col>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            *
+          </a>
+        </ion-col>
+        <ion-col>
+          VIP Passenger
+        </ion-col>
+      </ion-item>
+    </ion-col>
+
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            YU
+          </a>
+          <!--  <ion-img src="assets/icon/vacant-berth.png"  width="5" height="5"/> -->
+        </ion-col>
+        <ion-col>
+          Quota Code
+        </ion-col>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            /
+          </a>
+        </ion-col>
+        <ion-col>
+          Then VIP Symbol
+        </ion-col>
+      </ion-item>
+    </ion-col>
+
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            !
+          </a>
+          <!--  <ion-img src="assets/icon/vacant-berth.png"  width="5" height="5"/> -->
+        </ion-col>
+        <ion-col>
+          Upgraded passenger
+        </ion-col>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            NRF
+          </a>
+          <!--  <ion-img src="assets/icon/vacant-berth.png"  width="5" height="5"/> -->
+        </ion-col>
+        <ion-col>
+          Non refund across the counter
+        </ion-col>
+      </ion-item>
+    </ion-col>
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            ^
+          </a>
+          <!--  <ion-img src="assets/icon/vacant-berth.png"  width="5" height="5"/> -->
+        </ion-col>
+        <ion-col>
+          Atas Transfered PNR, Ask for Catering option
+        </ion-col>
+      </ion-item>
+    </ion-col>
+
+  </ion-row>
+
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            +
+          </a>
+        </ion-col>
+        <ion-col>
+          Passenger booked under DOCTOR concession
+        </ion-col>
+      </ion-item>
+    </ion-col>
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            <ion-icon name="search"></ion-icon>
+          </a>
+          <!--  <ion-img src="assets/icon/vacant-berth.png"  width="5" height="5"/> -->
+        </ion-col>
+        <ion-col>
+          Serach by PNR and passenger name
+        </ion-col>
+      </ion-item>
+    </ion-col>
+
+
+  </ion-row>
+
+
+
+
+  <ion-row>
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            >
+          </a>
+        </ion-col>
+        <ion-col>
+          Passenger opted for Bedroll
+        </ion-col>
+      </ion-item>
+    </ion-col>
+
+    <ion-col>
+      <ion-item>
+        <ion-col>
+          <a>
+            < </a>
+              <!--  <ion-img src="assets/icon/vacant-berth.png"  width="5" height="5"/> -->
+        </ion-col>
+        <ion-col>
+          FT passenger booked using PASSPORT
+        </ion-col>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+
+
+
+
+
+
+</ion-content>

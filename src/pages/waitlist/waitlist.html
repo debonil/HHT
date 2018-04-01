@@ -10,6 +10,7 @@
 
 <ion-content padding>
   <super-tabs *ngIf="classArrayFound" [scrollTabs]="classArray.length>10">
-    <super-tab *ngFor="let tab of classArray" title="{{tab.CLASS}}" [root]="rootPage" [rootParams]="{class :tab.CLASS, readonly:false}"></super-tab>
+    <!-- <super-tab *ngFor="let tab of classArray" title="{{tab.CLASS}}" [root]="rootPage" [rootParams]="{class :tab.CLASS, readonly:false}"></super-tab> -->
+    <super-tab *ngFor="let tab of classArray" title="{{tab}}" [root]="rootPage" [rootParams]="{class :tab, readonly:false}"></super-tab>
   </super-tabs>
 </ion-content>

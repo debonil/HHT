@@ -161,8 +161,8 @@ private collectionConfigInitOption = {
   }
 
   replace(collectionName:string,dataToSave:any,markClean?:boolean){
-    console.log("dataToSave");
-    console.log(dataToSave);
+   // console.log("dataToSave");
+  //  console.log(dataToSave);
     return new Promise(resolve=>{
       if(!(dataToSave instanceof Array))
       dataToSave=[dataToSave];
@@ -197,6 +197,7 @@ private collectionConfigInitOption = {
   }
 
   addOrReplace(collectionName:string,dataToSave:any,replaceCriteria:string[],markClean?:boolean){
+    //alert("replace :" + JSON.stringify(replaceCriteria) );
     return new Promise(resolve=>{
       if(!(dataToSave instanceof Array))
       dataToSave=[dataToSave];

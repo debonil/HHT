@@ -22,15 +22,21 @@
   <ion-item color="mediumgraycustom">
       <ion-label><strong>EFT NO<br>NO OF PSGN</strong></ion-label>
       <ion-label><strong>SRC<br>DEST</strong></ion-label>
-      <ion-label><strong>FARE<br>EXCESS FARE</strong></ion-label>
-      <ion-label><strong>TOTAL FARE<BR>EFT DATE</strong></ion-label>
+      <ion-label><strong>FARE<br>EXCESS FARE<br>GST</strong></ion-label>
+      <ion-label><strong>REASON<BR>TOTAL FARE<BR>EFT DATE</strong></ion-label>
   </ion-item>
   <ion-card *ngFor="let item of eftList" padding-left color="primary">
       <button ion-item padding>
           <ion-label text-wrap>{{item.json.EFT_NO}}<br>{{item.json.NUM_OF_PSGN}}</ion-label>
           <ion-label text-wrap>{{item.json.SRC}}<br>{{item.json.DEST}}</ion-label>
-          <ion-label text-wrap>{{item.json.FARE}}<br>{{item.json.FINE}}</ion-label>
-          <ion-label text-wrap>{{getTotal(item.json.FARE,item.json.FINE)}}<br>{{item.json.EFT_DATE}}</ion-label>
+          <ion-label text-wrap>{{item.json.FARE}}<br>{{item.json.FINE}}<br>{{item.json.GST}}</ion-label>
+          <ion-label text-wrap>{{item.json.REASON}}<br>{{getTotal(item.json.FARE,item.json.FINE,item.json.GST)}}<br>{{item.json.EFT_DATE}}</ion-label>
+          <!-- <expandable [expandHeight]="itemExpandHeight" [expanded]="item.expanded">
+            Hello people
+          </expandable> -->
       </button>
+      <ion-list ng-if="!item.open">
+
+      </ion-list>
   </ion-card>
 </ion-content>

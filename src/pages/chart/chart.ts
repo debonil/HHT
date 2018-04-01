@@ -16,12 +16,16 @@ import { PsngDataServiceProvider } from "../../providers/psng-data-service/psng-
 import { DataSyncProvider } from "../../providers/data-sync/data-sync";
 import { StorageServiceProvider } from '../../providers/storage-service/storage-service';
 import { Network } from '@ionic-native/network';
+
+declare var WL;
+
 ///@IonicPage()
 @Component({
   selector: 'page-chart',
   templateUrl: 'chart.html',
 })
 export class ChartPage {
+  appVer:any;
   trainAssignment: any;
   loader : any;
   dataleft: boolean;
@@ -35,6 +39,14 @@ export class ChartPage {
   progressval: number = 0;
   savedChartCoachList: Array<any>;
   chartLoadInfo: any;
+
+  isBerthLoadComplete: boolean = false;
+  isDropEtktComplete: boolean = false;
+  isDynamicFareComplete: boolean = false;
+  isEFTMasterComplete: boolean = false;
+  isChartLoadInfoComplete: boolean = false;
+
+  syncColor;
 
   constructor(public navCtrl: NavController, 
     public navParams: NavParams,
@@ -55,6 +67,7 @@ export class ChartPage {
     this.menuCtrl.get('menu1').enable(false);
     this.menuCtrl.get('menu2').enable(true);
     this.isNetworkAvailable='none'!=this.network.type;
+    this.appVer=util.getAppVersion();
   }
 
   ionViewDidEnter(){
@@ -65,6 +78,10 @@ export class ChartPage {
         arr.push(obj);
       });
       this.chartLoadInfo = arr;
+    });
+
+    this.pdsp.syncStatus.then(res=>{
+      this.syncColor = res;
     });
   }
 
@@ -110,6 +127,7 @@ export class ChartPage {
   }
 
   confirmAlert() {
+    console.log('************************************ Confirm Alert');
     let alert = this.alert.create({
       title: 'Confirm New Duty',
       message: 'Do you want to switch to new Duty or fresh copy of current one ? Doing this would clean all unsynced changes. It is suggested to sync your work before doing this. ',
@@ -155,31 +173,34 @@ export class ChartPage {
     //  }
   }
   /// New Code 
+
   loadChart() {
-    //alert('load chart');
+    this.syncColor = "light";
+    let logger = WL.Logger.create({pkg: 'HHT_CORDOVA',maxFileSize : 150000});
+    //analytics,debug,error,fatal,info,log,trace,warn
+    logger.error('DEBUG LOG ');
+    console.log("************************ logger *******************************");
+    console.log(logger);
     this.loader = this.loading.create({
       content: 'Loading data from server!!'
     });
    this.loader.present();
-    // this.addTrainAssignment(loader).then(response=>{
     if (this.trainAssignment) {
       this.loadPassenger();
-      //this.loadCoachTime(loader);
-      this.loadDropEticketPassenger( this.loader);
-      this.loadDynamicFare( this.loader);
-      this.loadEFTMaster( this.loader);
-      //this.addPassenger(this.trainAssignment.TRAIN_ID, this.trainAssignment.ASSIGNED_COACHES[0],0,this.loader, this.trainAssignment.LOAD_TIME);
-      /* this.loadVacantberth(); */
-      this.addVacantBerth(this.trainAssignment.TRAIN_ID, this.trainAssignment.ASSIGNED_COACHES[0], 0,this.loader, this.trainAssignment.LOAD_TIME);
-      //this.addWaitlist(loader);
+      /* this.loadForeignWaitlist(); */
+      /* Since we can't call loadPassenger and loadForeignWaitlist parallely due to API limitation 
+      I've called it after all the passengers have suceessfully been loaded */
+
+      this.loadDropEticketPassenger();
+      this.loadDynamicFare();
+      this.loadEFTMaster();
+      this.loadVacantberth();
       this.loadChartLoadInfo();
-     this.loader.dismiss();
+      this.loader.dismiss();
     } else {
       this.alertToast("No Train Assigned!! Could not download chart.");
     }
-    // });
   }
-
 
   clearChartData() {
     this.clearChart().then((resp) => {
@@ -189,6 +210,7 @@ export class ChartPage {
 
   clearChart() {
     //alert('clear chart');
+    this.chartLoadInfo=[];
     return new Promise(resolve => {
       this.storage.clearAll().then(() => {
         this.pdsp.clearAllData();
@@ -202,20 +224,21 @@ export class ChartPage {
   refreshTrainAssignmentFromBackend() {
     return new Promise(resolve => {
       this.backend.getTrainAssignment(this.username).then((response: any) => {
-        if (response.CODE == 200) {
-          this.trainAssignment = response.TEXT;
+        if (response.status == 200) {
+          this.trainAssignment = response.responseJSON;
           this.storage.add(this.storage.collectionName.TRAIN_ASSNGMNT_TABLE,
             this.trainAssignment,true).then(success => {
             resolve(success);
           });
-        } else if (response.CODE == 500) {
+        } else if (response.status == 0 || response.status==-1) {
           this.alertToast("Failed to refresh TrainAssignment From Backend in first attempt!! Retrying...");
-          this.refreshTrainAssignmentFromBackend();
+          /* this.refreshTrainAssignmentFromBackend(); */
+          alert('BACKEND_ERROR (CHART.REFRESH_TRAIN_ASSIGNMENT) : ' + response.errorMsg);
         } else {
-          alert('UNHANDLED ERROR ' + response.CODE);
+          alert('UNEXPECTED_ERROR (CHART.REFRESH_TRAIN_ASSIGNMENT) : ' + JSON.stringify(response));
         }
       }, failure => {
-        alert('FAILS TO GET TRAIN ASSIGNMENT' + JSON.stringify(failure));
+        alert('BACKEND_FAILURE (CHART.REFRESH_TRAIN_ASSIGNMENT) : ' + JSON.stringify(failure));
       });
     });
   }
@@ -246,7 +269,7 @@ export class ChartPage {
               });
               resolve(true);
             } else if (response.CODE == 500) {
-              this.addVacantBerth(trainId, coach, index, loader, loadTime);
+              //this.addVacantBerth(trainId, coach, index, loader, loadTime);
             } else {
               loader.dismiss();
               alert('UNHANDLED ERROR ' + response.CODE);
@@ -259,109 +282,157 @@ export class ChartPage {
     });
   }
 
-  loadDropEticketPassenger(loader) {
-    let trainId = this.trainAssignment.TRAIN_ID;
-    return new Promise(resolve => {
-      this.storage.getDocumentCount(this.storage.collectionName.DROP_ETCKT_PSNG_TABLE).then(cnt => {
-        if (cnt == 0) {
-          this.backend.loaddroppedETickets(trainId).then((response: any) => {
-            if (response.CODE == 200) {
-              let data = this.util.convertIntoJson(response.TEXT);
-              if (data.resultSet.length > 0) {
-                this.storage.add(this.storage.collectionName.DROP_ETCKT_PSNG_TABLE,
-                  data.resultSet,true).then((success) => {
-
-                }, (failure) => {
-                  alert("failed to add dropped e ticket passenger " + JSON.stringify(failure));
-                });
+  loadForeignWaitlist(){
+    let coachWiseForeignWaitlist = new Array<any>();
+    this.trainAssignment.FOREIGN_COACHES.forEach((coachId, index)=>{
+      this.loader.present();
+      var downloadStartTime=new Date();
+      let coachWiseWaitlist = new Array<any>();
+      this.storage.getDocumentCount(this.storage.collectionName.PASSENGER_TABLE,{ COACH_ID: coachId }, { exact: true }).then(count=>{
+        if(count==0){
+          let loadTime = this.trainAssignment.LOAD_TIME;
+          let trainId = this.trainAssignment.TRAIN_ID;
+          this.backend.getForeignWaitList(trainId, coachId, loadTime).then((response:any)=>{
+            if(response.status==200){
+              coachWiseForeignWaitlist.push({ key: coachId, value: response.responseJSON });
+              if(coachWiseForeignWaitlist.length == this.trainAssignment.FOREIGN_COACHES.length){
+                var completTime=(new Date().getTime()-downloadStartTime.getTime())/ 1000;
+                var rdcdArr = coachWiseForeignWaitlist.reduce((arr, x)=>{
+                  return arr.concat(x.value);
+                },[]);
+                
+                if(rdcdArr.length>0){
+                  this.storage.add(this.storage.collectionName.PASSENGER_TABLE,rdcdArr,true).then((success)=>{
+                    this.loader.dismiss();
+                    if(success){
+                      //this.isBerthLoadComplete = true;
+                      this.alertToast("Foreign Waitlist Download Complete in "+completTime+" sec.");
+                      
+                    }else{
+                      alert('Foreign Waitlist Download');
+                    }
+                  });
+                }
               }
-              resolve(true);
-            } else if (response.CODE == 500) {
-              this.loadDropEticketPassenger(loader);
-            } else {
-              loader.dismiss();
-              alert('UNHANDLED ERROR ' + response.CODE);
+            }else{
+              this.loader.dismiss();
+              if (response.status == 0 || response.status == -1) {
+                alert("BACKEND_ERROR (CHART.LOAD_FOREIGN_WL) : " + response.errorMsg);
+                return false;
+              }else{
+                alert('UNEXPECTED_ERROR (CHART.LOAD_FOREIGN_WL) : ' + JSON.stringify(response));
+              }
             }
-          }, (failure) => {
-            alert("failed to get dropped e ticket passsenger " + JSON.stringify(failure));
+          },failure=>{
+            this.loader.dismiss();
+            alert("SERVER_GET_FAILURE (CHART.LOAD_FOREIGN_WL)  : " + JSON.stringify(failure));
           });
-        } else {
-          resolve(true);
         }
       });
     });
   }
 
-  loadDynamicFare(loader) {
+  loadDropEticketPassenger() {
+    var downloadStartTime=new Date();
+    this.loader.present();
     let trainId = this.trainAssignment.TRAIN_ID;
-    return new Promise(resolve => {
-      this.storage.getDocumentCount(this.storage.collectionName.DYNAMIC_FARE_TABLE).then(cnt => {
-        if (cnt == 0) {
-          this.backend.getDynamicFare(trainId).then((response: any) => {
-            if (response.CODE == 200) {
-              let data = this.util.convertIntoJson(response.TEXT);
-              if (data.resultSet.length > 0) {
-                this.storage.add(this.storage.collectionName.DYNAMIC_FARE_TABLE,data.resultSet,true).then((success) => {
-
-                }, (failure) => {
-                  alert("failed to add dynamic fare " + JSON.stringify(failure));
-                });
-              }
-              resolve(true);
-            } else if (response.CODE == 500) {
-              this.loadDynamicFare(loader);
-            } else {
-              loader.dismiss();
-              alert('UNHANDLED ERROR ' + response.CODE);
-            }
-          }, (failure) => {
-            alert("failed to get dynamic fare " + JSON.stringify(failure));
-          });
-        } else {
-          resolve(true);
-        }
-      });
+    this.backend.getDroppedETickets(trainId).then((response:any)=>{
+      if (response.status == 200) {
+        this.storage.add(this.storage.collectionName.DROP_ETCKT_PSNG_TABLE,response.responseJSON.resultSet,true).then(success=>{
+          this.loader.dismiss();
+          this.isDropEtktComplete = true;
+          var completTime=(new Date().getTime()-downloadStartTime.getTime())/ 1000;
+          this.alertToast("DROP_ETKTS Download Complete in "+completTime+" sec.")
+        },failure=>{
+          this.loader.dismiss();
+          alert('STORAGE_ADD_FAILURE (CHART.DROP_ETKTS) : ' + JSON.stringify(failure));
+        });
+      }else if(response.status ==0 || response.status == -1){
+        this.loader.dismiss();
+        alert("BACKEND_ERROR (CHART.DROP_ETKTS) : " + response.errorMsg);
+      }else{
+        this.loader.dismiss();
+        alert('UNEXPECTED_ERROR (CHART.DROP_ETKTS) : ' + JSON.stringify(response));
+      }
+    },failure=>{
+      this.loader.dismiss();
+      alert("SERVER_GET_FAILURE (CHART.DROP_ETKTS)  : " + JSON.stringify(failure));
     });
   }
 
-  loadEFTMaster(loader) {
+  loadDynamicFare() {
+    let logger = WL.Logger.create({pkg: 'HHT_CORDOVA',maxFileSize : 150000});
+      //analytics,debug,error,fatal,info,log,trace,warn
+      logger.log('DEBUG LOG ');
+      logger.error('**************** loadDynamicFare ');
+    var downloadStartTime=new Date();
+    this.loader.present();
     let trainId = this.trainAssignment.TRAIN_ID;
-    return new Promise(resolve => {
-      this.storage.getDocumentCount(this.storage.collectionName.EFT_MASTER_TABLE).then(cnt => {
-        if (cnt == 0) {
-          this.backend.getEFTDetails(trainId).then((response: any) => {
-            if (response.CODE == 200) {
-              let data = this.util.convertIntoJson(response.TEXT);
-              if (data.resultSet.length > 0) {
-                this.storage.add(this.storage.collectionName.EFT_MASTER_TABLE,data.resultSet,true).then((success) => {
 
-                }, (failure) => {
-                  alert("FAILS TO ADD EFT MASTER " + JSON.stringify(failure));
-                });
-              }
-              resolve(true);
-            } else if (response.CODE == 500) {
-              this.loadEFTMaster(loader);
-            } else {
-              loader.dismiss();
-              alert('UNHANDLED ERROR ' + response.CODE);
-            }
-          }, (failure) => {
-            alert("failed to get eft master" + JSON.stringify(failure));
-          });
-        } else {
-          resolve(true);
-        }
-      });
+    this.backend.getDynamicFare(trainId).then((response:any)=>{
+      if(response.status==200){
+        this.storage.add(this.storage.collectionName.DYNAMIC_FARE_TABLE,response.responseJSON.resultSet,true).then(success=>{
+          this.loader.dismiss();
+          this.isDynamicFareComplete = true;
+          var completeTime=(new Date().getTime()-downloadStartTime.getTime())/ 1000;
+          this.alertToast("DYNAMIC_FARE Download Complete in "+completeTime+" sec.");
+        },failure=>{
+          this.loader.dismiss();
+          alert('STORAGE_ADD_FAILURE (CHART.DYNAMIC_FARE) : ' + JSON.stringify(failure));
+        });
+      }else if(response.status==0 || response.status==-1){
+        this.loader.dismiss();
+        alert("BACKEND_ERROR (CHART.DYNAMIC_FARE) : " + response.errorMsg);
+      }else{
+        this.loader.dismiss();
+        alert('UNEXPECTED_ERROR (CHART.DYNAMIC_FARE) : ' + JSON.stringify(response));
+      }
+    },failure=>{
+      this.loader.dismiss();
+      alert("SERVER_GET_FAILURE (CHART.DYNAMIC_FARE)  : " + JSON.stringify(failure));
+    });
+  }
+
+  loadEFTMaster() {
+    var downloadStartTime=new Date();
+    this.loader.present();
+    let trainId = this.trainAssignment.TRAIN_ID;
+    this.backend.getEFTDetails(trainId).then((response:any)=>{
+      if (response.status == 200) {
+        this.storage.add(this.storage.collectionName.EFT_MASTER_TABLE,response.responseJSON.resultSet,true).then((success:any)=>{
+          this.loader.dismiss();
+          this.isEFTMasterComplete = true;
+          var completeTime=(new Date().getTime()-downloadStartTime.getTime())/ 1000;
+          this.alertToast("EFT_MASTER Download Complete in "+completeTime+" sec.");
+        },failure=>{
+          this.loader.dismiss();
+          alert('STORAGE_ADD_FAILURE (CHART.EFT_MASTER) : ' + JSON.stringify(failure));
+        });
+      }else if (response.status == 0 || response.status == -1) {
+        this.loader.dismiss();
+        alert("BACKEND_ERROR (CHART.EFT_MASTER) : " + response.errorMsg);
+      }else{
+        this.loader.dismiss();
+        alert('UNEXPECTED_ERROR (CHART.EFT_MASTER) : ' + JSON.stringify(response));
+      }
+    },failure=>{
+      this.loader.dismiss();
+      alert("SERVER_GET_FAILURE (CHART.EFT_MASTER)  : " + JSON.stringify(failure));
     });
   }
 
   loadVacantberth(){
     try{
+      let logger = WL.Logger.create({pkg: 'HHT_CORDOVA',maxFileSize : 150000});
+      //analytics,debug,error,fatal,info,log,trace,warn
+      logger.log('DEBUG LOG ');
+      logger.error('**************** loadVacantberth ');
       var downloadStartTime=new Date();
-      let coachList = new Array<any>();
-      let coachArray = this.trainAssignment.TS_FLAG?this.trainAssignment.TOTAL_COACH.map(coach=>coach.COACH_ID):this.trainAssignment.ASSIGNED_COACHES.slice();
-      console.log('coachArry for VAC: ' + JSON.stringify(coachArray));
+      let coachWiseBerthList = new Array<any>();
+      /* let coachArray = this.trainAssignment.TOTAL_COACH.map(coach=>coach.COACH_ID); */
+      let coachArray=this.trainAssignment.TS_FLAG?this.trainAssignment.TOTAL_COACH.map(coach=>coach.COACH_ID):
+      this.trainAssignment.ASSIGNED_COACHES.slice();
+      
       coachArray.forEach((coachId, index) => {
         this.loader.present();
         this.storage.getDocumentCount(this.storage.collectionName.VACANT_BERTH_TABLE,{ COACH_ID: coachId }, { exact: true }).then(count=>{
@@ -369,17 +440,39 @@ export class ChartPage {
             let loadTime = this.trainAssignment.LOAD_TIME;
             let trainId = this.trainAssignment.TRAIN_ID;
             this.backend.getVacantBerth(trainId, coachId, loadTime).then((response:any)=>{
-              if (response.CODE == 200) {
-                coachList.push({ key: coachId, value: response.TEXT.resultSet });
-                //this.progressval = (this.savedChartCoachList.length + 1) * 100 / (coachArry.length + 1);
+              if (response.status == 200) {
+                coachWiseBerthList.push({ key: coachId, value: response.responseJSON.resultSet });
+                
+                if(coachWiseBerthList.length == coachArray.length){
+                  var completTime=(new Date().getTime()-downloadStartTime.getTime())/ 1000;
+                  var rdcdArr = coachWiseBerthList.reduce((arr, x) => {
+                    return arr.concat(x.value);
+                  }, []);
+                  this.storage.add(this.storage.collectionName.VACANT_BERTH_TABLE,rdcdArr,true).then(success=>{
+                    this.loader.dismiss();
+                    if(success){
+                      this.isBerthLoadComplete = true;
+                      this.alertToast("Berth Download Complete in "+completTime+" sec.");
+                    }else{
+                      alert('Berth Download Error');
+                    }
+                  },failure=>{
+                    alert('STORAGE_ADD_FAILURE (CHART.LOAD_BERTH) : ' + JSON.stringify(failure));
+                  });
+                }
               }else{
-                if (response.CODE == 500) {
-
+                if (response.status == 0 || response.status == -1) {
+                  this.loader.dismiss();
+                  alert("BACKEND_ERROR (CHART.LOAD_BERTH) : " + response.errorMsg);
+                  return false;
                 }else {
                   this.loader.dismiss();
-                  alert('UNHANDLED RESPONSE IN LOAD VACANT BERTH : ' + response.CODE);
+                  alert('UNEXPECTED_ERROR (CHART.LOAD_BERTH) : ' + JSON.stringify(response));
                 }
               }
+            },failure=>{
+              this.loader.dismiss();
+              alert("SERVER_GET_FAILURE (CHART.LOAD_BERTH)  : " + JSON.stringify(failure));
             });
           }
         });
@@ -390,16 +483,16 @@ export class ChartPage {
   }
 
   loadPassenger() {
+    let logger = WL.Logger.create({pkg: 'HHT_CORDOVA',maxFileSize : 150000});
+    //analytics,debug,error,fatal,info,log,trace,warn
+    logger.log('DEBUG LOG ');
+    logger.error('**************** loadPassenger ');
     var downloadStartTime=new Date();
-    //let index = 0;
     this.savedChartCoachList = new Array<any>();
     let coachArry=this.trainAssignment.TS_FLAG?this.trainAssignment.TOTAL_COACH.map(coach=>coach.COACH_ID):
     this.trainAssignment.ASSIGNED_COACHES.slice();
     coachArry.push("W/L");
     console.log(coachArry);
-    
-   // console.log("Starting download...");
-   // console.log((new Date().getTime()-downloadStartTime.getTime())/ 1000);
     
     coachArry.forEach((coachId, index) => {
       this.loader.present();
@@ -407,39 +500,27 @@ export class ChartPage {
         if (count == 0) {
           let loadTime = this.trainAssignment.LOAD_TIME;
           let trainId = this.trainAssignment.TRAIN_ID;
-          //alert('GET PSGN FOR ' + coachId);
-
-   // console.log('GET PSGN FOR ' + coachId);
-   // console.log((new Date().getTime()-downloadStartTime.getTime())/ 1000);
           this.backend.getPassenger(trainId, coachId, loadTime).then((response: any) => {
-            // if(index==0)this.savedChartCoachList=new Array<any>();
-            if (response.CODE == 200) {
-              this.savedChartCoachList.push({ key: coachId, value: response.TEXT.resultSet });
-             //// console.log("Downloaded "+coachId+" ==>"+response.TEXT.resultSet.length);
-             // console.log((new Date().getTime()-downloadStartTime.getTime())/ 1000);
-             // console.log(this.savedChartCoachList.length);
-              
+            if (response.status == 200) {  
+              this.savedChartCoachList.push({ key: coachId, value: response.responseJSON.resultSet });
               this.progressval = (this.savedChartCoachList.length + 1) * 100 / (coachArry.length + 1);
-             // console.log(this.progressval);
+             
               if (coachArry.length == this.savedChartCoachList.length) {
                 var completTime=(new Date().getTime()-downloadStartTime.getTime())/ 1000;
-               // console.log("Chart Download Complete in "+completTime+" sec.");
                 
                 var rdcdArr = this.savedChartCoachList.reduce((arr, x) => {
-                 // console.log(x);
                   return arr.concat(x.value);
                 }, []);
-               // console.log(this.savedChartCoachList);
-               // console.log(rdcdArr);
 
                 this.storage.add(this.storage.collectionName.PASSENGER_TABLE,rdcdArr,true).then((success) => {
                   if (success) {
-                   // console.log("Downloaded "+coachId+" ==>"+response.TEXT.resultSet.length);
-                   // console.log((new Date().getTime()-downloadStartTime.getTime())/ 1000);
                     this.isChartLoadComplete = true;
                     this.alertToast("Chart Download Complete in "+completTime+" sec.")
                     this.noChart = false;
-                    //this.loadWaitlist();
+                    
+                    if(!this.trainAssignment.TS_FLAG){
+                      this.loadForeignWaitlist();
+                    }
                   } else {
                     alert("Chart Download ERROR!!");
                   }
@@ -447,15 +528,19 @@ export class ChartPage {
                 });
               }
             } else {
-              if (response.CODE == 500) {
-                this.loadPassenger();
+              if (response.status == 0 || response.status == -1) {
+                this.loader.dismiss();
+                //alert("BACKEND_ERROR (CHART.LOAD_PSGN) : " + response.errorMsg);
+                alert("BACKEND_ERROR (CHART.LOAD_PSGN) : " + JSON.stringify(response));
+                return false;
               } else {
                 this.loader.dismiss();
-                alert('UNHANDLED RESPONSE IN LOAD PSGN : ' + response.CODE);
+                alert('UNEXPECTED_ERROR (CHART.LOAD_PSGN) : ' + JSON.stringify(response));
               }
             }
           }, failure => {
-            alert('FAILS TO GET PASSENGER FROM BACKEND ' + JSON.stringify(failure));
+            this.loader.dismiss();
+            alert("SERVER_GET_FAILURE (CHART.LOAD_PSGN)  : " + JSON.stringify(failure)); 
           });
         }
       });
@@ -464,22 +549,32 @@ export class ChartPage {
   }
 
   loadChartLoadInfo(){
+    var downloadStartTime=new Date();
+    this.loader.present();
     let trainId = this.trainAssignment.TRAIN_ID;
-    this.backend.getChartLoadInfo(trainId).then((res:any)=>{
-      if(res.CODE==200){
-        this.chartLoadInfo = res.TEXT;
-        this.storage.add(this.storage.collectionName.CHART_LOAD_INFO, res.TEXT, true).then(success=>{
-          if(success){
-            //alert('chart_load_info loaded' + JSON.stringify(this.chartLoadInfo ));
-          }
+
+    this.backend.getChartLoadInfo(trainId).then((response:any)=>{
+      if (response.status == 200) {
+        this.chartLoadInfo = response.responseJSON;
+        this.storage.add(this.storage.collectionName.CHART_LOAD_INFO, response.responseJSON, true).then((success)=>{
+          this.loader.dismiss();
+          this.isChartLoadInfoComplete = true;
+          var completeTime=(new Date().getTime()-downloadStartTime.getTime())/ 1000;
+          this.alertToast("CHART_LOAD_INFO Download Complete in "+completeTime+" sec.");
+        },failure=>{
+          this.loader.dismiss();
+          alert('STORAGE_ADD_FAILURE (CHART.CHART_LOAD_INFO) : ' + JSON.stringify(failure));
         });
+      }else if (response.status == 0 || response.status == -1) {
+        this.loader.dismiss();
+        alert("BACKEND_ERROR (CHART.CHART_LOAD_INFO) : " + response.errorMsg);
       }else{
-        if(res.CODE==500){
-          this.loadChartLoadInfo();
-        }else{
-          alert('Unhandled Exception : loadChartLoadInfo : ' + res.CODE);
-        }
+        this.loader.dismiss();
+        alert('UNEXPECTED_ERROR (CHART.CHART_LOAD_INFO) : ' + JSON.stringify(response));
       }
+    },failure=>{
+      this.loader.dismiss();
+      alert("SERVER_GET_FAILURE (CHART.CHART_LOAD_INFO)  : " + JSON.stringify(failure));
     });
   }
 
@@ -513,11 +608,14 @@ export class ChartPage {
 
   syncData() {
     console.log("syncData");
-    
     this.syncProvider.syncData(this.trainAssignment).then(res=>{
       console.log("syncData"+res);
       if(res){
         this.alertToast("Data Sync completed in "+this.syncProvider.getTimeInMili()/1000+" sec");
+        //this.syncColor = "light";
+        this.pdsp.syncStatus.then(res=>{
+          this.syncColor = res;
+        });
         this.pdsp.findAll(true).subscribe(data => {
           console.log(data);
           
@@ -527,6 +625,10 @@ export class ChartPage {
           this.trainAssignment.LAST_SYNCED = this.syncProvider.serverTimeAtProcessStart;
          });
       }else{
+        //this.syncColor = "danger";
+        this.pdsp.syncStatus.then(res=>{
+          this.syncColor = res;
+        });
         this.alertToast("Some Problem in data Sync, completed in "+this.syncProvider.getTimeInMili()/1000+" sec");
       }
     }).catch((e) => {

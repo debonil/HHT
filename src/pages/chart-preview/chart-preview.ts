@@ -58,7 +58,7 @@ export class ChartPreviewPage {
     val.forEach(element => {
       let curr_TU_count = 0;
       let curr_NT_count = 0;
-      console.log(element.key);
+     // console.log(element.key);
      let cStatus:CoachChartStatus= {
         coachId:"",
         tuCount : 0,
@@ -107,14 +107,16 @@ export class ChartPreviewPage {
     });
 
 
-    this.load.dismiss();
-    console.log(this.coachWiseChartStatus);
+   // this.load.dismiss();
+  //  console.log(this.coachWiseChartStatus);
     
   }
 
   ionViewDidEnter() {
-    console.log(this.navParams.data.coachwiseChartData);
-    this.status(this.navParams.data.coachwiseChartData);
+   console.log(this.navParams.data);
+   // this.status(this.navParams.data.coachwiseChartData);
+        this.status(this.navParams.data);
+
   }
   alertToast(msg) {
     let toast = this.toastCtrl.create({
@@ -135,12 +137,12 @@ export class ChartPreviewPage {
 
   }
   
-  savePsngBerthDataLocally() {
+   savePsngBerthDataLocally() {
     this.showLoader("Saving data... ");
     this.pdsp.savePsngBerthDataLocally()
       .then((resp) => {
         this.load.dismiss();
-        this.modal_Close() 
+        this.modal_Close() ;
         if (resp["success"]) {
           this.alertToast("Data saved successfully!!");
         } else {
@@ -151,7 +153,9 @@ export class ChartPreviewPage {
         this.load.dismiss();
         alert("Data could not be saved!! \n ERROR : " + JSON.stringify(error));
       });
-  }
+  } 
+
+  
 
   modal_Close() {
     this.viewCtrl.dismiss();

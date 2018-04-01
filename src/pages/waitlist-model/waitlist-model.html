@@ -37,10 +37,26 @@
             <ion-label> {{wlPsgn.json.JRNY_TO}}</ion-label>
         </ion-item>
         <ion-item>
+          <ion-label> Coach : </ion-label>
+          <ion-label>{{this.selectedCoach}}</ion-label>
+          <ion-label >
+            <ion-buttons end>
+              <a ion-button icon-only end id="coaches" (click)="getCoaches()">
+                <ion-icon name="train"></ion-icon>
+              </a>
+            </ion-buttons>
+          </ion-label>
+        </ion-item>
+        <ion-item>
             <ion-label> Berth : </ion-label>
-            <ion-select full interface="popover" placeholder="Select vacant berth" [(ngModel)]="bsd">
-                <ion-option *ngFor="let item of berth" [value]="item">{{item.json.COACH_ID + '-' +item.json.BERTH_INDEX + '-' + item.json.SRC + '-' + item.json.DEST}}</ion-option>
-              </ion-select>
+           <ion-label>{{this.selectedData}}</ion-label>
+              <ion-label>
+                <ion-buttons end>
+                  <a ion-button icon-only end id="waitVacantBerth" (click)="waitVacantBerthList() ">
+                    <ion-icon name="arrow-up"></ion-icon>
+                  </a>
+                </ion-buttons>
+              </ion-label>
         </ion-item>
         <button ion-button full (click)="onSubmit()" id="waitlistSubmit">Submit</button>
     </ion-list>
